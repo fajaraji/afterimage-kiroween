@@ -1,5 +1,7 @@
 # Afterimage
 
+[Open the visual demo on Vercel](https://afterimage-kiroween.vercel.app/)
+
 Afterimage follows one fictional erasure request through a primary database, an analytics replica, a file export and a backup snapshot. Surviving copies appear as ghosts on an illustrated cemetery map. A read that confirms absence places a headstone. Restoring a retained snapshot reveals which record returned and why.
 
 ## Run the frontend
