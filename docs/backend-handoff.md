@@ -4,6 +4,56 @@ Afterimage mengikuti satu pelanggan fiktif yang meminta penghapusan. Pengunjung 
 
 Frontend dibangun dengan Codex. Bagianmu adalah membangun backend AWS dengan Kiro dan mengevaluasi apakah pengalaman di browser sesuai dengan bukti di penyimpanan. Demo publik saat ini memakai simulasi per tab. [Coba Afterimage](https://afterimage-kiroween.vercel.app/)
 
+## Alur AWS untuk video juri
+
+**Target rekaman adalah 2 menit 45 detik dalam mode Connected.** Pertanyaan untuk juri adalah “Kami sudah menghapus Evelyn. Bisakah satu backup mengembalikan datanya?” Dalam satu kasus fiktif, tunjukkan tiga fakta yang bisa dibaca di layar: primary pernah kosong, sebuah versi snapshot masih menyimpan record, lalu pembacaan primary menemukan isi snapshot itu kembali. Alur berikut adalah pekerjaan backend yang masih terbuka. Demo publik saat handoff ini ditulis memakai simulator.
+
+### Tiket teman backend
+
+Kerjakan berurutan. Setiap tiket memiliki kriteria penerimaan. Pakai kasus baru untuk percobaan gagal agar rekaman utama tetap mudah diikuti.
+
+| Urutan | Hasil yang harus tersedia untuk tiket berikutnya |
+| --- | --- |
+| [#20 · Kasus dan snapshot](https://github.com/fajaraji/afterimage-kiroween/issues/20) | Spec Kiro, kasus AWS terisolasi, snapshot S3 berversi yang bisa dibaca ulang. |
+| [#21 · Bukti penghapusan](https://github.com/fajaraji/afterimage-kiroween/issues/21) | Pembacaan primary kosong dan pembacaan backup positif untuk subjek yang sama. |
+| [#22 · Restore terverifikasi](https://github.com/fajaraji/afterimage-kiroween/issues/22) | Impor objek versi tertentu, baca ulang target, bukti asal dan pengujian jalur gagal. |
+| [#23 · Gladi di Connected Preview](https://github.com/fajaraji/afterimage-kiroween/issues/23) | Peta, log dan sertifikat cocok dengan bukti AWS. Kasus kontrol gagal tetap belum terverifikasi. |
+| [#24 · Rekaman 2:45](https://github.com/fajaraji/afterimage-kiroween/issues/24) | Video berteks Inggris, bukti satu run, dan uji keterbacaan tanpa audio. |
+
+### Satu run yang bisa diperiksa ulang
+
+1. **Sebelum dihapus.** Gunakan pasangan `caseId` dan `subjectId` sebagai identitas record. Buat satu penanda acak per kasus, misalnya `recordTag`, sebagai bagian dari payload fiktif. Baca item awal dari DynamoDB dan simpan payload itu ke S3 dengan versioning aktif. Catat key dan `VersionId` aktual dari hasil penulisan. Tunggu sampai salinan awal siap sebelum merekam.
+2. **Buktikan primary kosong.** Sesudah `DeleteItem`, biarkan status menunggu pemeriksaan. Lakukan `GetItem(ConsistentRead=true)` pada **tabel dasar, region dan kunci yang sama**. Respons sukses tanpa `Item` menghasilkan `clear` dengan waktu baca UTC. Tampilkan juga hasil `GetObject` untuk versi backup yang masih memuat subjek dan penandanya. Kegagalan akses atau timeout tetap belum terverifikasi. [DynamoDB GetItem](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_GetItem.html) · [S3 GetObject](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html)
+3. **Pulihkan dari objek yang ditunjuk.** Saat menerima `restore`, validasi sesi dan versi kasus. Ambil bytes melalui `GetObject(Key, VersionId)`, cocokkan kasus dan subjek, lalu tulis payload hasil pembacaan itu ke primary dengan syarat item masih kosong. Kaitkan operasi dengan `commandId` dan referensi impor. Cara ini mencegah record yang sudah muncul dari penulis lain dianggap hasil restore. Simpan kemajuan perintah agar retry setelah penulisan bisa melanjutkan verifikasi tanpa mengimpor ulang.
+4. **Buktikan record kembali.** Setelah penulisan, lakukan `GetItem` strongly consistent yang baru. Bandingkan identitas dan penanda hasil **baca target** dengan hasil **baca versi S3**, serta cocokkan referensi impor pada item target dengan operasi ini. Simpan jejak berurutan berisi ID kasus, subjek, versi snapshot, `commandId`, hasil baca dan waktu UTC. Untuk video, gunakan referensi singkat yang bisa dicocokkan dengan versi penuh pada lampiran run. Isi `event.detail` dalam bahasa Inggris agar laporan saat ini langsung bisa menampilkan bukti tersebut.
+
+### Kapan hantu muncul?
+
+| Bukti yang sudah tersedia | Yang boleh terlihat atau terdengar |
+| --- | --- |
+| Pembacaan suatu lokasi menemukan salinan | Hantu kecil pada lokasi itu. Nisan diberikan ketika pembacaan lokasi berhasil dan record memang absen. |
+| Primary terverifikasi kosong dan backup ditemukan | Jalur putus-putus yang menunjukkan kemungkinan restore. |
+| Impor berhasil, verifikasi target belum berhasil | Event `restore` bersumber dari `backup`. Pintu vault boleh terbuka. Primary tetap pending atau `unreachable` sesuai hasil pemeriksaan. |
+| Pembacaan target baru cocok dengan payload dan asal impor | Backend menambahkan event `return` pada `primary`, dengan `seq` lebih besar daripada event `restore` untuk perintah itu. Dalam snapshot respons yang sama, entri primary memiliki `finding: "returned"`, `sourceId: "backup"`, `pendingCheck: false` dan `checkedAt` dari pembacaan baru. Baru di sini penampakan besar, suara hantu, dan jalur terkonfirmasi boleh muncul. |
+
+Backend bertanggung jawab mencocokkan versi, penanda dan operasi. Frontend membaca event baru beserta status primary dalam respons perintah. Bila hasil baca kosong, salah subjek, penanda berbeda, atau verifikasi gagal, catat hasil aktual dan tahan event `return`. Uji juga replay dan retry: replay hanya memutar bukti yang sudah ada, sedangkan retry perintah yang sama harus mempertahankan satu impor logis. [Logika penampakan](../lib/trace.ts) · [Kontrak HTTP](backend-contract.md)
+
+### Storyboard 2:45 yang tetap terbaca saat mute
+
+| Waktu | Gambar utama | Pesan di layar dalam bahasa Inggris |
+| --- | --- | --- |
+| 0:00–0:15 | Evelyn, ID subjek, dan pertanyaan kasus. Tunjukkan siapa yang membutuhkan bukti ini, misalnya petugas privasi. | “Evelyn asked to be erased. How can we prove every copy is gone?” |
+| 0:15–0:42 | Perlihatkan label Connected, tekan erase lalu scan. Tahan pada nisan primary dan hantu vault. | “Primary read: absent. Backup read: present.” |
+| 0:42–1:02 | Sisipkan potongan hasil baca AWS dari run yang sama. Perbesar ID subjek, referensi versi dan penanda singkat. | “This backup still holds Evelyn’s record.” |
+| 1:02–1:25 | Satu pengambilan gambar utuh dari klik restore hingga penampakan dan cap sumber. Biarkan jalur vault ke primary terbaca. | “Snapshot imported.” Lalu setelah konfirmasi, “A new primary read found Evelyn again.” |
+| 1:25–2:05 | Buka sertifikat. Tahan perbandingan sebelum/sesudah. Sandingkan penanda dari S3 dan hasil baca DynamoDB, dengan waktu UTC dan referensi impor yang sama. | “Same case. Same record tag. Read back from DynamoDB.” |
+| 2:05–2:30 | Perlihatkan spec atau pengujian Kiro yang benar-benar dipakai. Sisipkan satu kasus kontrol terpisah dengan caption yang membedakannya. | “Control run: import succeeded, verification failed. No confirmed return.” |
+| 2:30–2:45 | Kembali ke bukti kasus utama dan tampilkan URL aplikasi. | “An erasure report is only as good as its last verified read.” |
+
+**Gladi sebelum rekam.** Siapkan tampilan ringkas hasil AWS SDK atau log backend dari operasi aktual. Tampilkan field yang relevan dengan ukuran yang terbaca di pemutar video; sembunyikan kredensial dan detail akun. Ambil nilai caption dari run tersebut. Simpan bukti lengkap yang disanitasi bersama commit yang direkam. Putar hasil ekspor dengan suara mati kepada orang yang belum mencoba demo. Jika ia bisa menunjuk kapan primary kosong, backup mana yang diimpor dan pembacaan mana yang membuktikan record kembali, video sudah menyampaikan inti produk.
+
+Aturan meminta video demonstrasi di bawah tiga menit dan memperbolehkan juri menilai dari video, gambar, dan deskripsi saja. Target 2:45 menyisakan 15 detik dari batas tiga menit. [Aturan resmi Kiroween](https://kiroween.devpost.com/rules)
+
 ## Kenali satu putaran kasus
 
 Petunjuk lapangan tampil di atas peta sejak kasus dibuka. Baca tujuan langkah aktif pada urutan **Erase → Inspect → Restore → Report**, lalu jalankan satu tombol utama di bawah peta. Pemilihan makam membuka bukti lokasi dan bersifat opsional.
