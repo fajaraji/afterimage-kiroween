@@ -633,3 +633,174 @@
 button:not(:disabled):active {
   filter: brightness(0.94);
 }
+
+.field-instruction {
+  position: relative;
+  padding: 12px clamp(14px, 1.6vw, 25px) 15px;
+  color: #342631;
+  background: #e6d6be;
+  border-left: 5px solid #9e5642;
+}
+.case-itinerary {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  gap: 0;
+  margin: 0 0 10px;
+  padding: 0 0 8px;
+  border-bottom: 1px solid #ad9782;
+  font: 600 12px/1.2 var(--sans);
+}
+.case-itinerary li {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  color: #655447;
+}
+.case-itinerary li:not(:last-child)::after {
+  content: '';
+  display: inline-block;
+  align-self: center;
+  width: clamp(10px, 2.1vw, 34px);
+  margin: 0 10px;
+  height: 1px;
+  background: #ac9783;
+}
+.case-itinerary li[aria-current] {
+  color: #582923;
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+.case-itinerary li span {
+  font-variant-numeric: tabular-nums;
+  font-size: 10px;
+}
+.instruction-copy {
+  display: grid;
+  gap: 4px 18px;
+  grid-template-columns: minmax(150px, 0.72fr) minmax(0, 1.65fr);
+  align-items: center;
+}
+.instruction-copy h2 {
+  font: 400 clamp(24px, 2.2vw, 34px)/1.02 var(--serif);
+  letter-spacing: -0.25px;
+}
+.instruction-copy p {
+  font-size: 13px;
+  line-height: 1.47;
+  max-width: 72ch;
+}
+.return-imprint {
+  pointer-events: none;
+  position: absolute;
+  top: 9px;
+  left: 10px;
+  display: grid;
+  gap: 1px;
+  padding: 5px 9px;
+  border-left: 2px solid #ffad76;
+  color: #ffe4d0;
+  background: #251723f5;
+  max-width: 62%;
+  line-height: 1.2;
+}
+.return-imprint span {
+  color: #ffbd89;
+  font: 600 10px/1.4 var(--sans);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.return-imprint strong {
+  font: 400 clamp(18px, 2vw, 28px)/1.05 var(--serif);
+}
+.return-imprint small {
+  font-size: 10px;
+}
+.atlas-frame:has(.atlas-canvas[data-scene='vault']) .return-imprint,
+.atlas-frame:has(.atlas-canvas[data-scene='apparition']) .return-imprint {
+  opacity: 0;
+}
+.atlas-frame:has(.atlas-canvas[data-scene='apparition']) .map-node:not(:focus-visible) {
+  opacity: 0.08;
+}
+.atlas-frame:has(.atlas-canvas[data-scene='retreat']) .map-node {
+  transition: opacity 0.6s ease;
+}
+.cert-comparison {
+  margin: 20px 0 6px;
+  border-block: 1px solid #b79e92;
+  padding: 14px 4px;
+  break-inside: avoid;
+}
+.cert-comparison h3 {
+  font: 400 28px/1.1 var(--serif);
+}
+.cert-comparison > p,
+.cert-comparison dd {
+  color: #534145;
+  font: 400 13px/1.5 var(--sans);
+}
+.cert-comparison > p {
+  margin: 4px 0 12px;
+}
+.cert-comparison dl {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 20px;
+}
+.cert-comparison dt {
+  font-weight: 700;
+}
+.cert-comparison time {
+  font-size: 11px;
+}
+.atlas-sheet > .atlas-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 3;
+}
+@media (max-width: 640px) {
+  .instruction-copy {
+    display: block;
+  }
+  .instruction-copy p {
+    margin-top: 5px;
+  }
+  .case-itinerary {
+    font-size: 11px;
+  }
+  .case-itinerary li:not(:last-child)::after {
+    width: 8px;
+    margin: 0 6px;
+  }
+  .field-instruction {
+    padding: 10px 12px 12px;
+  }
+  .atlas-sheet > .atlas-actions {
+    flex-direction: row;
+    align-items: center;
+    padding: 7px 8px;
+    gap: 9px;
+  }
+  .atlas-actions .action-buttons {
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+  .atlas-actions .action-prompt p {
+    display: none;
+  }
+  .atlas-actions .action-buttons .primary-button {
+    font-size: 13px;
+    padding-inline: 11px;
+  }
+  .cert-comparison dl {
+    grid-template-columns: 1fr;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .atlas-frame .map-node {
+    transition: none !important;
+  }
+}

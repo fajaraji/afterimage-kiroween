@@ -1,3 +1,4 @@
+import { compareRestoreReads } from './restore-evidence.ts';
 import { evidence, STORE_IDS, STORES } from './case.ts';
 import type { CaseEvent, CaseFile, Command, StoreEvidence, StoreId } from './case.ts';
 
@@ -106,4 +107,11 @@ export function openPlayback(file: CaseFile, demo: boolean, now: number): Playba
     trace = describe(file, { type: 'erase-copy', store: last.store }, [last]);
   // A reload opens on the recorded result. Replay is an explicit view action.
   return trace ? { trace, before: [], at: -Infinity } : null;
+}
+
+export function replayConfirmedReturn(file: CaseFile, now: number): Playback | null {
+  const comparison = compareRestoreReads(file);
+  if (comparison?.after?.kind !== 'return') return null;
+  const trace = describe(file, { type: 'restore' }, [comparison.imported, comparison.after]);
+  return trace.confirmedReturn ? { trace, before: [], at: now } : null;
 }

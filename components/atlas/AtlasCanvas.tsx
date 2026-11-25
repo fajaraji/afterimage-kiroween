@@ -4,6 +4,8 @@ import type { RestoreRoute } from '../../lib/investigation';
 import type { Playback } from '../../lib/trace';
 import { NARROW, NARROW_WIDTH, WIDE } from './geometry';
 import type { Plan } from './geometry';
+import { RETURN_SCENE } from '../../lib/haunting';
+import { drawHaunting, drawMoonWitness } from './apparition';
 import { drawAtlas, drawTerrain, TRACE_SECONDS } from './draw';
 
 export function AtlasCanvas({
@@ -35,15 +37,28 @@ export function AtlasCanvas({
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
     let frame = 0,
       plan = WIDE;
+    const confirmedScene = play?.trace.kind === 'restore' && play.trace.confirmedReturn === true;
+    const duration = confirmedScene ? RETURN_SCENE.end : TRACE_SECONDS;
     function draw(now: number) {
       const t =
-        play && !reduced.matches && !document.hidden ? Math.max(0, (now - play.at) / 1000) : TRACE_SECONDS;
-      const active = !!play && !pending && t < TRACE_SECONDS;
+        play && !reduced.matches && !document.hidden ? Math.max(0, (now - play.at) / 1000) : duration;
+      const active = !!play && !pending && t < duration;
+      const phase =
+        active && confirmedScene
+          ? t < RETURN_SCENE.voiceAt
+            ? 'vault'
+            : t < RETURN_SCENE.retreatAt
+              ? 'apparition'
+              : 'retreat'
+          : 'still';
+      if (canvas!.dataset.scene !== phase) canvas!.dataset.scene = phase;
       canvas!.dataset.playing = String(active);
       ctx!.setTransform(1, 0, 0, 1, 0, 0);
       ctx!.drawImage(ground, 0, 0);
       ctx!.setTransform(canvas!.width / plan.width, 0, 0, canvas!.height / plan.height, 0, 0);
       drawAtlas(ctx!, plan, file, recovery, selected, paths, active ? play : null, t, pending);
+      if (active && confirmedScene) drawHaunting(ctx!, plan, t);
+      else if (recovery?.kind === 'confirmed') drawMoonWitness(ctx!, plan);
       if (active) frame = requestAnimationFrame(draw);
     }
     function paint() {

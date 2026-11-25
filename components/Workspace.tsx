@@ -15,9 +15,8 @@ import {
 } from 'lucide-react';
 import { commandCase, demoMode, openCase } from '../lib/gateway';
 import type { CaseFile, Command, StoreId } from '../lib/case';
-import { openPlayback, traceResult } from '../lib/trace';
+import { openPlayback, replayConfirmedReturn, traceResult } from '../lib/trace';
 import type { Playback } from '../lib/trace';
-import { CaseActions } from './CaseActions';
 import { CasePanel } from './CasePanel';
 import { Certificate, EventLog } from './Evidence';
 import { Graveyard } from './Graveyard';
@@ -30,7 +29,7 @@ const PAGES = {
     icon: Map,
     title: 'The haunted',
     italic: 'archive',
-    description: 'Use the button below the map to see what survives.'
+    description: 'Can you prove every copy is gone?'
   },
   events: {
     label: 'Event log',
@@ -44,7 +43,7 @@ const PAGES = {
     icon: FileBadge,
     title: 'Erasure',
     italic: 'certificate',
-    description: 'Review and export the evidence from the latest inspection.'
+    description: 'See what the reads proved and whether the record came back.'
   }
 };
 type Page = keyof typeof PAGES;
@@ -52,6 +51,14 @@ type Page = keyof typeof PAGES;
 function pageFromHash(): Page {
   const hash = window.location.hash.slice(1);
   return hash === 'events' || hash === 'certificate' ? hash : 'investigation';
+}
+
+function bringMapIntoView() {
+  if (document.querySelector('.map-dialog[open]')) return;
+  const scene = document.querySelector('#atlas .atlas-viewport');
+  const rect = scene?.getBoundingClientRect();
+  if (rect && (rect.top < -rect.height * 0.24 || rect.bottom > window.innerHeight + rect.height * 0.24))
+    scene?.scrollIntoView({ block: 'center', behavior: 'instant' });
 }
 
 let firstOpen: Promise<CaseFile> | undefined;
@@ -96,15 +103,28 @@ export function Workspace() {
     return () => window.clearTimeout(timer);
   }, [notice]);
 
-  function replayTrace() {
-    if (!play) return;
-    sound.play(play.trace);
-    setPlay({ ...play, at: performance.now() });
+  useEffect(() => {
+    if (page !== 'investigation') {
+      sound.stopCue();
+      setPlay((current) =>
+        current && Number.isFinite(current.at) ? { ...current, at: -Infinity } : current
+      );
+    }
+  }, [page, sound.stopCue]);
+
+  function replayTrace(returnOnly = false) {
+    const now = performance.now();
+    const scene = returnOnly && file ? replayConfirmedReturn(file, now) : play;
+    if (!scene) return;
+    if (scene.trace.kind === 'restore') bringMapIntoView();
+    sound.play(scene.trace);
+    setPlay({ ...scene, at: now });
   }
 
   async function perform(command?: Command, reset = false) {
     if (lock.current) return;
     if (reset) sound.stopCue();
+    if (command?.type === 'restore') bringMapIntoView();
     lock.current = true;
     setBusy(true);
     setError('');
@@ -116,8 +136,9 @@ export function Workspace() {
       firstOpen = Promise.resolve(result);
       if (command && file) {
         const trace = traceResult(file, result, command);
-        setPlay({ trace, before: file.stores, at: performance.now() });
-        sound.play(trace);
+        const visible = pageFromHash() === 'investigation';
+        setPlay({ trace, before: file.stores, at: visible ? performance.now() : -Infinity });
+        if (visible) sound.play(trace);
       } else {
         setPlay(openPlayback(result, demoMode, performance.now()));
         if (reset) {
@@ -209,7 +230,9 @@ export function Workspace() {
               {labels.title} <em>{labels.italic}</em>
             </h1>
             <p className="page-intro">
-              {page === 'investigation' && file && file.subject.name + ' asked to have a record erased. '}
+              {page === 'investigation' &&
+                file &&
+                file.subject.name + ' asked to be erased from the archive. '}
               {labels.description}
             </p>
           </div>
@@ -260,15 +283,12 @@ export function Workspace() {
                     onSelect={chooseStore}
                     pending={pending}
                     play={play}
-                    replay={replayTrace}
-                  >
-                    <CaseActions
-                      file={file}
-                      busy={busy || !!error}
-                      run={perform}
-                      certificate={() => navigate('certificate')}
-                    />
-                  </Graveyard>
+                    replay={() => replayTrace()}
+                    replayReturn={() => replayTrace(true)}
+                    busy={busy || !!error}
+                    run={perform}
+                    certificate={() => navigate('certificate')}
+                  />
                   <CasePanel
                     file={file}
                     busy={busy || !!error}

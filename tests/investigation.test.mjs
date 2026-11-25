@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { evidence, outcome, runDemo, startDemo } from '../lib/case.ts';
 import { nextStep, restoreRoute } from '../lib/investigation.ts';
+import { compareRestoreReads } from '../lib/restore-evidence.ts';
 import { traceResult } from '../lib/trace.ts';
 
 const newCase = () => startDemo('direct', '2026-11-25T10:00:00Z');
@@ -77,4 +78,39 @@ test('an acknowledgement, a misordered read or a mismatched source cannot confir
     assert.equal(traceResult(scanned.file, file, { type: 'restore' }).confirmedReturn, false);
     assert.notEqual(nextStep(file).command?.type, 'restore');
   }
+});
+
+test('the report shows the two actual reads around an import, including legacy v1 events', () => {
+  const scanned = scan();
+  assert.equal(compareRestoreReads(scanned.file), null);
+  const restored = restore(scanned);
+  const comparison = compareRestoreReads(restored.file);
+  assert.equal(comparison.before.store, 'primary');
+  assert.match(comparison.before.detail, /no matching/);
+  assert.equal(comparison.after.kind, 'return');
+  assert.ok(
+    comparison.before.seq < comparison.imported.seq && comparison.imported.seq < comparison.after.seq
+  );
+  const partial = structuredClone(restored.file);
+  partial.events.pop();
+  assert.equal(compareRestoreReads(partial).after, undefined);
+  const erased = apply(restored, { type: 'erase-copy', store: 'primary' });
+  const checked = apply(erased, { type: 'inspect', store: 'primary' });
+  assert.deepEqual(compareRestoreReads(checked.file).after, comparison.after);
+  const second = restore(checked);
+  assert.equal(compareRestoreReads(second.file).before.seq, checked.file.events.at(-1).seq);
+});
+
+test('an earlier or later read is never substituted for missing evidence', () => {
+  const file = restore(scan()).file;
+  const imported = file.events.at(-2);
+  file.events = [
+    file.events[0],
+    imported,
+    { ...imported, seq: imported.seq + 1, kind: 'erasure', store: 'primary' },
+    { ...imported, seq: imported.seq + 2, kind: 'inspection', store: 'primary' }
+  ];
+  const comparison = compareRestoreReads(file);
+  assert.equal(comparison.before, undefined);
+  assert.equal(comparison.after, undefined);
 });

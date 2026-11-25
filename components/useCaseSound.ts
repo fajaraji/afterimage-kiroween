@@ -15,7 +15,6 @@ export function useCaseSound(notify: (message: string) => void) {
   const [audible, setAudible] = useState(false);
   const engine = useRef<CemeterySound | null>(null);
   const wanted = useRef(true);
-  const arrivalDue = useRef(true);
   const cueNumber = useRef(0);
 
   const start = useCallback(
@@ -30,15 +29,18 @@ export function useCaseSound(notify: (message: string) => void) {
         const current = player;
         const sync = () => {
           if (engine.current !== current) return;
-          const playing = wanted.current && !document.hidden && current.context.state === 'running';
+          const playing =
+            wanted.current &&
+            !document.hidden &&
+            current.hasAmbience &&
+            current.context.state === 'running';
           setAudible(playing);
-          if (playing && arrivalDue.current) {
-            arrivalDue.current = false;
-            current.enter();
-          }
         };
         current.context.onstatechange = sync;
+        const ambience = current.enter();
         if (current.context.state !== 'running') await current.context.resume();
+        if (!(await ambience) && manual && engine.current === current)
+          notify('The cemetery recording could not load. Try the sound control again.');
         sync();
       } catch {
         if (engine.current !== player) return;
@@ -54,10 +56,10 @@ export function useCaseSound(notify: (message: string) => void) {
     } catch {
       wanted.current = true;
     }
-    arrivalDue.current = true;
     void start();
     const resumeOnGesture = (event: Event) => {
-      if (!event.isTrusted || engine.current?.context.state === 'running') return;
+      if (!event.isTrusted || (engine.current?.context.state === 'running' && engine.current.hasAmbience))
+        return;
       if (
         event instanceof KeyboardEvent &&
         (event.metaKey || event.ctrlKey || event.altKey || event.repeat)
@@ -95,16 +97,15 @@ export function useCaseSound(notify: (message: string) => void) {
     wanted.current = false;
     storeChoice('off');
     cueNumber.current++;
-    arrivalDue.current = true;
     const old = engine.current;
     engine.current = null;
     old?.close();
     setAudible(false);
   }
-  function stopCue() {
+  const stopCue = useCallback(() => {
     cueNumber.current++;
     engine.current?.cancelCue();
-  }
+  }, []);
   function play(trace: Trace) {
     const player = engine.current;
     if (!player || !wanted.current || document.hidden) return;

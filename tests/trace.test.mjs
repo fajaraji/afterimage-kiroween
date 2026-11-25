@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { startDemo, runDemo, evidence } from '../lib/case.ts';
-import { openPlayback, seedTrace, traceResult } from '../lib/trace.ts';
+import { openPlayback, replayConfirmedReturn, seedTrace, traceResult } from '../lib/trace.ts';
 
 const initial = startDemo('demo', '2026-11-25T04:00:00Z');
 const after = (state, command) =>
@@ -51,4 +51,13 @@ test('reopening a restored case offers an idle replay from its recorded source',
   assert.equal(replay.trace.confirmedReturn, true);
   assert.equal(replay.at, -Infinity);
   assert.deepEqual(replay.before, []);
+});
+test('the confirmed scene can be replayed after a later inspection without changing the case', () => {
+  const seen = after(restored, { type: 'scan' });
+  const prior = structuredClone(seen.file);
+  assert.equal(replayConfirmedReturn(seen.file, 27).trace.confirmedReturn, true);
+  assert.deepEqual(seen.file, prior);
+  const partial = structuredClone(restored.file);
+  partial.events.pop();
+  assert.equal(replayConfirmedReturn(partial, 27), null);
 });

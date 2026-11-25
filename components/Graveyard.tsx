@@ -1,13 +1,15 @@
-import { useMemo, useRef, useState } from 'react';
-import type { CSSProperties, ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import type { CSSProperties } from 'react';
 import { ChevronDown, CircleDashed, Expand, Ghost, RotateCcw, X } from 'lucide-react';
 import { evidence, statusText, STORES, STORE_IDS } from '../lib/case';
 import type { CaseFile, Command, StoreId } from '../lib/case';
 import type { Playback } from '../lib/trace';
-import { restoreRoute } from '../lib/investigation';
+import { nextStep, restoreRoute } from '../lib/investigation';
 import { AtlasCanvas } from './atlas/AtlasCanvas';
 import { NARROW, WIDE } from './atlas/geometry';
-import { Grave, StatusIcon } from './Common';
+import { RETURN_SCENE } from '../lib/haunting';
+import { CaseActions } from './CaseActions';
+import { clockTime, Grave, StatusIcon } from './Common';
 
 export function Graveyard({
   file,
@@ -16,7 +18,10 @@ export function Graveyard({
   pending,
   play,
   replay,
-  children
+  replayReturn,
+  busy,
+  run,
+  certificate
 }: {
   file: CaseFile;
   selected: StoreId | null;
@@ -24,7 +29,10 @@ export function Graveyard({
   pending: Command | null;
   play: Playback | null;
   replay: () => void;
-  children: ReactNode;
+  replayReturn: () => void;
+  busy: boolean;
+  run: (command: Command) => void;
+  certificate: () => void;
 }) {
   const [paths, setPaths] = useState(true);
   const [expanded, setExpanded] = useState(false);
@@ -32,6 +40,31 @@ export function Graveyard({
   const tools = useRef<HTMLDetailsElement>(null);
   const dialog = useRef<HTMLDialogElement>(null);
   const last = file.events.at(-1)!;
+  const step = nextStep(file);
+  const [watching, setWatching] = useState(false);
+  useEffect(() => {
+    if (!play?.trace.confirmedReturn || !Number.isFinite(play.at)) {
+      setWatching(false);
+      return;
+    }
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let timer = 0;
+    const update = () => {
+      window.clearTimeout(timer);
+      const remaining = play.at + RETURN_SCENE.retreatAt * 1000 - performance.now();
+      const visible = remaining > 0 && !document.hidden && !reduced.matches;
+      setWatching(visible);
+      if (visible) timer = window.setTimeout(() => setWatching(false), remaining);
+    };
+    update();
+    reduced.addEventListener('change', update);
+    document.addEventListener('visibilitychange', update);
+    return () => {
+      window.clearTimeout(timer);
+      reduced.removeEventListener('change', update);
+      document.removeEventListener('visibilitychange', update);
+    };
+  }, [play]);
   function closeTools() {
     if (!tools.current?.open) return;
     tools.current.open = false;
@@ -54,6 +87,19 @@ export function Graveyard({
             pending={pending}
             play={play}
           />
+          {route?.kind === 'confirmed' && (
+            <div className="return-imprint" role="note" aria-label="Confirmed return">
+              <span>Return confirmed</span>
+              <strong>{file.subject.name}</strong>
+              <small>
+                {STORES[route.source].name} → Primary ·{' '}
+                {clockTime(
+                  file.events.findLast((event) => event.kind === 'return' && event.store === 'primary')!.at
+                )}{' '}
+                UTC
+              </small>
+            </div>
+          )}
           {STORE_IDS.map((id) => {
             const item = evidence(file, id);
             const position: CSSProperties = {
@@ -95,10 +141,27 @@ export function Graveyard({
     : (play?.trace.title ?? last.title);
   return (
     <section className="atlas-sheet" id="atlas" aria-labelledby="map-title">
+      <section className="field-instruction" aria-label="Investigation guide">
+        <ol className="case-itinerary" aria-label="Your progress">
+          {['Erase', 'Inspect', 'Restore', 'Report'].map((name, index) => (
+            <li key={name} aria-current={index + 1 === step.number ? 'step' : undefined}>
+              <span aria-hidden="true">{String(index + 1).padStart(2, '0')}</span> {name}
+            </li>
+          ))}
+        </ol>
+        <div className="instruction-copy" aria-live="polite" aria-atomic="true">
+          <h2>{watching ? 'Watch the primary grave.' : step.title}</h2>
+          <p id="step-hint">
+            {watching
+              ? 'The read has confirmed a return. Follow the record out of the vault and back into the archive.'
+              : step.hint}
+          </p>
+        </div>
+      </section>
       <div className="atlas-top">
         <div className="map-heading">
           <h2 id="map-title">Cemetery map</h2>
-          <p>Select any location for details.</p>
+          <p>Select a grave for its evidence.</p>
         </div>
         <details
           className="map-tools"
@@ -146,7 +209,7 @@ export function Graveyard({
         </details>
       </div>
       {atlas()}
-      {children}
+      <CaseActions step={step} busy={busy} watching={watching} run={run} certificate={certificate} />
       <div className="atlas-foot">
         <div className="map-legend">
           <span>
@@ -177,6 +240,12 @@ export function Graveyard({
             {!pending && play?.trace.kind === 'inspect' && <> · {play.trace.detail}</>}
           </span>
         </div>
+        {route?.kind === 'confirmed' && (
+          <button className="replay" disabled={watching || !!pending} onClick={replayReturn}>
+            <RotateCcw size={14} />
+            Replay the return
+          </button>
+        )}
       </div>
       <dialog
         className="map-dialog"

@@ -6,14 +6,20 @@ Frontend dibangun dengan Codex. Bagianmu adalah membangun backend AWS dengan Kir
 
 ## Kenali satu putaran kasus
 
-Peta langsung terbuka. Ikuti satu tombol besar tepat di bawah peta. Pemilihan lokasi hanya membuka bukti lokasi tersebut.
+Petunjuk lapangan tampil di atas peta sejak kasus dibuka. Baca tujuan langkah aktif pada urutan **Erase → Inspect → Restore → Report**, lalu jalankan satu tombol utama di bawah peta. Pemilihan makam membuka bukti lokasi dan bersifat opsional.
 
 1. **Erase primary record** menghapus rekaman aktif. Primary menunggu pemeriksaan.
 2. **Scan all locations** membaca keempat lokasi. Di demo, primary menjadi *Verified clear*. Replika, ekspor, dan backup masih memuat salinan. Garis putus-putus dari vault ke primary menunjukkan kemungkinan pemulihan.
-3. **Restore from backup** mengimpor snapshot dan memeriksa primary. Jika pembacaan mengonfirmasi data kembali dari vault, hantu bangkit dan jalurnya menjadi garis utuh berwarna jingga. Pada jalur langsung ini hasilnya empat lokasi ditemukan memuat salinan.
-4. **View certificate** membuka bukti terbaru untuk empat lokasi beserta waktu pemeriksaannya. **Print / save PDF** menghasilkan salinan laporan pada saat itu.
+3. **Restore from backup** mengimpor snapshot dan memeriksa primary. Impor membuka engsel vault. Pembacaan primary yang mengonfirmasi sumber memicu penampakan besar dari makam primary, suara hantu, lalu garis utuh berwarna jingga. Dengan reduced motion, penampakan ditunjukkan sebagai potret diam dan cap bukti. Pada jalur langsung ini hasilnya empat lokasi ditemukan memuat salinan.
+4. **View certificate** membuka bukti terbaru untuk empat lokasi beserta waktu pemeriksaannya. Sesudah impor, bagian **What changed at the primary database?** menunjukkan pembacaan sebelum dan sesudah impor beserta waktunya. **Print / save PDF** menghasilkan salinan laporan pada saat itu.
 
-Untuk menguji pembersihan tambahan, pilih replika atau ekspor pada peta atau tabel. Di panel bukti, **Erase this copy** menghapus salinan setempat dan **Recheck this location** membaca kembali lokasi tersebut. Tombol utama tetap menuntun kasus meskipun pengguna memilih lokasi lain. Di **Map tools**, **Replay last scene** memutar ulang adegan tanpa mengirim perintah. Ambiens mulai saat halaman dibuka bila browser mengizinkan, atau saat interaksi pertama. Tombol suara ada di header.
+Untuk menguji pembersihan tambahan, pilih replika atau ekspor pada peta atau tabel. Di panel bukti, **Erase this copy** menghapus salinan setempat dan **Recheck this location** membaca kembali lokasi tersebut. Tombol utama tetap menuntun kasus meskipun pengguna memilih lokasi lain. Sesudah ada bukti kebangkitan, **Replay the return** memutar ulang penampakan, termasuk setelah halaman dimuat ulang. Di **Map tools**, **Replay last scene** memutar ulang operasi terakhir. Keduanya mempertahankan semua bukti. Ambiens mulai saat halaman dibuka bila browser mengizinkan, atau saat interaksi pertama. Tombol suara ada di header.
+
+### Apa arti pembaruan kasus pada sertifikat?
+
+Nomor **Case update** bertambah ketika sebuah perintah mengubah bukti kasus. Contohnya, pemeriksaan pertama menemukan primary kosong, lalu restore dan pemeriksaan berikutnya menemukan pelanggan yang sama di primary. Kode aplikasi bisa tetap sama selama kedua pemeriksaan itu. Juri bisa melihat perbedaannya dalam satu sertifikat.
+
+Frontend mengambil perbandingan dari `events` milik impor terakhir. Sertakan lokasi, waktu UTC, urutan dan hasil baca dalam detail yang bisa dipahami manusia. Saat salah satu pembacaan belum tercatat, laporan menyebutnya. Mematikan suara, memutar replay atau mencetak laporan mempertahankan nomor kasus dan revisinya. Untuk MVP cukup laporan terkini dan log. Arsip sertifikat tetap per revisi hanya berguna bila nanti auditor perlu membuka ulang laporan persis seperti yang diterbitkan pada waktu lampau.
 
 ## Sepakati antarmuka sebelum menyambungkan AWS
 
@@ -75,7 +81,7 @@ Saat menyerahkan hasil, cantumkan URL frontend preview, alamat API uji, commit, 
 | Ide dan rujukan | Status pada Afterimage | Pekerjaan backend dan cara mengevaluasi |
 | --- | --- | --- |
 | **Jalur yang mungkin vs. kebangkitan yang terbukti.** [Graf GhostTrace](https://github.com/Ashish-AIML-systems/ghosttrace/blob/main/code/slam/reconstruction/graph.py) | **Sudah ada di demo.** Peta menunjukkan jalur putus-putus ketika primary terverifikasi kosong dan vault masih memuat salinan. Garis utuh memakai sumber impor dan event pembacaan primary setelah impor. | Di AWS, periksa juga izin pemulihan dan ID snapshot. Uji impor yang berhasil diikuti pembacaan gagal. Sertifikat harus tetap menunjukkan celah bukti dan peta hanya boleh menggambar jalur terkonfirmasi bila urutan serta sumbernya cocok. |
-| **Sertifikat per revisi.** [Rekonstruksi waktu audit G26karthik](https://github.com/G26karthik/ghost-data-still-exists/blob/main/ghost/state.py) | **Usulan.** Frontend menampilkan revisi terkini dan bisa mencetak PDF. Untuk membandingkan hari ini, simpan PDF sebelum dan sesudah restore. | Sepakati penyimpanan revisi tetap, batas waktu audit dan ID bukti. Uji membuka revisi sebelum restore setelah kasus berubah. Hasil dan waktu bacanya harus sama dengan laporan lama. |
+| **Sertifikat per revisi.** [Rekonstruksi waktu audit G26karthik](https://github.com/G26karthik/ghost-data-still-exists/blob/main/ghost/state.py) | **Opsional sesudah MVP.** Satu laporan sudah membandingkan pembacaan primary sebelum dan sesudah impor. Arsip terpisah berguna jika auditor perlu membuka kembali seluruh laporan empat lokasi persis seperti saat diterbitkan. | Sepakati penyimpanan revisi tetap, batas waktu audit dan ID bukti. Uji membuka revisi sebelum restore setelah kasus berubah. Hasil dan waktu bacanya harus sama dengan laporan lama. |
 | **Uji hasil, urutan, dan asal bukti secara terpisah.** [Evaluator Ghostinel](https://github.com/RITIKSINGH-DEOS/Ghostinel/blob/main/code/evaluation/evaluator.py) | **Ada di pengujian lokal dan skenario evaluasi.** Tes membandingkan isi empat lokasi, urutan impor dan pembacaan, serta sumber pada jalur pemulihan. | Jalankan skenario di atas terhadap AWS. Sertakan kasus yang status akhirnya tampak benar tetapi sumber salah, impor tanpa konfirmasi, dan perintah duplikat. Catat ketiga hasil pemeriksaan secara terpisah. |
 
 Status pengujian di sini mengacu pada simulator dan adapter frontend. Teman backend dapat mengisi hasil integrasi setelah Preview terhubung ke AWS.

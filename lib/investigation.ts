@@ -28,10 +28,12 @@ export function restoreRoute(file: CaseFile): RestoreRoute | null {
   return canRestore(file) ? { kind: 'possible', source: 'backup' } : null;
 }
 
-interface InvestigationStep {
+export interface InvestigationStep {
   number: 1 | 2 | 3 | 4;
   label: string;
+  title: string;
   hint: string;
+  watch: string;
   command?: Command;
 }
 
@@ -40,7 +42,9 @@ export function nextStep(file: CaseFile): InvestigationStep {
     return {
       number: 1,
       label: 'Erase primary record',
-      hint: 'Erase the active record first. Then check which copies survive.',
+      title: 'Start with the original.',
+      hint: 'Press “Erase primary record” below the map to request deletion at the source. Then check the replica, export and vault for surviving copies.',
+      watch: 'Watch the primary database. Erasure leaves it waiting for a check.',
       command: { type: 'erase-primary' }
     };
   const imported = file.events.some((event) => event.kind === 'restore');
@@ -48,7 +52,9 @@ export function nextStep(file: CaseFile): InvestigationStep {
     return {
       number: 2,
       label: 'Scan all locations',
-      hint: 'Erasure was requested. Read all four locations to find out what survived.',
+      title: 'Find what survived.',
+      hint: 'Use “Scan all locations” to read the stores. A headstone means the record was absent at that read. A ghost means a copy was found.',
+      watch: 'Look for the headstone and the ghosts as each read finishes.',
       command: { type: 'scan' }
     };
   const route = restoreRoute(file);
@@ -56,13 +62,17 @@ export function nextStep(file: CaseFile): InvestigationStep {
     return {
       number: 4,
       label: 'View certificate',
-      hint: 'A fresh read found the record back in the primary database. See the evidence.'
+      title: 'Explain how the record came back.',
+      hint: 'Open the certificate. Compare the primary read before the import with the read that found the record again.',
+      watch: 'The report names the source and shows both readings.'
     };
   if (route?.kind === 'possible' && !imported)
     return {
       number: 3,
       label: 'Restore from backup',
-      hint: 'The primary is clear. The vault still has a copy. Restore it to see if the record returns.',
+      title: 'Test the vault.',
+      hint: 'The primary was clear, but the vault still holds a copy. Use “Restore from backup” below to import it and read the primary again.',
+      watch: 'Follow the vault door, then watch the primary grave.',
       command: { type: 'restore' }
     };
   const pending = file.stores.find((store) => store.pendingCheck);
@@ -70,12 +80,16 @@ export function nextStep(file: CaseFile): InvestigationStep {
     return {
       number: imported ? 4 : 3,
       label: 'Recheck ' + STORES[pending.id].name.toLowerCase(),
-      hint: 'A change at this location still needs a fresh read. Check what it contains now.',
+      title: 'Verify the change.',
+      hint: 'Run the recheck below. Only a fresh read can say whether this location still contains the record.',
+      watch: 'A successful read replaces the pending finding.',
       command: { type: 'inspect', store: pending.id }
     };
   return {
     number: 4,
     label: 'View certificate',
+    title: 'Read the findings.',
+    watch: 'Check the time and scope of each reading.',
     hint:
       imported && evidence(file, 'primary').finding === 'unreachable'
         ? 'The import was recorded, but the primary could not be read. The certificate shows that gap.'

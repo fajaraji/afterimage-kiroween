@@ -1,19 +1,20 @@
 import { ArchiveRestore, FileBadge, ScanLine, Trash2 } from 'lucide-react';
-import type { CaseFile, Command } from '../lib/case';
-import { nextStep } from '../lib/investigation';
+import type { Command } from '../lib/case';
+import type { InvestigationStep } from '../lib/investigation';
 
 export function CaseActions({
-  file,
+  step,
+  watching,
   busy,
   run,
   certificate
 }: {
-  file: CaseFile;
+  step: InvestigationStep;
+  watching: boolean;
   busy: boolean;
   run: (command: Command) => void;
   certificate: () => void;
 }) {
-  const step = nextStep(file);
   const icons = {
     'erase-primary': Trash2,
     scan: ScanLine,
@@ -24,24 +25,24 @@ export function CaseActions({
   const Icon = step.command ? icons[step.command.type] : FileBadge;
   return (
     <section className="atlas-actions" aria-label="Investigation step">
-      <div className="action-prompt" aria-live="polite" aria-atomic="true">
+      <div className="action-prompt">
         <span className="field-label">Step {step.number} of 4</span>
-        <p id="step-hint">{step.hint}</p>
+        <p>{watching ? 'The vault has opened. Watch where the record returns.' : step.watch}</p>
       </div>
       <div className="action-buttons">
         <button
           className="primary-button"
           aria-describedby="step-hint"
-          aria-disabled={busy}
+          aria-disabled={busy || watching}
           onClick={() => {
-            if (!busy) {
+            if (!busy && !watching) {
               if (step.command) run(step.command);
               else certificate();
             }
           }}
         >
           <Icon size={16} />
-          {busy ? 'Working…' : step.label}
+          {busy ? 'Working…' : watching ? 'Witnessing the return…' : step.label}
         </button>
       </div>
     </section>
