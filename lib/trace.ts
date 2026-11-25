@@ -24,9 +24,17 @@ export function traceResult(before: CaseFile, after: CaseFile, command: Command)
 function describe(after: CaseFile, command: Command, events: CaseEvent[]): Trace {
   if (command.type === 'restore') {
     const restoration = events.find((e) => e.kind === 'restore');
-    const reading = events.find((e) => e.kind === 'return' && e.store === 'primary');
+    const reading = events.find(
+      (e) => e.kind === 'return' && e.store === 'primary' && restoration && e.seq > restoration.seq
+    );
     const primary = evidence(after, 'primary');
-    const confirmed = !!reading && primary.finding === 'returned' && !primary.pendingCheck;
+    const confirmed =
+      !!reading &&
+      primary.finding === 'returned' &&
+      !primary.pendingCheck &&
+      !!primary.sourceId &&
+      primary.sourceId !== 'primary' &&
+      primary.sourceId === restoration?.store;
     const recordedSource = restoration?.store;
     const source =
       recordedSource && recordedSource !== 'primary' ? recordedSource : confirmed ? primary.sourceId : null;

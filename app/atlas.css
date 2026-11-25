@@ -12,9 +12,76 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 46px;
+  min-height: 52px;
   gap: 12px;
-  padding: 0 2px;
+  padding: 5px 2px;
+}
+.map-heading {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 1px 14px;
+}
+.map-heading p {
+  color: var(--muted);
+  font-size: 12px;
+}
+.map-tools {
+  position: relative;
+  z-index: 5;
+  flex: none;
+}
+.map-tools summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  cursor: pointer;
+  color: #dcc7d1;
+  font-size: 12px;
+  list-style: none;
+}
+.map-tools summary::-webkit-details-marker {
+  display: none;
+}
+.map-tools summary:focus-visible,
+.map-tool-list input:focus-visible {
+  outline: 2px solid var(--ember);
+  outline-offset: 1px;
+}
+.map-tools[open] summary svg {
+  transform: rotate(180deg);
+}
+.map-tool-list {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  padding: 4px 8px;
+  width: 173px;
+  background: #2d202c;
+  border: 1px solid #79586a;
+  box-shadow: 0 8px 18px #130d16b8;
+}
+.map-tool-list :is(label, button) {
+  display: flex;
+  padding: 0 7px;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  min-height: 44px;
+  font: 500 13px var(--sans);
+  text-align: left;
+  cursor: pointer;
+}
+.map-tool-list input {
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  accent-color: var(--ember);
+}
+.map-tool-list :is(button, label):hover {
+  background: #3b2a39;
 }
 .atlas-top h2,
 .case-rubric {
@@ -100,7 +167,7 @@
 }
 .plot-name {
   font: 600 clamp(13px, 1.8cqw, 19px)/1.13 var(--sans);
-  letter-spacing: -.25px;
+  letter-spacing: -0.25px;
   white-space: nowrap;
   color: #f9ece0;
   background: #1c1420ed;
@@ -144,6 +211,14 @@
 .map-legend > span {
   gap: 6px;
 }
+.route-key i {
+  display: inline-block;
+  width: 18px;
+  border-top: 2px dashed #d1bbf3;
+}
+.route-key.confirmed i {
+  border-top: 2px solid #ffbc80;
+}
 .map-legend > span:first-child {
   color: #ddc9f1;
 }
@@ -184,7 +259,9 @@
   align-items: center;
   gap: 20px;
   justify-content: space-between;
-  padding: 16px 1px;
+  padding: 14px 14px 15px;
+  background: #2b1c27;
+  border-block: 1px solid #72505e;
 }
 .action-prompt {
   min-width: 0;
@@ -195,8 +272,9 @@
 }
 .action-prompt p {
   margin-top: 4px;
-  color: #d3beca;
-  font-size: 13px;
+  color: #f3dfdf;
+  font-size: 14px;
+  line-height: 1.45;
 }
 .action-buttons {
   display: flex;
@@ -205,15 +283,81 @@
   gap: 4px 12px;
 }
 .action-buttons .primary-button {
-  min-height: 42px;
+  min-height: 46px;
   padding: 9px 15px;
   white-space: nowrap;
   background: #f7a466;
   border-radius: 3px;
 }
-.action-buttons .text-button {
+.action-buttons .primary-button[aria-disabled='true'] {
+  opacity: 0.65;
+  cursor: progress;
+}
+.location-actions {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0 14px;
+}
+.location-actions .paper-link {
+  min-height: 44px;
+  margin-top: 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.ledger-location:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.ledger .checked-time,
+.ledger th:last-child {
+  text-align: left;
+}
+.heading-tools {
+  flex-shrink: 0;
+}
+.sound-toggle {
+  gap: 6px;
   font-size: 12px;
-  min-height: 32px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.environment .env-long {
+  margin-left: -4px;
+}
+@media (max-width: 590px) {
+  .env-long {
+    display: none;
+  }
+  .map-heading {
+    flex-direction: column;
+  }
+}
+@media (max-width: 520px) {
+  .heading-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .heading-row > div:first-child {
+    display: contents;
+  }
+  .heading-row h1 {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: center;
+  }
+  .heading-row .page-intro {
+    grid-column: 1/-1;
+    grid-row: 2;
+    margin-top: 0;
+  }
+  .heading-tools {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .heading-tools .reset {
+    min-width: 44px;
+  }
 }
 .case-sheet {
   position: relative;
@@ -393,7 +537,11 @@
     gap: 0 22px;
     align-items: start;
   }
-  .death-head { grid-column: 1/-1; width: 104px; margin: 11px auto 2px; }
+  .death-head {
+    grid-column: 1/-1;
+    width: 104px;
+    margin: 11px auto 2px;
+  }
   .case-rubric,
   .case-entry {
     grid-column: 1/-1;
@@ -468,7 +616,10 @@
     margin-top: 4px;
     padding-top: 12px;
   }
-  .death-head { width: 114px; margin: 12px auto 1px; }
+  .death-head {
+    width: 114px;
+    margin: 12px auto 1px;
+  }
   .case-name {
     padding: 8px 0 9px;
   }

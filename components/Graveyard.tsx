@@ -1,9 +1,10 @@
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
-import { CircleDashed, Expand, Ghost, RotateCcw, Route, X } from 'lucide-react';
+import { ChevronDown, CircleDashed, Expand, Ghost, RotateCcw, X } from 'lucide-react';
 import { evidence, statusText, STORES, STORE_IDS } from '../lib/case';
 import type { CaseFile, Command, StoreId } from '../lib/case';
 import type { Playback } from '../lib/trace';
+import { restoreRoute } from '../lib/investigation';
 import { AtlasCanvas } from './atlas/AtlasCanvas';
 import { NARROW, WIDE } from './atlas/geometry';
 import { Grave, StatusIcon } from './Common';
@@ -27,8 +28,16 @@ export function Graveyard({
 }) {
   const [paths, setPaths] = useState(true);
   const [expanded, setExpanded] = useState(false);
+  const route = useMemo(() => restoreRoute(file), [file]);
+  const tools = useRef<HTMLDetailsElement>(null);
   const dialog = useRef<HTMLDialogElement>(null);
   const last = file.events.at(-1)!;
+  function closeTools() {
+    if (!tools.current?.open) return;
+    tools.current.open = false;
+    tools.current.querySelector('summary')?.focus({ preventScroll: true });
+  }
+
   function select(id: StoreId) {
     dialog.current?.close();
     onSelect(id);
@@ -37,7 +46,14 @@ export function Graveyard({
     return (
       <div className="atlas-viewport">
         <div className="atlas-frame">
-          <AtlasCanvas file={file} selected={selected} paths={paths} pending={pending} play={play} />
+          <AtlasCanvas
+            recovery={route}
+            file={file}
+            selected={selected}
+            paths={paths}
+            pending={pending}
+            play={play}
+          />
           {STORE_IDS.map((id) => {
             const item = evidence(file, id);
             const position: CSSProperties = {
@@ -52,6 +68,8 @@ export function Graveyard({
                 type="button"
                 className={'map-node ' + (item.pendingCheck ? 'pending' : item.finding)}
                 data-store={id}
+                aria-label={STORES[id].name + ', ' + statusText(item) + '. View evidence'}
+                aria-controls="case-panel"
                 aria-pressed={selected === id}
                 style={position}
                 onClick={() => select(id)}
@@ -78,25 +96,57 @@ export function Graveyard({
   return (
     <section className="atlas-sheet" id="atlas" aria-labelledby="map-title">
       <div className="atlas-top">
-        <h2 id="map-title" tabIndex={-1}>Cemetery map</h2>
-        <div className="atlas-tools">
-          <button className="map-switch" aria-pressed={paths} onClick={() => setPaths(!paths)}>
-            <Route size={15} />
-            Paths
-          </button>
-          <button
-            className="icon-button"
-            aria-label="Expand graveyard map"
-            onClick={() => {
-              setExpanded(true);
-              dialog.current?.showModal();
-            }}
-          >
-            <Expand size={16} />
-          </button>
+        <div className="map-heading">
+          <h2 id="map-title">Cemetery map</h2>
+          <p>Select any location for details.</p>
         </div>
+        <details
+          className="map-tools"
+          ref={tools}
+          onKeyDown={(event) => {
+            if (event.key === 'Escape') closeTools();
+          }}
+          onBlur={(event) => {
+            if (!event.currentTarget.contains(event.relatedTarget)) event.currentTarget.open = false;
+          }}
+        >
+          <summary>
+            Map tools <ChevronDown size={13} />
+          </summary>
+          <div className="map-tool-list">
+            <label>
+              <input type="checkbox" checked={paths} onChange={(event) => setPaths(event.target.checked)} />
+              Show paths
+            </label>
+            <button
+              type="button"
+              onClick={() => {
+                closeTools();
+                setExpanded(true);
+                dialog.current?.showModal();
+              }}
+            >
+              <Expand size={15} />
+              Expand map
+            </button>
+            {play && (
+              <button
+                type="button"
+                disabled={!!pending}
+                onClick={() => {
+                  closeTools();
+                  replay();
+                }}
+              >
+                <RotateCcw size={15} />
+                Replay last scene
+              </button>
+            )}
+          </div>
+        </details>
       </div>
       {atlas()}
+      {children}
       <div className="atlas-foot">
         <div className="map-legend">
           <span>
@@ -111,6 +161,12 @@ export function Graveyard({
             <CircleDashed size={13} />
             Unverified
           </span>
+          {paths && route && (
+            <span className={'route-key ' + route.kind}>
+              <i aria-hidden="true" />
+              {route.kind === 'possible' ? 'Possible restore' : 'Confirmed return'}
+            </span>
+          )}
         </div>
       </div>
       <div className="trace-strip">
@@ -121,14 +177,7 @@ export function Graveyard({
             {!pending && play?.trace.kind === 'inspect' && <> · {play.trace.detail}</>}
           </span>
         </div>
-        {play && (
-          <button className="replay" disabled={!!pending} onClick={replay} aria-label="Replay last trace">
-            <RotateCcw size={13} />
-            Replay
-          </button>
-        )}
       </div>
-      {children}
       <dialog
         className="map-dialog"
         ref={dialog}

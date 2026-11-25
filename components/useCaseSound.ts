@@ -14,11 +14,13 @@ function storeChoice(value: 'on' | 'off') {
 export function useCaseSound(notify: (message: string) => void) {
   const [audible, setAudible] = useState(false);
   const engine = useRef<CemeterySound | null>(null);
-  const wanted = useRef(false);
+  const wanted = useRef(true);
+  const arrivalDue = useRef(true);
   const cueNumber = useRef(0);
 
   const start = useCallback(
-    async (entrance: boolean) => {
+    async (manual = false) => {
+      if (!wanted.current || document.hidden) return;
       let player = engine.current;
       try {
         if (!player) {
@@ -27,21 +29,20 @@ export function useCaseSound(notify: (message: string) => void) {
         }
         const current = player;
         const sync = () => {
-          if (engine.current === current) setAudible(current.context.state === 'running');
+          if (engine.current !== current) return;
+          const playing = wanted.current && !document.hidden && current.context.state === 'running';
+          setAudible(playing);
+          if (playing && arrivalDue.current) {
+            arrivalDue.current = false;
+            current.enter();
+          }
         };
         current.context.onstatechange = sync;
-        // Call resume inside the entry click, before other asynchronous work.
-        await current.context.resume();
-        if (engine.current !== current) return;
+        if (current.context.state !== 'running') await current.context.resume();
         sync();
-        if (entrance && current.context.state === 'running' && !document.hidden) current.enter();
       } catch {
         if (engine.current !== player) return;
-        engine.current = null;
-        player?.close();
-        wanted.current = false;
-        setAudible(false);
-        notify('Sound could not start. Use the sound button to try again.');
+        if (manual) notify('Sound could not start. Try the sound control again.');
       }
     },
     [notify]
@@ -49,29 +50,35 @@ export function useCaseSound(notify: (message: string) => void) {
 
   useEffect(() => {
     try {
-      wanted.current = window.localStorage.getItem(soundKey) === 'on';
+      wanted.current = window.localStorage.getItem(soundKey) !== 'off';
     } catch {
-      /* Optional storage. */
+      wanted.current = true;
     }
-    const resumeOnGesture = (event: MouseEvent) => {
-      if (!event.isTrusted || !wanted.current || document.hidden) return;
-      if (event.target instanceof Element && event.target.closest('[data-sound-control], .field-guide'))
+    arrivalDue.current = true;
+    void start();
+    const resumeOnGesture = (event: Event) => {
+      if (!event.isTrusted || engine.current?.context.state === 'running') return;
+      if (
+        event instanceof KeyboardEvent &&
+        (event.metaKey || event.ctrlKey || event.altKey || event.repeat)
+      )
         return;
-      if (engine.current?.context.state !== 'running') void start(false);
+      if (event.target instanceof Element && event.target.closest('[data-sound-control]')) return;
+      void start();
     };
     const visibility = () => {
-      const ctx = engine.current?.context;
-      if (!ctx || ctx.state === 'closed') return;
       if (document.hidden) {
         cueNumber.current++;
         engine.current?.cancelCue();
-        void ctx.suspend().catch(() => {});
-      } else if (wanted.current) void start(false);
+        void engine.current?.context.suspend().catch(() => {});
+      } else void start();
     };
     document.addEventListener('click', resumeOnGesture, true);
+    document.addEventListener('keydown', resumeOnGesture, true);
     document.addEventListener('visibilitychange', visibility);
     return () => {
       document.removeEventListener('click', resumeOnGesture, true);
+      document.removeEventListener('keydown', resumeOnGesture, true);
       document.removeEventListener('visibilitychange', visibility);
       const old = engine.current;
       engine.current = null;
@@ -87,6 +94,8 @@ export function useCaseSound(notify: (message: string) => void) {
   function turnOff() {
     wanted.current = false;
     storeChoice('off');
+    cueNumber.current++;
+    arrivalDue.current = true;
     const old = engine.current;
     engine.current = null;
     old?.close();

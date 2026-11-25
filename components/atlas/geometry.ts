@@ -22,7 +22,7 @@ export const NARROW: Plan = {
 export const NARROW_WIDTH = 550;
 
 // The same cubic drives the inked path, direction mark and travelling record.
-export function pathBetween(plan: Plan, from: StoreId, to: StoreId) {
+export function pathBetween(plan: Plan, from: StoreId, to: StoreId, recovery = false) {
   const a = plan.plots[from],
     b = plan.plots[to];
   const dx = b[0] - a[0],
@@ -37,12 +37,12 @@ export function pathBetween(plan: Plan, from: StoreId, to: StoreId) {
     const side = a[0] + b[0] < plan.width ? -1 : 1;
     const start: Point = [a[0] + side * xpad, a[1] + plan.scale * 3];
     const end: Point = [b[0] + side * xpad, b[1] + plan.scale * 3];
-    const bow = 39 * plan.scale * side;
+    const bow = (recovery ? 15 : 39) * plan.scale * side;
     const c1: Point = [start[0] + bow, start[1] + dy * 0.28];
     const c2: Point = [end[0] + bow, end[1] - dy * 0.28];
     return { start, end, c1, c2 };
   }
-  const bend = (from < to ? 1 : -1) * Math.min(34, length * 0.13);
+  const bend = (recovery ? -1.5 : 1) * (from < to ? 1 : -1) * Math.min(34, length * 0.13);
   const start: Point = [a[0] + ux * xpad, a[1] + uy * ypad];
   const end: Point = [b[0] - ux * xpad, b[1] - uy * ypad];
   const c1: Point = [start[0] + dx * 0.24 - uy * bend, start[1] + dy * 0.24 + ux * bend];

@@ -6,7 +6,6 @@ import '@fontsource/dm-sans/latin-700.css';
 import '@fontsource/germania-one/latin-400.css';
 import './globals.css';
 import './atlas.css';
-import './guide.css';
 
 export const metadata: Metadata = {
   title: 'Afterimage | Erasure investigation',

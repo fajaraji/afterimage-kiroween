@@ -1,16 +1,21 @@
 import { ArrowLeft, ArrowUpRight, CircleDashed, Ghost } from 'lucide-react';
 import { evidence, outcome, STORES } from '../lib/case';
-import type { CaseFile, StoreId } from '../lib/case';
+import { nextStep, restoreRoute } from '../lib/investigation';
+import type { CaseFile, Command, StoreId } from '../lib/case';
 import { clockTime, Grave, Status } from './Common';
 
 export function CasePanel({
   file,
   selected,
+  busy,
+  run,
   clearSelection,
   openLog
 }: {
   file: CaseFile;
   selected: StoreId | null;
+  busy: boolean;
+  run: (command: Command) => void;
   clearSelection: () => void;
   openLog: () => void;
 }) {
@@ -54,9 +59,36 @@ export function CasePanel({
               </div>
             )}
           </dl>
+          {file.erasureRequested && (
+            <div className="location-actions">
+              <button
+                className="paper-link"
+                disabled={busy}
+                onClick={() => run({ type: 'inspect', store: selected })}
+              >
+                {item.checkedAt || item.pendingCheck ? 'Recheck this location' : 'Inspect this location'}
+              </button>
+              {outcome(item) === 'found' && (
+                <button
+                  className="paper-link"
+                  disabled={busy}
+                  onClick={() => run({ type: 'erase-copy', store: selected })}
+                >
+                  Erase this copy
+                </button>
+              )}
+              {selected === 'backup' &&
+                restoreRoute(file)?.kind === 'possible' &&
+                nextStep(file).command?.type !== 'restore' && (
+                  <button className="paper-link" disabled={busy} onClick={() => run({ type: 'restore' })}>
+                    Restore from this vault
+                  </button>
+                )}
+            </div>
+          )}
           <button className="paper-link" onClick={clearSelection}>
             <ArrowLeft size={14} />
-            Case file
+            Back to case file
           </button>
         </>
       ) : (

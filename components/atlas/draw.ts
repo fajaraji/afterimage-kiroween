@@ -1,5 +1,6 @@
 import { evidence, STORE_IDS } from '../../lib/case';
 import type { CaseFile, Command, StoreEvidence, StoreId } from '../../lib/case';
+import type { RestoreRoute } from '../../lib/investigation';
 import type { Playback } from '../../lib/trace';
 import { along, clamp, pathBetween, smooth } from './geometry';
 import type { Plan, Trail } from './geometry';
@@ -39,7 +40,7 @@ function arrow(c: Brush, tr: Trail, t: number, color: string) {
   c.stroke();
   c.restore();
 }
-export function paper(c: Brush, x: number, y: number, size: number, color: string) {
+function paper(c: Brush, x: number, y: number, size: number, color: string) {
   c.save();
   c.translate(x, y);
   c.scale(size, size);
@@ -85,7 +86,7 @@ function travel(c: Brush, tr: Trail, progress: number, color: string, size = 1) 
   paper(c, x, y, size, color);
   c.restore();
 }
-export function headstone(c: Brush) {
+function headstone(c: Brush) {
   c.save();
   c.rotate(-0.09);
   cut(c, 'M-11 3L-10 -16Q-10 -24 -2 -26L2 -27 4 -24 7 -25Q12 -22 11 -16L11 4Z', '#a697a0', ink, 1.4);
@@ -95,7 +96,7 @@ export function headstone(c: Brush) {
   c.restore();
 }
 
-export function phantom(c: Brush, returned: boolean) {
+function phantom(c: Brush, returned: boolean) {
   const edge = returned ? '#ffbe86' : '#d5c9ed';
   const fabric = returned ? '#a45a53' : '#8d7da5';
   const lining = returned ? '#643746' : '#51425e';
@@ -295,6 +296,7 @@ export function drawAtlas(
   c: Brush,
   plan: Plan,
   file: CaseFile,
+  recovery: RestoreRoute | null,
   selected: StoreId | null,
   paths: boolean,
   play: Playback | null,
@@ -305,7 +307,7 @@ export function drawAtlas(
   const weatherTime = play ? clamp(t / TRACE_SECONDS) : 0;
   groundMist(c, plan, weatherTime);
   for (const item of file.stores) {
-    if (!item.sourceId || item.sourceId === item.id) continue;
+    if (item.id === 'primary' || !item.sourceId || item.sourceId === item.id) continue;
     const tr = pathBetween(plan, item.sourceId, item.id);
     if (paths) {
       route(c, tr, '#160f1d', 6.5);
@@ -314,14 +316,18 @@ export function drawAtlas(
       arrow(c, tr, 0.6, '#d5bdc7');
     }
   }
-  const primary = evidence(file, 'primary');
-  if (paths && primary.finding === 'returned' && primary.sourceId && primary.sourceId !== 'primary') {
-    const sourceLine = pathBetween(plan, primary.sourceId, 'primary');
-    route(c, sourceLine, '#f3a56e', 2, [4, 3]);
-    arrow(c, sourceLine, 0.61, amber);
+  if (paths && recovery) {
+    const tr = pathBetween(plan, recovery.source, 'primary', true);
+    const possible = recovery.kind === 'possible';
+    const visible = possible || trace?.kind !== 'restore' || t >= 1.38;
+    if (visible) {
+      route(c, tr, '#211524', 4.6);
+      route(c, tr, possible ? spectral : amber, 2.2, possible ? [5, 5] : []);
+      arrow(c, tr, 0.61, possible ? spectral : amber);
+    }
   }
-  if (trace?.kind === 'restore' && trace.source && t < 2.35) {
-    const tr = pathBetween(plan, trace.source, 'primary');
+  if (paths && trace?.kind === 'restore' && trace.source && t < 2.35) {
+    const tr = pathBetween(plan, trace.source, 'primary', true);
     c.save();
     c.globalAlpha = 0.82 * (1 - clamp((t - 1.8) / 0.55));
     route(c, tr, amber, 1.6, [2, 3]);
@@ -342,7 +348,7 @@ export function drawAtlas(
   }
   if (trace?.kind === 'restore' && trace.source) {
     if (trace.source === 'backup') disturbedBats(c, plan, t);
-    travel(c, pathBetween(plan, trace.source, 'primary'), (t - 0.35) / 1.08, amber, 1.3 * plan.scale);
+    travel(c, pathBetween(plan, trace.source, 'primary', true), (t - 0.35) / 1.08, amber, 1.3 * plan.scale);
   }
   foreground(c, plan, weatherTime);
 }

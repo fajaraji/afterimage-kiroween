@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { CaseFile, Command, StoreId } from '../../lib/case';
+import type { RestoreRoute } from '../../lib/investigation';
 import type { Playback } from '../../lib/trace';
 import { NARROW, NARROW_WIDTH, WIDE } from './geometry';
 import type { Plan } from './geometry';
@@ -7,12 +8,14 @@ import { drawAtlas, drawTerrain, TRACE_SECONDS } from './draw';
 
 export function AtlasCanvas({
   file,
+  recovery,
   selected,
   paths,
   play,
   pending
 }: {
   file: CaseFile;
+  recovery: RestoreRoute | null;
   selected: StoreId | null;
   paths: boolean;
   play: Playback | null;
@@ -40,7 +43,7 @@ export function AtlasCanvas({
       ctx!.setTransform(1, 0, 0, 1, 0, 0);
       ctx!.drawImage(ground, 0, 0);
       ctx!.setTransform(canvas!.width / plan.width, 0, 0, canvas!.height / plan.height, 0, 0);
-      drawAtlas(ctx!, plan, file, selected, paths, active ? play : null, t, pending);
+      drawAtlas(ctx!, plan, file, recovery, selected, paths, active ? play : null, t, pending);
       if (active) frame = requestAnimationFrame(draw);
     }
     function paint() {
@@ -75,7 +78,7 @@ export function AtlasCanvas({
       reduced.removeEventListener('change', paint);
       document.removeEventListener('visibilitychange', paint);
     };
-  }, [file, selected, paths, play, pending]);
+  }, [file, recovery, selected, paths, play, pending]);
   return (
     <canvas
       ref={ref}
