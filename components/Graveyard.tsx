@@ -78,7 +78,7 @@ export function Graveyard({
   return (
     <section className="atlas-sheet" id="atlas" aria-labelledby="map-title">
       <div className="atlas-top">
-        <h2 id="map-title">Storage grounds</h2>
+        <h2 id="map-title">Cemetery map</h2>
         <div className="atlas-tools">
           <button className="map-switch" aria-pressed={paths} onClick={() => setPaths(!paths)}>
             <Route size={15} />
@@ -136,7 +136,7 @@ export function Graveyard({
         onClose={() => setExpanded(false)}
       >
         <div className="atlas-top">
-          <h2>Storage grounds</h2>
+          <h2>Cemetery map</h2>
           <div className="atlas-tools">
             {play && (
               <button className="replay" onClick={replay} disabled={!!pending}>

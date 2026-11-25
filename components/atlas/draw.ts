@@ -2,92 +2,17 @@ import { evidence, STORE_IDS } from '../../lib/case';
 import type { CaseFile, Command, StoreEvidence, StoreId } from '../../lib/case';
 import type { Playback } from '../../lib/trace';
 import { along, clamp, pathBetween, smooth } from './geometry';
-import type { Plan, Point, Trail } from './geometry';
-import { cypress, landmark, lot } from './landmarks';
+import type { Plan, Trail } from './geometry';
+import { landmark, lot } from './landmarks';
+import { disturbedBats, foreground, groundMist } from './night';
+import { cut, etch, lightPool, oval } from './print';
+export { cemeteryFloor as drawTerrain } from './night';
 
 type Brush = CanvasRenderingContext2D;
-const mint = '#c8f4ce',
-  amber = '#fad49a',
-  ink = '#18241f';
+const spectral = '#d1bbf3',
+  amber = '#ffbc80',
+  ink = '#1c1321';
 export const TRACE_SECONDS = 2.6;
-
-export function drawTerrain(c: Brush, plan: Plan) {
-  const { width: w, height: h, scale: s } = plan;
-  c.fillStyle = '#1e2b25';
-  c.fillRect(0, 0, w, h);
-  // Contour the ground around all four plots as one survey, in atlas coordinates.
-  const step = 8,
-    cols = Math.ceil(w / step) + 1,
-    rows = Math.ceil(h / step) + 1;
-  const elevations = new Float32Array(cols * rows);
-  for (let j = 0; j < rows; j++)
-    for (let i = 0; i < cols; i++) {
-      const x = i * step,
-        y = j * step;
-      let level = 0.08 * Math.sin(x * 0.018 + y * 0.027) + 0.035 * Math.cos(y * 0.053 - x * 0.014);
-      for (const [px, py] of Object.values(plan.plots)) {
-        level += Math.exp(-(((x - px) / (110 * s)) ** 2 + ((y - py) / (47 * s)) ** 2) * 0.7);
-      }
-      elevations[j * cols + i] = level;
-    }
-  for (let l = 1; l <= 15; l++) {
-    const threshold = l * 0.064;
-    c.beginPath();
-    for (let j = 0; j < rows - 1; j++)
-      for (let i = 0; i < cols - 1; i++) {
-        const k = j * cols + i,
-          v = [elevations[k], elevations[k + 1], elevations[k + cols + 1], elevations[k + cols]];
-        const p: Point[] = [
-          [i * step, j * step],
-          [(i + 1) * step, j * step],
-          [(i + 1) * step, (j + 1) * step],
-          [i * step, (j + 1) * step]
-        ];
-        let first: Point | null = null;
-        for (let a = 0; a < 4; a++) {
-          const b = (a + 1) % 4;
-          if (v[a] >= threshold === v[b] >= threshold) continue;
-          const t = (threshold - v[a]) / (v[b] - v[a]);
-          const at: Point = [p[a][0] + t * (p[b][0] - p[a][0]), p[a][1] + t * (p[b][1] - p[a][1])];
-          if (first) {
-            c.moveTo(...first);
-            c.lineTo(...at);
-            first = null;
-          } else first = at;
-        }
-      }
-    c.lineWidth = l % 4 === 0 ? 1 : 0.58;
-    c.strokeStyle = l % 4 === 0 ? '#52614e' : '#3d4e40';
-    c.stroke();
-  }
-  // Dry-brush specks follow a repeatable seed so the survey never shimmers.
-  let seed = 173;
-  const random = () => {
-    seed = (seed * 16807) % 2147483647;
-    return seed / 2147483647;
-  };
-  for (let i = 0; i < (w * h) / 160; i++) {
-    const x = random() * w,
-      y = random() * h;
-    c.fillStyle = i % 2 ? '#b5c3a51a' : '#17231d66';
-    c.fillRect(x, y, random() * 2 + 0.35, 0.55);
-  }
-  // Registration ticks mark the edge of the drawn sheet.
-  c.strokeStyle = '#8b9a80';
-  c.lineWidth = 0.75;
-  for (const [x, y, dx, dy] of [
-    [11, 11, 1, 1],
-    [w - 11, 11, -1, 1],
-    [11, h - 11, 1, -1],
-    [w - 11, h - 11, -1, -1]
-  ]) {
-    c.beginPath();
-    c.moveTo(x + dx * 7, y);
-    c.lineTo(x, y);
-    c.lineTo(x, y + dy * 7);
-    c.stroke();
-  }
-}
 
 function route(c: Brush, tr: Trail, color: string, width: number, dashes: number[] = []) {
   c.beginPath();
@@ -161,80 +86,114 @@ function travel(c: Brush, tr: Trail, progress: number, color: string, size = 1) 
   c.restore();
 }
 function headstone(c: Brush) {
-  c.beginPath();
-  c.moveTo(-7, 3);
-  c.lineTo(-7, -6);
-  c.bezierCurveTo(-7, -15, 6, -16, 7, -7);
-  c.lineTo(7, 3);
-  c.closePath();
-  c.fillStyle = '#a5af9b';
-  c.fill();
-  c.strokeStyle = ink;
-  c.lineWidth = 1.2;
-  c.stroke();
-  c.fillStyle = '#667866';
-  c.fillRect(-8, 2, 16, 3);
-  c.fillStyle = ink;
-  c.fillRect(-3, -7, 6, 1);
-  c.fillRect(-2, -4, 4, 1);
+  c.save();
+  c.rotate(-0.09);
+  cut(c, 'M-11 3L-10 -16Q-10 -24 -2 -26L2 -27 4 -24 7 -25Q12 -22 11 -16L11 4Z', '#a697a0', ink, 1.4);
+  cut(c, 'M5 -24L9 -22 9 1 5 1Z', '#796676');
+  etch(c, 'M-1 -21V-12M-5 -18H3M-6 -7L4 -7M-4 -4H2M6 -12L4 -9 7 -6 5 -2', '#44353f', 1.3);
+  cut(c, 'M-14 2L12 1 15 4 9 6 -12 6Z', '#796a76', ink, 1);
+  c.restore();
 }
-function phantom(c: Brush, color: string) {
-  c.beginPath();
-  c.moveTo(-10, 1);
-  c.bezierCurveTo(-10, -5, -13, -9, -9, -16);
-  c.bezierCurveTo(-6, -24, 5, -25, 9, -17);
-  c.bezierCurveTo(12, -10, 7, -5, 15, 0);
-  c.quadraticCurveTo(11, 2, 7, -2);
-  c.quadraticCurveTo(10, 8, 3, 5);
-  c.quadraticCurveTo(1, 2, -1, 1);
-  c.quadraticCurveTo(-3, 9, -7, 5);
-  c.quadraticCurveTo(-7, 1, -10, 1);
-  c.fillStyle = color;
-  c.shadowColor = color;
-  c.shadowBlur = 6;
-  c.fill();
-  c.shadowBlur = 0;
-  c.strokeStyle = '#203a30';
-  c.lineWidth = 1.1;
-  c.stroke();
-  c.fillStyle = '#27483b';
-  c.beginPath();
-  c.ellipse(-4.5, -12, 1.5, 2.6, -0.12, 0, 2 * Math.PI);
-  c.ellipse(2.3, -13, 1.5, 2.5, 0, 0, 2 * Math.PI);
-  c.fill();
+
+function phantom(c: Brush, returned: boolean) {
+  const edge = returned ? '#ffbe86' : '#d5c9ed';
+  const fabric = returned ? '#a45a53' : '#8d7da5';
+  const lining = returned ? '#643746' : '#51425e';
+  // The negative space inside the cowl stays black even over a lit window.
+  lightPool(c, 1, -23, 30, returned ? '#f77c493b' : '#c4a7ff38', '#20152600');
+  cut(
+    c,
+    'M-10 -33Q-12 -45 -4 -52L4 -58 3 -53Q13 -50 15 -39L13 -33Q17 -28 22 -24L28 -28 25 -21 30 -24 27 -18 19 -17 11 -23Q9 -11 21 5L10 0 14 10 4 3 4 12 -3 4 -9 10 -9 3 -19 8Q-14 0 -14 -13L-18 -17 -24 -14 -29 -17 -33 -24 -27 -21 -30 -28 -24 -23 -20 -23Z',
+    fabric,
+    '#211624',
+    1.4
+  );
+  cut(c, 'M-9 -34Q-7 -48 2 -52Q10 -46 10 -37L7 -29 1 -24 -6 -29Z', '#170f1e', edge, 1.1);
+  // An elongated death mask sits behind the cowl. The sockets and open jaw are cut away.
+  cut(
+    c,
+    'M-6 -40Q-5 -46 2 -47Q8 -46 8 -42L7 -36 4 -33 3 -29 1 -27 -2 -30 -3 -34 -6 -35Z',
+    returned ? '#eac3aa' : '#d8ced8'
+  );
+  cut(
+    c,
+    'M-5 -41L0 -40 -1 -37 -4 -37Z M2 -40L7 -43 6 -38 3 -37Z M0 -36L2 -37 3 -34 0 -34Z M-1 -32Q0 -36 3 -33L2 -29 0 -29Z',
+    '#281c2a'
+  );
+  cut(c, 'M-8 -48L0 -53 -3 -49 -9 -41Z M6 -50Q15 -43 13 -33L10 -31Q13 -41 6 -50Z', edge);
+  cut(
+    c,
+    'M-8 -29L-1 -23 7 -29 3 -22 -4 -18Z M-12 -19L-6 -10 -10 4 -13 6Z M5 -18Q8 -7 14 2L9 -1 9 4 3 -3Z',
+    lining
+  );
+  etch(c, 'M-16 -26L-21 -21 -26 -19M12 -29L19 -22 24 -23M-8 -21Q-3 -13 -5 -5M1 -15L3 -4', edge, 1.15);
+  cut(
+    c,
+    'M18 -20Q22 -23 23 -31L22 -36 24 -41 25 -40 25 -36 27 -35 29 -42 31 -44 30 -38 29 -34 32 -36 35 -41 36 -40 33 -34 27 -29 25 -20 21 -17Z',
+    fabric,
+    ink,
+    0.8
+  );
+  etch(
+    c,
+    'M-23 -18L-28 -18 -32 -23M-22 -20L-26 -22 -29 -27M22 -21L25 -28 26 -32M25 -34L24 -38 25 -41M28 -34L30 -41M30 -34L34 -39',
+    '#e7d5cc',
+    0.95
+  );
 }
+
+function fissure(c: Brush, opened: number) {
+  c.save();
+  c.scale(0.65 + opened * 0.44, 0.55 + opened * 0.45);
+  cut(
+    c,
+    'M-32 4L-18 0 -11 1 -4 -3 5 -2 16 -6 13 -3 26 -5 18 -1 8 1 4 4 -8 4 -17 7 -16 4Z',
+    '#210e19',
+    '#d88756',
+    1
+  );
+  etch(c, 'M-19 3L-9 2 -3 0 5 0 16 -4', amber, 1.4);
+  c.restore();
+}
+
 function marker(c: Brush, item: StoreEvidence, lift = 1) {
   if (item.finding === 'clear' && !item.pendingCheck) {
     headstone(c);
     return;
   }
   if (item.finding === 'found' || item.finding === 'returned') {
+    const returned = item.finding === 'returned';
+    if (returned) fissure(c, lift);
     c.save();
-    c.translate(0, -11 * lift);
-    c.globalAlpha *= item.pendingCheck ? 0.6 : lift;
-    phantom(c, item.finding === 'returned' ? amber : mint);
+    if (lift < 1) {
+      c.beginPath();
+      c.rect(-49, -81, 96, 88);
+      c.clip();
+    }
+    c.translate(0, 44 * (1 - lift) - 5 * lift);
+    if (item.pendingCheck) c.globalAlpha *= 0.6;
+    phantom(c, returned);
     c.restore();
   } else {
     c.save();
-    c.strokeStyle = item.finding === 'unreachable' ? '#e0bc84' : '#b4bea5';
-    c.lineWidth = 1;
+    c.strokeStyle = item.finding === 'unreachable' ? amber : '#c0aabb';
+    c.lineWidth = 1.25;
     c.setLineDash([2, 2]);
-    c.beginPath();
-    c.ellipse(0, 1, 8, 3.5, 0, 0, Math.PI * 2);
+    oval(c, 0, 1, 8, 3.5, '#201724');
     c.stroke();
     c.restore();
   }
   if (item.pendingCheck) {
-    c.fillStyle = '#e1c08d';
-    c.fillRect(8, -6, 1.6, 5);
-    c.fillRect(8, 0.8, 1.6, 1.6);
+    c.fillStyle = amber;
+    c.fillRect(13, -7, 2, 6);
+    c.fillRect(13, 1, 2, 2);
   }
 }
 function readRing(c: Brush, t: number) {
   if (t < 0 || t > 1) return;
   c.save();
   c.globalAlpha = 1 - t * 0.8;
-  c.strokeStyle = mint;
+  c.strokeStyle = spectral;
   c.lineWidth = 1.7;
   c.beginPath();
   c.ellipse(0, 0, 12 + 56 * t, 5 + 22 * t, 0, 0, Math.PI * 2);
@@ -248,39 +207,25 @@ function erasure(c: Brush, t: number) {
   if (t < 0 || t > 1) return;
   c.save();
   c.globalAlpha = 1 - clamp((t - 0.73) / 0.27);
-  c.fillStyle = '#101b16';
+  const swell = Math.sin(Math.PI * t);
+  c.save();
+  c.scale(1 + 0.6 * swell, 1);
+  etch(c, 'M-18 2L-8 -2 0 0 6 -3 15 -2 M-13 4L-5 3 4 4', '#ae8291', 1.35);
+  c.restore();
+  c.fillStyle = '#140c18';
   c.beginPath();
   c.ellipse(0, 1, 10, 3, 0, 0, Math.PI * 2);
   c.fill();
   c.beginPath();
   c.rect(-18, -45, 36, 46);
   c.clip();
-  paper(c, 0, -21 + 27 * smooth(t), 1.15, '#e6d6ac');
+  paper(c, 0, -27 + 38 * smooth(t), 1.65, '#e6d6ac');
   for (let j = 0; j < 5; j++) {
     c.fillStyle = '#dac69e';
     c.fillRect(-7 + j * 3, 2 - 9 * Math.sin(Math.PI * t + j * 0.2), 1.1, 2.5);
   }
   c.restore();
 }
-const planted = {
-  primary: [
-    [-36, -9, 39],
-    [-52, -3, 28]
-  ],
-  analytics: [
-    [35, -8, 30],
-    [47, -3, 21]
-  ],
-  export: [
-    [-38, -11, 33],
-    [34, -10, 26]
-  ],
-  backup: [
-    [26, -16, 46],
-    [47, -8, 31]
-  ]
-} as const;
-
 function drawPlot(
   c: Brush,
   plan: Plan,
@@ -308,7 +253,6 @@ function drawPlot(
   c.translate(...p);
   c.scale(s, s);
   lot(c, STORE_IDS.indexOf(id));
-  planted[id].forEach(([x, y, h]) => cypress(c, x, y, h));
   const door =
     trace?.kind === 'restore' && trace.source === id
       ? smooth(t / 0.38) * (1 - smooth((t - 1.65) / 0.55))
@@ -324,15 +268,17 @@ function drawPlot(
   ) {
     c.beginPath();
     c.ellipse(0, 3, 65, 25, 0, 0.36, 2.84);
-    c.strokeStyle = selected === id ? '#c7d6b9' : '#b5d6b8';
+    c.strokeStyle = selected === id ? '#efc6b6' : '#bba1c4';
     c.lineWidth = 1.8;
     c.stroke();
   }
   if (reading) readRing(c, (t - order * 0.25) / 0.83);
   c.translate(28, 8);
+  if (returning && t > 1.15 && t < 2.1) fissure(c, smooth((t - 1.15) / 0.65));
   if (reveal < 1 && old) {
     c.save();
     c.globalAlpha = 1 - reveal;
+    if (returning && old.finding === 'clear') c.rotate(-0.6 * reveal);
     marker(c, old);
     c.restore();
   }
@@ -356,20 +302,22 @@ export function drawAtlas(
   busy: Command | null
 ) {
   const trace = play?.trace;
+  const weatherTime = play ? clamp(t / TRACE_SECONDS) : 0;
+  groundMist(c, plan, weatherTime);
   for (const item of file.stores) {
     if (!item.sourceId || item.sourceId === item.id) continue;
     const tr = pathBetween(plan, item.sourceId, item.id);
     if (paths) {
-      route(c, tr, '#18261f', 6.5);
-      route(c, tr, '#73846e', 2.5);
-      route(c, tr, '#27392c', 1.1, [2, 3.6]);
-      arrow(c, tr, 0.6, '#c0c9ae');
+      route(c, tr, '#160f1d', 6.5);
+      route(c, tr, '#946f86', 2.5);
+      route(c, tr, '#3c2a3e', 1.1, [2, 3.6]);
+      arrow(c, tr, 0.6, '#d5bdc7');
     }
   }
   const primary = evidence(file, 'primary');
   if (paths && primary.finding === 'returned' && primary.sourceId && primary.sourceId !== 'primary') {
     const sourceLine = pathBetween(plan, primary.sourceId, 'primary');
-    route(c, sourceLine, '#e9c78e', 2, [4, 3]);
+    route(c, sourceLine, '#f3a56e', 2, [4, 3]);
     arrow(c, sourceLine, 0.61, amber);
   }
   if (trace?.kind === 'restore' && trace.source && t < 2.35) {
@@ -387,12 +335,14 @@ export function drawAtlas(
         c,
         pathBetween(plan, trace.source!, id),
         (t - 0.13 - i * 0.26) / 1.03,
-        '#d5e7bb',
+        '#eddacd',
         0.85 * plan.scale
       )
     );
   }
   if (trace?.kind === 'restore' && trace.source) {
+    if (trace.source === 'backup') disturbedBats(c, plan, t);
     travel(c, pathBetween(plan, trace.source, 'primary'), (t - 0.35) / 1.08, amber, 1.3 * plan.scale);
   }
+  foreground(c, plan, weatherTime);
 }

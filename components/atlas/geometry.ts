@@ -9,15 +9,15 @@ export interface Plan {
 }
 export const WIDE: Plan = {
   width: 800,
-  height: 359,
+  height: 416,
   scale: 1.12,
-  plots: { primary: [260, 134], analytics: [609, 103], export: [143, 264], backup: [534, 264] }
+  plots: { primary: [225, 174], analytics: [615, 157], export: [157, 307], backup: [541, 306] }
 };
 export const NARROW: Plan = {
   width: 430,
-  height: 360,
+  height: 424,
   scale: 0.84,
-  plots: { primary: [111, 103], analytics: [324, 113], export: [90, 258], backup: [311, 259] }
+  plots: { primary: [111, 154], analytics: [325, 149], export: [90, 303], backup: [310, 305] }
 };
 export const NARROW_WIDTH = 550;
 
@@ -32,6 +32,16 @@ export function pathBetween(plan: Plan, from: StoreId, to: StoreId) {
     uy = dy / length;
   const xpad = 56 * plan.scale,
     ypad = 21 * plan.scale;
+  // Neighbours in the same column share an outside path, clear of their captions.
+  if (Math.abs(dy) > Math.abs(dx) * 1.15) {
+    const side = a[0] + b[0] < plan.width ? -1 : 1;
+    const start: Point = [a[0] + side * xpad, a[1] + plan.scale * 3];
+    const end: Point = [b[0] + side * xpad, b[1] + plan.scale * 3];
+    const bow = 39 * plan.scale * side;
+    const c1: Point = [start[0] + bow, start[1] + dy * 0.28];
+    const c2: Point = [end[0] + bow, end[1] - dy * 0.28];
+    return { start, end, c1, c2 };
+  }
   const bend = (from < to ? 1 : -1) * Math.min(34, length * 0.13);
   const start: Point = [a[0] + ux * xpad, a[1] + uy * ypad];
   const end: Point = [b[0] - ux * xpad, b[1] - uy * ypad];

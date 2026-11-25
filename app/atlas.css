@@ -1,11 +1,11 @@
-/* The atlas and its paper case record share the same baseline like an open register. */
+/* The map uses a full scene on desktop and a separately composed stage on small screens. */
 .investigation-grid {
   grid-template-columns: minmax(0, 2.42fr) minmax(255px, 0.88fr);
   gap: clamp(14px, 1.7vw, 28px);
 }
 .atlas-sheet {
   min-width: 0;
-  border-block: 1px solid #54614f;
+  border-block: 1px solid #674856;
   scroll-margin-top: 12px;
 }
 .atlas-top {
@@ -43,7 +43,7 @@
 .replay {
   min-height: 36px;
   padding: 3px 8px;
-  color: #bac9b8;
+  color: #d8c2cf;
   background: transparent;
   font-size: 12px;
 }
@@ -53,8 +53,8 @@
   border-radius: 3px;
 }
 .map-switch[aria-pressed='true'] {
-  color: #e0e8da;
-  border-color: #465347;
+  color: #f4e1d6;
+  border-color: #634755;
 }
 .atlas-viewport {
   width: 100%;
@@ -63,9 +63,9 @@
 .atlas-frame {
   position: relative;
   width: 100%;
-  aspect-ratio: 800/359;
+  aspect-ratio: 800/416;
   isolation: isolate;
-  background: #1e2b25;
+  background: #211724;
 }
 .atlas-canvas {
   position: absolute;
@@ -87,7 +87,7 @@
   align-items: center;
   gap: 1px;
   justify-content: center;
-  color: #ececda;
+  color: #f4e7df;
   border-radius: 1px;
   line-height: 1.12;
 }
@@ -99,10 +99,11 @@
   height: clamp(24px, 7cqw, 75px);
 }
 .plot-name {
-  font: 400 clamp(16px, 2.4cqw, 24px)/1 var(--serif);
+  font: 600 clamp(13px, 1.8cqw, 19px)/1.13 var(--sans);
+  letter-spacing: -.25px;
   white-space: nowrap;
-  color: #eff0df;
-  background: #1d2a24ed;
+  color: #f9ece0;
+  background: #1c1420ed;
   padding: 1px 4px 2px;
 }
 .plot-status {
@@ -111,62 +112,62 @@
   align-items: center;
   font-size: clamp(10px, 1.2cqw, 12px);
   padding: 1px 3px;
-  color: #c1cdbb;
-  background: #1d2a24ed;
+  color: #d6c4d1;
+  background: #1c1420ed;
 }
 .map-node.found .plot-status {
-  color: #c6efc6;
+  color: #e2cafc;
 }
 .map-node.pending .plot-status,
 .map-node.returned .plot-status {
-  color: #f6d198;
+  color: #ffbd80;
 }
 .map-node:is(:hover, [aria-pressed='true']) .plot-name {
   text-decoration: underline;
   text-underline-offset: 3px;
-  color: #fff7d5;
+  color: #ffe3c6;
 }
 .map-node:active .plot-name {
-  color: #c8ecc4;
+  color: #f2ac77;
 }
 .atlas-foot {
   padding: 8px 13px;
-  background: #1e2b25;
-  border-top: 1px solid #37483b;
+  background: #211724;
+  border-top: 1px solid #523848;
 }
 .map-legend {
   gap: clamp(12px, 2vw, 28px);
   flex-wrap: wrap;
-  color: #c0cbb9;
+  color: #d7c3cf;
   font-size: 11px;
 }
 .map-legend > span {
   gap: 6px;
 }
 .map-legend > span:first-child {
-  color: #c6e7c5;
+  color: #ddc9f1;
 }
 .trace-strip {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  border-block: 1px solid #3b493d;
+  border-block: 1px solid #4f3848;
   min-height: 40px;
   padding-inline: 13px;
-  background: #1b241d;
+  background: #211723;
 }
 .trace-strip > div {
   gap: 9px;
-  color: #d4dfcc;
+  color: #e2cdd5;
   font-size: 12px;
 }
 .trace-tick {
   flex: none;
   width: 13px;
   height: 7px;
-  border-left: 1px solid #a9c3a6;
-  border-bottom: 1px solid #a9c3a6;
+  border-left: 1px solid #dc966f;
+  border-bottom: 1px solid #dc966f;
   margin-top: -5px;
 }
 .replay {
@@ -194,7 +195,7 @@
 }
 .action-prompt p {
   margin-top: 4px;
-  color: #c2cdbd;
+  color: #d3beca;
   font-size: 13px;
 }
 .action-buttons {
@@ -207,7 +208,7 @@
   min-height: 42px;
   padding: 9px 15px;
   white-space: nowrap;
-  background: #d1e4c5;
+  background: #f7a466;
   border-radius: 3px;
 }
 .action-buttons .text-button {
@@ -221,28 +222,39 @@
   flex-direction: column;
   align-self: stretch;
   padding: clamp(18px, 2vw, 31px);
-  color: #243228;
-  background: #dfdfcb;
-  border-top: 4px solid #949d84;
+  color: #f4e2db;
+  background: #271c27;
+  border: 1px solid #70505c;
+  border-top: 3px double #b18474;
+  outline: 1px solid #4b3542;
+  outline-offset: -6px;
+}
+.death-head {
+  display: block;
+  width: clamp(108px, 11vw, 158px);
+  height: auto;
+  align-self: center;
+  margin: 18px auto 0;
+  color: #c2988c;
 }
 .case-sheet::after {
   content: '';
   pointer-events: none;
   position: absolute;
   bottom: 5px;
-  left: 0;
-  right: 0;
-  border-bottom: 1px solid #adb29c;
+  left: 5px;
+  right: 5px;
+  border-bottom: 1px solid #6d4b58;
 }
 .case-sheet :is(button, a):focus-visible {
-  outline-color: #283d2c;
+  outline-color: #ffb279;
 }
 .case-rubric {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   padding-bottom: 11px;
-  border-bottom: 1px solid #8f9b85;
+  border-bottom: 1px solid #6d4b58;
   font-size: 23px;
   line-height: 1.1;
 }
@@ -252,13 +264,13 @@
   font: 500 11px var(--sans);
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.6px;
-  color: #465844;
+  color: #c7aab9;
 }
 .case-name {
-  padding: clamp(17px, 2.1vw, 31px) 0 15px;
+  padding: 12px 0 15px;
 }
 .case-sheet .field-label {
-  color: #4a5949;
+  color: #d5b8c4;
   font-size: 10px;
   letter-spacing: 0.85px;
 }
@@ -270,13 +282,13 @@
 .case-description,
 .case-entry p {
   font-size: 13px;
-  color: #3e4d3e;
+  color: #d4beca;
   line-height: 1.5;
 }
 .finding-counts,
 .case-facts {
   margin: 7px 0 15px;
-  border-top: 1px solid #a9b19b;
+  border-top: 1px solid #583e4d;
 }
 .finding-counts > div,
 .case-facts > div {
@@ -285,7 +297,7 @@
   justify-content: space-between;
   gap: 8px;
   padding: 8px 0;
-  border-bottom: 1px solid #a9b19b;
+  border-bottom: 1px solid #583e4d;
   font-size: 13px;
 }
 .finding-counts dt {
@@ -302,13 +314,13 @@
   text-align: right;
 }
 .case-sheet .status {
-  background: #cbd5c0;
-  border: 1px solid #82927b;
-  color: #233b28;
+  background: #443247;
+  border: 1px solid #72566b;
+  color: #f2defa;
 }
 .case-sheet .status:is(.pending, .returned, .unreachable) {
-  background: #e2d4b5;
-  color: #453a1c;
+  background: #513732;
+  color: #ffd1a3;
 }
 .case-entry {
   margin-top: auto;
@@ -335,7 +347,7 @@
   margin-top: 8px;
   padding: 3px 0;
   font-size: 12px;
-  color: #263d2b;
+  color: #ffc496;
   font-weight: 600;
 }
 .map-dialog {
@@ -347,7 +359,7 @@
 }
 @container (max-width:550px) {
   .atlas-frame {
-    aspect-ratio: 430/360;
+    aspect-ratio: 430/424;
   }
   .map-node {
     left: var(--x-small);
@@ -355,7 +367,7 @@
     min-width: 76px;
   }
   .plot-name {
-    font-size: clamp(15px, 4.1cqw, 20px);
+    font-size: clamp(12px, 3.35cqw, 16px);
   }
   .plot-status {
     font-size: 10px;
@@ -381,12 +393,13 @@
     gap: 0 22px;
     align-items: start;
   }
+  .death-head { grid-column: 1/-1; width: 104px; margin: 11px auto 2px; }
   .case-rubric,
   .case-entry {
     grid-column: 1/-1;
   }
   .case-entry {
-    border-top: 1px solid #a9b19b;
+    border-top: 1px solid #583e4d;
     padding-top: 15px;
   }
   .header-inner nav a,
@@ -455,8 +468,9 @@
     margin-top: 4px;
     padding-top: 12px;
   }
+  .death-head { width: 114px; margin: 12px auto 1px; }
   .case-name {
-    padding: 15px 0 9px;
+    padding: 8px 0 9px;
   }
   .finding-counts > div {
     padding: 5px 0;

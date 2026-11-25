@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Activity, ArrowRight, Check, FileBadge, Ghost, LoaderCircle, Map, RotateCcw, Volume2, VolumeX, X } from 'lucide-react';
+import { Activity, ArrowRight, Check, FileBadge, LoaderCircle, Map, RotateCcw, Volume2, VolumeX, X } from 'lucide-react';
 import { commandCase, demoMode, openCase } from '../lib/gateway';
 import type { CaseFile, Command, StoreId } from '../lib/case';
 import { openPlayback, traceResult } from '../lib/trace';
@@ -13,7 +13,7 @@ import { Graveyard } from './Graveyard';
 import { Ledger } from './Ledger';
 
 const PAGES = {
-  investigation: { label: 'Investigation', icon: Map, title: 'The burial', italic: 'register', description: 'Trace the copies that survive an erasure request.' },
+  investigation: { label: 'Investigation', icon: Map, title: 'The haunted', italic: 'archive', description: 'Erase a record. Find the copies that come back to haunt it.' },
   events: { label: 'Event log', icon: Activity, title: 'Event', italic: 'log', description: 'Follow the reads, erasures and restores recorded in this case.' },
   certificate: { label: 'Certificate', icon: FileBadge, title: 'Erasure', italic: 'certificate', description: 'Review and export the evidence from the latest inspection.' }
 };
@@ -136,7 +136,7 @@ export function Workspace() {
 
   return <><a className="skip-link" href="#workspace" onClick={event=>{event.preventDefault();document.getElementById('workspace')?.focus();}}>Skip to workspace</a>
     <header className="site-header"><div className="header-inner">
-      <a className="brand" href="#investigation" aria-label="Afterimage investigation"><span className="brand-mark"><Ghost size={23} strokeWidth={1.65} /></span>Afterimage</a>
+      <a className="brand" href="#investigation" aria-label="Afterimage investigation"><img className="brand-mark" src="/icon.svg" width="36" height="35" alt="" />Afterimage</a>
       <nav aria-label="Workspace views">{(Object.keys(PAGES) as Page[]).map(key => { const tab = PAGES[key]; const Icon = tab.icon;
         return <a key={key} href={'#' + key} aria-current={page === key ? 'page' : undefined}><Icon size={15}/>{tab.label}</a>;
       })}</nav>
@@ -145,7 +145,7 @@ export function Workspace() {
     <main className="workspace" id="workspace" tabIndex={-1}>
       <div className="heading-row"><div>
         <h1>{labels.title} <em>{labels.italic}</em></h1><p className="page-intro">{labels.description}</p></div>
-        {file && <button className="secondary-button reset" disabled={busy} onClick={() => resetDialog.current?.showModal()}><RotateCcw size={14}/>Reset case</button>}
+        {file && <button className="secondary-button reset" disabled={busy} onClick={() => resetDialog.current?.showModal()}><RotateCcw size={14}/><span>Reset case</span></button>}
       </div>
       {error && <div className="error-banner" role="alert"><span>{error}</span><button className="secondary-button" disabled={busy} onClick={() => void perform()}>Reload case</button>{!file && <button className="secondary-button" disabled={busy} onClick={() => void perform(undefined,true)}>New case</button>}</div>}
       {!file && !error && <div className="loading" role="status"><LoaderCircle className="spin" size={18}/>Opening case…</div>}
