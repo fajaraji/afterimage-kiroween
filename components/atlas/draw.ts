@@ -39,7 +39,7 @@ function arrow(c: Brush, tr: Trail, t: number, color: string) {
   c.stroke();
   c.restore();
 }
-function paper(c: Brush, x: number, y: number, size: number, color: string) {
+export function paper(c: Brush, x: number, y: number, size: number, color: string) {
   c.save();
   c.translate(x, y);
   c.scale(size, size);
@@ -85,7 +85,7 @@ function travel(c: Brush, tr: Trail, progress: number, color: string, size = 1) 
   paper(c, x, y, size, color);
   c.restore();
 }
-function headstone(c: Brush) {
+export function headstone(c: Brush) {
   c.save();
   c.rotate(-0.09);
   cut(c, 'M-11 3L-10 -16Q-10 -24 -2 -26L2 -27 4 -24 7 -25Q12 -22 11 -16L11 4Z', '#a697a0', ink, 1.4);
@@ -95,7 +95,7 @@ function headstone(c: Brush) {
   c.restore();
 }
 
-function phantom(c: Brush, returned: boolean) {
+export function phantom(c: Brush, returned: boolean) {
   const edge = returned ? '#ffbe86' : '#d5c9ed';
   const fabric = returned ? '#a45a53' : '#8d7da5';
   const lining = returned ? '#643746' : '#51425e';

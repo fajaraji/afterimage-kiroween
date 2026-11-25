@@ -47,8 +47,9 @@ function guidance(file: CaseFile): Step {
     };
   return { label: 'View certificate', hint: 'Review the recorded scope and the latest findings.' };
 }
-function choices(file: CaseFile, id: StoreId | null): Step[] {
-  if (!id || !file.erasureRequested) return [guidance(file)];
+export function caseSteps(file: CaseFile, id: StoreId | null): Step[] {
+  if (!id || !file.erasureRequested || file.stores.every((s) => s.finding === 'unchecked'))
+    return [guidance(file)];
   const item = evidence(file, id);
   const inspect: Step = {
     label: item.pendingCheck ? 'Recheck location' : 'Inspect location',
@@ -65,8 +66,17 @@ function choices(file: CaseFile, id: StoreId | null): Step[] {
     return [
       {
         label: 'Restore snapshot',
-        hint: 'Follow the retained record from the vault to the primary database.',
+        hint: 'The primary was verified clear. This vault still holds a copy that could bring it back.',
         command: { type: 'restore' }
+      },
+      erase,
+      inspect
+    ];
+  if (id === 'primary' && item.finding === 'returned' && !item.pendingCheck)
+    return [
+      {
+        label: 'View certificate',
+        hint: 'The primary record is back. Open the certificate to see its source and the latest reads.'
       },
       erase,
       inspect
@@ -86,7 +96,7 @@ export function CaseActions({
   run: (c: Command) => void;
   certificate: () => void;
 }) {
-  const [main, ...other] = choices(file, selected);
+  const [main, ...other] = caseSteps(file, selected);
   const icon = main.command?.type;
   const Icon =
     icon === 'restore'
