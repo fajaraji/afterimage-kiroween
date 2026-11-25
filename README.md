@@ -19,7 +19,7 @@ Open the local address printed by Next.js. Run `npm test` for the evidence-state
 
 1. Choose **Erase primary record**, then **Scan all locations**. The primary database becomes verified clear. Three copies survive.
 2. Follow **Next action** to erase and recheck the analytics replica and the export. You can also select any location on the map or in the ledger.
-3. Leave the backup intact and choose **Restore snapshot**. The restoration and the confirming read appear in the event log. The primary location shows its backup source.
+3. Leave the backup intact and choose **Restore snapshot**. Watch a record travel out of the vault. The ghost rises at its destination once the primary read confirms its return. **Replay** repeats the last motion in this view without issuing a command or changing the evidence. Reduced-motion mode shows the same findings immediately.
 4. Open **Certificate** and select **Print / save PDF** to export a point-in-time report. You can issue a report before finishing, including unverified locations.
 5. Use **Reset case** to start over. Browser sessions use fictional data held in session storage. Reloading the page retains the current case.
 
@@ -35,4 +35,4 @@ Track implementation and verification in the [GitHub issues](https://github.com/
 
 ## Assets and license
 
-The original graveyard artwork was generated for this project with OpenAI ImageGen. Ambient sound and interaction chimes are synthesized in the browser and start muted. DM Sans and Instrument Serif are bundled locally under the SIL Open Font License. Lucide supplies interface icons. Their license notices are in [public/licenses](public/licenses). The project source is available under [MIT](LICENSE).
+The burial atlas is drawn in Canvas from the case topology and inspection state. Buildings, ground contours, paths, headstones and apparitions are drawn in code. Its four plots change arrangement on small screens. Ambient sound and interaction chimes are synthesized in the browser and start muted. DM Sans and Instrument Serif are bundled locally under the SIL Open Font License. Lucide supplies interface icons. Their license notices are in [public/licenses](public/licenses). The project source is available under [MIT](LICENSE).

@@ -23,7 +23,7 @@ export function Status({ item }: { item: StoreEvidence }) {
 }
 
 export function clockTime(iso: string | null) {
-  return iso ? new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' }).format(new Date(iso)) : '—';
+  return iso ? new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' }).format(new Date(iso)) : 'Not checked';
 }
 
 export function fullTime(iso: string) {

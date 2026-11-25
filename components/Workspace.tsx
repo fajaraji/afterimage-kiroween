@@ -1,16 +1,19 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Activity, ArrowRight, Check, ChevronRight, FileBadge, FolderOpen, Ghost, LoaderCircle, Map, RotateCcw, Volume2, VolumeX, X } from 'lucide-react';
+import { Activity, ArrowRight, Check, FileBadge, Ghost, LoaderCircle, Map, RotateCcw, Volume2, VolumeX, X } from 'lucide-react';
 import { commandCase, demoMode, openCase } from '../lib/gateway';
 import type { CaseFile, Command, StoreId } from '../lib/case';
+import { openPlayback, traceResult } from '../lib/trace';
+import type { Playback } from '../lib/trace';
+import { CaseActions } from './CaseActions';
 import { CasePanel } from './CasePanel';
 import { Certificate, EventLog } from './Evidence';
 import { Graveyard } from './Graveyard';
 import { Ledger } from './Ledger';
 
 const PAGES = {
-  investigation: { label: 'Investigation', icon: Map, title: 'Erasure', italic: 'investigation', description: 'Trace a deletion request across every place a customer record lives.' },
+  investigation: { label: 'Investigation', icon: Map, title: 'The burial', italic: 'register', description: 'Trace the copies that survive an erasure request.' },
   events: { label: 'Event log', icon: Activity, title: 'Event', italic: 'log', description: 'Follow the reads, erasures and restores recorded in this case.' },
   certificate: { label: 'Certificate', icon: FileBadge, title: 'Erasure', italic: 'certificate', description: 'Review and export the evidence from the latest inspection.' }
 };
@@ -28,6 +31,8 @@ export function Workspace() {
   const [file, setFile] = useState<CaseFile | null>(null);
   const [selected, setSelected] = useState<StoreId | null>(null);
   const [busy, setBusy] = useState(false);
+  const [pending, setPending] = useState<Command|null>(null);
+  const [play, setPlay] = useState<Playback|null>(null);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const [sound, setSound] = useState(false);
@@ -42,7 +47,11 @@ export function Workspace() {
     readHash();
     window.addEventListener('hashchange', readHash);
     firstOpen ??= openCase();
-    firstOpen.then(result => { if (live) setFile(result); }).catch(reason => {
+    firstOpen.then(result => {
+      if (!live) return;
+      setFile(result);
+      setPlay(openPlayback(result,demoMode,performance.now()));
+    }).catch(reason => {
       firstOpen = undefined;
       if (live) setError(reason.message || 'Could not open this case.');
     });
@@ -90,30 +99,34 @@ export function Workspace() {
   async function perform(command?: Command, reset = false) {
     if (lock.current) return;
     lock.current = true; setBusy(true); setError(''); setNotice('');
+    setPending(command ?? null);
+    const atlas = document.getElementById('atlas');
+    if (command && atlas && (atlas.getBoundingClientRect().top < -95 || atlas.getBoundingClientRect().top > window.innerHeight * .6)) {
+      atlas.scrollIntoView({block:'start',behavior:'instant'});
+    }
     try {
       const result = command && file ? await commandCase(file, command) : await openCase(reset);
       setFile(result);
       firstOpen = Promise.resolve(result);
-      if (command) {
+      if (command && file) {
         chime(command.type === 'restore');
-        setNotice(command.type === 'scan' ? 'Inspection complete. Four locations checked.' : result.events.at(-1)!.title);
+        setPlay({trace:traceResult(file,result,command),before:file.stores,at:performance.now()});
         if (command.type === 'restore') setSelected('primary');
-      } else if (reset) {
-        setSelected(null); window.location.hash = 'investigation'; setNotice('A fresh case is ready.');
+      } else {
+        setPlay(openPlayback(result,demoMode,performance.now()));
+        if(reset){setSelected(null); window.location.hash = 'investigation'; setNotice('A fresh case is ready.');}
       }
     } catch (reason) { setError(reason instanceof Error ? reason.message : 'The operation could not be completed.'); }
-    finally { lock.current = false; setBusy(false); }
+    finally { lock.current = false; setBusy(false); setPending(null); }
   }
 
   const chooseStore = useCallback((id: StoreId) => {
     setSelected(id);
-    requestAnimationFrame(() => {
-      const panel = document.getElementById('case-panel');
-      panel?.focus({preventScroll:true});
-      if (panel && (panel.getBoundingClientRect().top < 0 || panel.getBoundingClientRect().top > window.innerHeight - 100)) {
-        panel.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block:'start' });
-      }
-    });
+    const atlas=document.getElementById('atlas');
+    if(atlas && atlas.getBoundingClientRect().bottom < window.innerHeight*.35) {
+      atlas.scrollIntoView({behavior:'instant',block:'start'});
+      atlas.querySelector<HTMLButtonElement>('[data-store="'+id+'"]')?.focus({preventScroll:true});
+    }
   }, []);
   const labels = PAGES[page];
   function navigate(target: Page) {
@@ -121,7 +134,7 @@ export function Workspace() {
     window.scrollTo({top:0,behavior:'instant'});
   }
 
-  return <><a className="skip-link" href="#workspace">Skip to workspace</a>
+  return <><a className="skip-link" href="#workspace" onClick={event=>{event.preventDefault();document.getElementById('workspace')?.focus();}}>Skip to workspace</a>
     <header className="site-header"><div className="header-inner">
       <a className="brand" href="#investigation" aria-label="Afterimage investigation"><span className="brand-mark"><Ghost size={23} strokeWidth={1.65} /></span>Afterimage</a>
       <nav aria-label="Workspace views">{(Object.keys(PAGES) as Page[]).map(key => { const tab = PAGES[key]; const Icon = tab.icon;
@@ -129,8 +142,8 @@ export function Workspace() {
       })}</nav>
       <div className="header-tools"><span className="environment"><i/>{demoMode ? 'Demo workspace' : 'Connected workspace'}</span><button className={'sound-toggle' + (sound ? ' on' : '')} aria-pressed={sound} aria-label={sound ? 'Mute ambient sound' : 'Enable ambient sound'} title={sound ? 'Mute ambient sound' : 'Enable ambient sound'} onClick={toggleSound}>{sound ? <Volume2 size={17}/> : <VolumeX size={17}/>}</button></div>
     </div></header>
-    <main className="workspace" id="workspace">
-      <div className="heading-row"><div><div className="breadcrumb"><FolderOpen size={13}/><span>Workspace</span><ChevronRight size={12}/><span>Case {file?.reference ?? '…'}</span></div>
+    <main className="workspace" id="workspace" tabIndex={-1}>
+      <div className="heading-row"><div>
         <h1>{labels.title} <em>{labels.italic}</em></h1><p className="page-intro">{labels.description}</p></div>
         {file && <button className="secondary-button reset" disabled={busy} onClick={() => resetDialog.current?.showModal()}><RotateCcw size={14}/>Reset case</button>}
       </div>
@@ -138,8 +151,10 @@ export function Workspace() {
       {!file && !error && <div className="loading" role="status"><LoaderCircle className="spin" size={18}/>Opening case…</div>}
       {file && <>
         {page === 'investigation' && <><div className="investigation-grid">
-          <Graveyard file={file} selected={selected} onSelect={chooseStore} busy={busy} />
-          <CasePanel file={file} selected={selected} clearSelection={() => setSelected(null)} run={perform} busy={busy || !!error} certificate={() => navigate('certificate')}/>
+          <Graveyard file={file} selected={selected} onSelect={chooseStore} pending={pending} play={play} replay={()=>setPlay(current=>current?{...current,at:performance.now()}:null)}>
+            <CaseActions file={file} selected={selected} busy={busy || !!error} run={perform} certificate={()=>navigate('certificate')}/>
+          </Graveyard>
+          <CasePanel file={file} selected={selected} clearSelection={()=>setSelected(null)} openLog={()=>navigate('events')}/>
         </div><Ledger file={file} selected={selected} onSelect={chooseStore} busy={busy || !!error} onScan={() => void perform({type:'scan'})}/></>}
         {page === 'events' && <EventLog file={file}/>}
         {page === 'certificate' && <Certificate file={file} demo={demoMode}/>}

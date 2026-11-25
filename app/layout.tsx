@@ -6,9 +6,10 @@ import '@fontsource/dm-sans/latin-700.css';
 import '@fontsource/instrument-serif/latin-400.css';
 import '@fontsource/instrument-serif/latin-400-italic.css';
 import './globals.css';
+import './atlas.css';
 
 export const metadata: Metadata = {
-  title: 'Afterimage — Erasure investigation',
+  title: 'Afterimage | Erasure investigation',
   description: 'Trace a fictional erasure request through a haunted storage map. Inspect the evidence that each copy leaves behind.'
 };
 
