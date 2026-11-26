@@ -1,6 +1,6 @@
 # Spec 06 — AWS runtime for the case API
 **Priority:** P0 · **Status:** not implemented · **Method:** requirements-first (EARS).
-References: `docs/backend-contract.md`, `docs/backend-handoff.md` (tickets #20 to #24), `backend/docs/AWS-DEPLOYMENT.md` (partly superseded).
+References: `docs/backend-contract.md`, `docs/backend-handoff.md` (tickets #20 to #24), `backend/docs/ARCHITECTURE.md`.
 
 **AWS-1:** WHEN the infrastructure is synthesized, THE SYSTEM SHALL define, in CDK v2 TypeScript, an HTTP API with Lambda handlers for `POST /cases`, `GET /cases/{id}` and `POST /cases/{id}/commands`, a DynamoDB table for customer records, a replica table, a case-state table, and a versioned S3 bucket for export and snapshot objects.
 

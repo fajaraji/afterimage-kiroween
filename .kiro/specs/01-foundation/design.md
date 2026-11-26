@@ -21,4 +21,4 @@ Case ID is a server-generated random ID of at least 128 bits and is the only acc
 `StoreAdapter.seed | observe | remove | reset`, `StoreRegistry.get(allowlistedId)`, `toFinding(observation)`, `CaseFile` type and `parseCaseFile` in `packages/contracts`.
 
 ## Older run contracts
-The existing packages/contracts still has the earlier run model (SCENARIO_IDS such as zombie-sync, RunEvidence) and tests for it. Task 10 adds CaseFile next to it. Retire the old run model in the same task or a follow-up once nothing imports it, and update its tests rather than deleting them silently.
+The existing `packages/contracts` still has the earlier run model (`SCENARIO_IDS` such as `zombie-sync`, `RunEvidence`) and tests for it. Task 10 adds `CaseFile` next to it. Retire the old run model in the same task or a follow-up once nothing imports it, and update its tests rather than deleting them silently.

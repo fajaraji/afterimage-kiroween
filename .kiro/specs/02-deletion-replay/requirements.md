@@ -1,6 +1,6 @@
 # 02 — Case commands and verified restore
 **Priority:** P0 · **Status:** not implemented · **Method:** requirements-first (EARS).
-(The folder name is kept from the earlier plan. This spec replaces the stale-event replay scenarios.)
+(The folder name is kept so Kiro history and links stay stable.)
 
 Source of truth: `docs/backend-contract.md`, `docs/backend-handoff.md` (restore flow, "Kapan hantu muncul?"), `lib/case.ts` (`runDemo`), `lib/trace.ts`.
 

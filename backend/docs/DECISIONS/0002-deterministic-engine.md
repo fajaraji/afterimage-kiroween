@@ -2,6 +2,6 @@
 
 Status: Accepted for MVP (Nov 7, 2026).
 
-Decision: Scenario runner and independent direct-store verifier produce typed events, observations, assertions, and evidence. UI renders their results only. No LLM makes pass/fail decisions.
+Decision: The command engine and an independent read-only verifier produce typed events and findings. The UI renders their results only. No model decides a finding.
 
 Consequences: Easier reproducibility, more trustworthy results, fewer demo dependencies. UI effects may lag actual state but never invent successes.

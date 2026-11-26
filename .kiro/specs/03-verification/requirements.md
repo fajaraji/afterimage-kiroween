@@ -1,6 +1,6 @@
 # 03 — Independent verification and evidence
 **Priority:** P0 · **Status:** not implemented · **Method:** requirements-first (EARS).
-(The folder name is kept from the earlier plan. The PASS/FAIL/UNKNOWN verdict model is replaced by per-store findings.)
+(The folder name is kept from the earlier plan; see spec 01 for the finding model.)
 
 ## User story
 As a reviewer, I want every finding to come from its own read, so that I can trust the map, log and certificate.

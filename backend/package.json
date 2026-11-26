@@ -3,7 +3,7 @@
   "version": "0.0.4",
   "private": true,
   "type": "module",
-  "description": "Kiro-first AWS+Strands Frankenstein starter with scoped forensic action evidence (not a production agent firewall)",
+  "description": "Afterimage backend: synthetic erasure-and-restore case API on AWS (not a compliance product)",
   "engines": {
     "node": ">=22.13.0"
   },

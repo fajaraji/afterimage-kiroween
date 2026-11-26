@@ -1,4 +1,4 @@
-> **Update:** for the cloud target follow `docs/KIRO-AWS-WORKFLOW.md`, spec 06 and ADR-0007/0008. `docs/AWS-ARCHITECTURE.md` and ADR-0004 are superseded. The local Fastify setup is a dev shell only.
+> **Update:** for the cloud target follow `docs/KIRO-AWS-WORKFLOW.md`, spec 06 and ADR-0007/0008. The local Fastify setup is a dev shell only.
 
 # Recommended Kiro IDE / Web workflow
 

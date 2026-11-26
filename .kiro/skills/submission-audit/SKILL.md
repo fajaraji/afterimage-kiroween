@@ -8,4 +8,4 @@ description: Verify Kiroween 2026 Afterimage submission readiness, real Kiro dev
 3. Confirm the public YouTube demo is under 3 minutes and shows the running app with the Connected label.
 4. Inspect `backend/docs/BUILD_LOG.md` for real Kiro usage (specs, tasks, tests), not template rows.
 5. Check that the video's three facts (primary empty, backup holds the record, new primary read finds it) come from one real run with a saved sanitized evidence file.
-6. Return PASS, MISSING or BLOCKED per item. Never invent proof or fill in URLs. Do not credit Frankenstein-era features (Strands, Bedrock, agent actions); they are out of scope.
+6. Return PASS, MISSING or BLOCKED per item. Never invent proof or fill in URLs. Do not credit features that are out of scope.

@@ -1,4 +1,4 @@
-> **AWS-first note:** `npm run dev` is local-only. AWS deployment is not implemented. See docs/AWS-DEPLOYMENT.md.
+> **Note:** `npm run dev` is local-only. AWS deployment is not implemented. See `.kiro/specs/06-aws-serverless/`.
 
 # Setup, environment, and troubleshooting
 

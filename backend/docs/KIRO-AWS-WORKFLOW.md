@@ -4,7 +4,7 @@ Active specs: `.kiro/specs/01-foundation`, `02-deletion-replay`, `03-verificatio
 ## Optional powers (install only when needed, from the Kiro Powers panel)
 - **AWS infrastructure as code (CDK and CloudFormation):** review CDK output and `cdk diff` for security and compliance.
 - **AWS Observability:** diagnose CloudWatch logs after a stack is live.
-Not needed for this scope: Strands, Amplify, Step Functions guidance.
+Not needed for this scope: Strands, Amplify, Step Functions.
 
 ## MCP
 `.kiro/settings/mcp.json` has no servers. Add one only after reviewing its permissions and with the owner's approval. Optional AWS MCP server docs: https://docs.aws.amazon.com/agent-toolkit/latest/userguide/getting-started-aws-mcp-server.html

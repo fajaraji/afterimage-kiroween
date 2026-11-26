@@ -9,17 +9,12 @@ const quiet = process.argv.includes('--quiet');
 const required = [
   'README.md', 'AGENTS.md', 'LICENSE', 'package.json', '.gitignore',
   '.kiro/README.md', '.kiro/settings/mcp.json', '.kiro/hooks/workspace-check.json',
-  '.kiro/steering/00-product.md', '.kiro/steering/01-guardrails.md',
-  'docs/PRD.md', 'docs/SECURITY-PRIVACY.md', 'docs/HACKATHON.md',
-  'docs/FRANKENSTEIN-STRATEGY.md', 'docs/FRANKENSTEIN-EVIDENCE-MATRIX.md',
-  'docs/AGENT-SAFETY-FINDINGS.md', 'docs/AGENT-ACTION-FORENSICS.md',
-  'docs/AGENT-ACTION-THREAT-MODEL.md', 'docs/DECISIONS/0006-consequential-agent-actions.md',
-  '.kiro/steering/23-agent-action-safety.md',
-  '.kiro/skills/agent-action-threat-review/SKILL.md',
-  '.kiro/steering/22-frankenstein.md', '.kiro/skills/frankenstein-demo-audit/SKILL.md',
+  '.kiro/steering/00-product.md', '.kiro/steering/01-guardrails.md', '.kiro/steering/20-aws-first.md',
+  'docs/SECURITY-PRIVACY.md', 'docs/HACKATHON.md', 'docs/ARCHITECTURE.md',
+  'docs/DECISIONS/0007-costume-contest-category.md', 'docs/DECISIONS/0008-no-cookies-reset-on-reload.md',
+  'docs/FRONTEND-REQUESTS.md',
   'apps/api/package.json',
-  'packages/engine/package.json', 'packages/contracts/package.json',
-  'fixtures/scenario.schema.json'
+  'packages/engine/package.json', 'packages/contracts/package.json', 'packages/aws-adapters/package.json'
 ];
 const errors = [];
 for (const file of required) if (!existsSync(at(file))) errors.push(`Missing required file: ${file}`);
@@ -28,35 +23,24 @@ for (const ignoreFile of [join(root, '.gitignore'), join(repoRoot, '.gitignore')
     errors.push(`DO NOT ignore .kiro/ in ${ignoreFile} (Kiroween requirement).`);
   }
 }
-for (const folder of ['01-foundation','02-deletion-replay','03-verification','04-investigation-ui','05-reporting-submission','06-aws-serverless','07-strands-investigator','08-frankenstein-integration','09-consequential-action-safety']) {
+for (const folder of ['01-foundation','02-deletion-replay','03-verification','05-reporting-submission','06-aws-serverless']) {
   for (const file of ['requirements.md','design.md','tasks.md']) {
     const p = `.kiro/specs/${folder}/${file}`;
     if (!existsSync(at(p))) errors.push(`Missing spec: ${p}`);
   }
 }
-const jsonFiles = ['fixtures/agent-actions/action-trace.schema.json', 'package.json','.kiro/settings/mcp.json','.kiro/hooks/workspace-check.json','fixtures/scenario.schema.json'];
-for (const entry of readdirSync(join(root,'fixtures/scenarios'))) if (entry.endsWith('.json')) jsonFiles.push(`fixtures/scenarios/${entry}`);
-for (const entry of readdirSync(join(root,'fixtures/agent-actions'))) if (entry.endsWith('.json')) jsonFiles.push(`fixtures/agent-actions/${entry}`);
+const jsonFiles = ['package.json', '.kiro/settings/mcp.json', '.kiro/hooks/workspace-check.json'];
+for (const entry of readdirSync(join(repoRoot, '.kiro/agents'))) if (entry.endsWith('.json')) jsonFiles.push(`.kiro/agents/${entry}`);
 for (const file of jsonFiles) {
   try { JSON.parse(readFileSync(at(file), 'utf8')); }
   catch (error) { errors.push(`Invalid JSON ${file}: ${error.message}`); }
 }
-for (const entry of readdirSync(join(root,'fixtures/scenarios'))) {
-  if (!entry.endsWith('.json')) continue;
-  const data = JSON.parse(readFileSync(join(root,'fixtures/scenarios',entry),'utf8'));
-  if (!data.fixture?.subjectId?.startsWith('synthetic-')) errors.push(`Non-synthetic fixture subject: ${entry}`);
-  const allowed = new Set(['seed_subject','hold_upsert','delete_subject','release_held','inject_delete_failure','mark_store_unreachable','verify']);
-  for (const step of data.steps || []) if (!allowed.has(step.action)) errors.push(`Unsupported action in ${entry}: ${step.action}`);
-}
-// Illustrative action traces must never be misrepresented as executed AWS results.
-for (const entry of readdirSync(join(root,'fixtures/agent-actions'))) {
-  if (!entry.endsWith('.json') || entry.endsWith('.schema.json')) continue;
-  const data = JSON.parse(readFileSync(join(root,'fixtures/agent-actions',entry), 'utf8'));
-  if (data.illustrativeOnly !== true || !data.runId?.startsWith('synthetic-')) errors.push(`Unsafe illustrative action fixture: ${entry}`);
-  if (data.intent?.operation !== 'DROP_SYNTHETIC_TABLE_PROPOSAL' || data.policyDecision?.outcome !== 'DENY' || data.executionReceipt?.status !== 'NOT_EXECUTED') errors.push(`Action fixture must be denied and not executed: ${entry}`);
-  if (!['PRESENT','UNKNOWN'].includes(data.postActionObservation?.state)) errors.push(`Bad post-denial observation state: ${entry}`);
-}
-if (errors.length) {
+// Every task in an active spec should name a requirement ID, except legacy tasks whose titles are kept for Kiro run history.
+for (const folder of ['01-foundation','02-deletion-replay','03-verification','05-reporting-submission','06-aws-serverless']) {
+  const text = readFileSync(at(`.kiro/specs/${folder}/tasks.md`), 'utf8');
+  const unmapped = text.split('\n').filter((l) => /^- \[.\] /.test(l) && !/\([A-Z]+-\d+/.test(l));
+  if (folder !== '01-foundation' && unmapped.length) errors.push(`Tasks without requirement IDs in ${folder}: ${unmapped.length}`);
+}if (errors.length) {
   console.error(`Workspace validation failed with ${errors.length} issue(s):\n${errors.map((e)=>'- '+e).join('\n')}`);
   process.exitCode = 1;
 } else if (!quiet) {

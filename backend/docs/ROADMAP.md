@@ -16,4 +16,4 @@
 3. Freeze features three days before the deadline. Use the rest for security, accessibility, the live URL and the submission.
 
 ## Deferred
-Per-revision certificate archive, Strands or Bedrock investigator, agent-action work, extra stores, authentication, multi-region.
+Per-revision certificate archive, extra stores, authentication, multi-region.

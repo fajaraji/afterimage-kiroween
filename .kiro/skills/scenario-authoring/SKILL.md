@@ -9,4 +9,4 @@ description: Design or extend a deterministic synthetic Afterimage case scenario
 4. Implement until it passes. Findings come only from reads.
 5. Add retry, stale revision and import-without-confirmation cases.
 6. Run tests and record real results in `backend/docs/BUILD_LOG.md`.
-Older scenario files in `backend/fixtures/scenarios/` belong to the superseded replay plan; do not extend them.
+Copy fixtures from `startDemo` and `runDemo` in `lib/case.ts`; there are no older scenario files.

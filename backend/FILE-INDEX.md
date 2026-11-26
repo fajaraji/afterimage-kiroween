@@ -1,35 +1,108 @@
-# File index — Afterimage AWS + Strands Frankenstein Kiro Starter v4
+# File index
 
-> **Note:** this index and `MANIFEST.sha256` were refreshed after the merge into the Afterimage repo. `apps/web/` was removed. Files under `.kiro/` and `LICENSE` live at the repository root. Documents marked superseded describe the earlier plan.
+Generated after the cleanup that removed the earlier Frankenstein plan. Backend paths are relative to `backend/`; Kiro files live in the repository root `.kiro/`.
 
-**Status:** AWS-first, synthetic-only planning + minimal runnable local scaffold. v4 documents action forensics and optional controlled agent-proposal safety; **it does not implement a production agent guard, AWS infrastructure, deletion engine, or Strands runtime**. No cloud deployments or actual incident evidence were produced.
-
-## v4 additions
-
-- `docs/AGENT-SAFETY-FINDINGS.md` — article lessons with verified/unverified claim boundaries.
-- `docs/AGENT-ACTION-FORENSICS.md` — intent, policy, receipt, independent observation data lineage.
-- `docs/AGENT-ACTION-THREAT-MODEL.md` — credible bounded synthetic-only test and IAM boundaries.
-- `docs/DECISIONS/0006-consequential-agent-actions.md` — prioritization and explicit non-goals.
-- `.kiro/specs/09-consequential-action-safety/` — requirements, design, tasks for optional extension.
-- `.kiro/steering/23-agent-action-safety.md` — always-on guardrails.
-- `.kiro/skills/agent-action-threat-review/SKILL.md` — on-demand risk review.
-- `fixtures/agent-actions/` — JSON Schema and **illustrative-only** example event chains.
-- `packages/contracts/src/index.ts` — extra TypeScript interfaces, **not** a running agent policy gateway.
-
-## All repository files
-
+## Backend (`backend/`)
 - `.editorconfig`
 - `.env.example`
 - `.gitattributes`
-- `.github/ISSUE_TEMPLATE/bug_report.md`
-- `.github/pull_request_template.md`
-- `.github/workflows/ci.yml`
 - `.gitignore`
-- `.kiro/README.md`
+- `.nvmrc`
+- `AGENTS.md`
+- `apps/api/package.json`
+- `apps/api/README.md`
+- `apps/api/src/server.ts`
+- `apps/api/tsconfig.json`
+- `CHANGELOG.md`
+- `CODE_OF_CONDUCT.md`
+- `CONTRIBUTING.md`
+- `docs/ACCEPTANCE-MATRIX.md`
+- `docs/AGENT-ACTION-FORENSICS.md`
+- `docs/AGENT-ACTION-THREAT-MODEL.md`
+- `docs/AGENT-SAFETY-FINDINGS.md`
+- `docs/API.md`
+- `docs/ARCHITECTURE.md`
+- `docs/AWS-ARCHITECTURE.md`
+- `docs/AWS-COST-AND-SAFETY.md`
+- `docs/AWS-DEPLOYMENT.md`
+- `docs/BUILD_LOG.md`
+- `docs/COMPETITION.md`
+- `docs/DECISIONS/0001-synthetic-lab.md`
+- `docs/DECISIONS/0002-deterministic-engine.md`
+- `docs/DECISIONS/0003-stack.md`
+- `docs/DECISIONS/0004-aws-first-strands.md`
+- `docs/DECISIONS/0005-frankenstein-category.md`
+- `docs/DECISIONS/0006-consequential-agent-actions.md`
+- `docs/DECISIONS/0007-costume-contest-category.md`
+- `docs/DECISIONS/0008-no-cookies-reset-on-reload.md`
+- `docs/DEMO.md`
+- `docs/DEPLOYMENT.md`
+- `docs/DEVPOST-FRANKENSTEIN.md`
+- `docs/DOMAIN-MODEL.md`
+- `docs/ENVIRONMENT.md`
+- `docs/FRANKENSTEIN-EVIDENCE-MATRIX.md`
+- `docs/FRANKENSTEIN-STRATEGY.md`
+- `docs/FRONTEND-REQUESTS.md`
+- `docs/HACKATHON.md`
+- `docs/KIRO-AWS-WORKFLOW.md`
+- `docs/KIRO-OPTIONAL-INTEGRATIONS.md`
+- `docs/KIRO-PROMPTS.md`
+- `docs/KIRO-WORKFLOW.md`
+- `docs/OPENAPI.yaml`
+- `docs/PRD.md`
+- `docs/RISK-REGISTER.md`
+- `docs/ROADMAP.md`
+- `docs/SECURITY-PRIVACY.md`
+- `docs/SOURCES.md`
+- `docs/STRANDS-AGENT-DESIGN.md`
+- `docs/TEST-PLAN.md`
+- `docs/UI-UX.md`
+- `fixtures/agent-actions/action-trace.schema.json`
+- `fixtures/agent-actions/denied-destructive-proposal.json`
+- `fixtures/agent-actions/verification-unavailable.json`
+- `fixtures/README.md`
+- `fixtures/scenario.schema.json`
+- `fixtures/scenarios/partial-delete-v1.json`
+- `fixtures/scenarios/unreachable-v1.json`
+- `fixtures/scenarios/zombie-sync-v1.json`
+- `infra/README.md`
+- `package.json`
+- `package-lock.json`
+- `packages/aws-adapters/package.json`
+- `packages/aws-adapters/src/index.test.ts`
+- `packages/aws-adapters/src/index.ts`
+- `packages/aws-adapters/tsconfig.json`
+- `packages/contracts/package.json`
+- `packages/contracts/README.md`
+- `packages/contracts/src/contracts.test.mjs`
+- `packages/contracts/src/index.ts`
+- `packages/contracts/src/validate.ts`
+- `packages/contracts/tsconfig.json`
+- `packages/engine/package.json`
+- `packages/engine/README.md`
+- `packages/engine/src/fixture.test.ts`
+- `packages/engine/src/fixture.ts`
+- `packages/engine/src/index.test.ts`
+- `packages/engine/src/index.ts`
+- `packages/engine/src/memory-stores.test.ts`
+- `packages/engine/src/memory-stores.ts`
+- `packages/engine/src/run-isolation.test.ts`
+- `packages/engine/src/store-adapter.test.ts`
+- `packages/engine/src/store-adapter.ts`
+- `packages/engine/tsconfig.json`
+- `README.md`
+- `scripts/audit-submission.mjs`
+- `scripts/dev.mjs`
+- `scripts/validate-workspace.mjs`
+- `SECURITY.md`
+- `START-HERE.md`
+
+## Kiro (`.kiro/`)
 - `.kiro/agents/demo-reviewer.json`
 - `.kiro/agents/privacy-reviewer.json`
 - `.kiro/agents/scenario-engineer.json`
 - `.kiro/hooks/workspace-check.json`
+- `.kiro/README.md`
 - `.kiro/settings/mcp.json`
 - `.kiro/skills/agent-action-threat-review/SKILL.md`
 - `.kiro/skills/aws-architecture-review/SKILL.md`
@@ -40,6 +113,7 @@
 - `.kiro/specs/01-foundation/design.md`
 - `.kiro/specs/01-foundation/requirements.md`
 - `.kiro/specs/01-foundation/tasks.md`
+- `.kiro/specs/01-foundation/tasks.meta.json`
 - `.kiro/specs/02-deletion-replay/design.md`
 - `.kiro/specs/02-deletion-replay/requirements.md`
 - `.kiro/specs/02-deletion-replay/tasks.md`
@@ -67,6 +141,7 @@
 - `.kiro/steering/00-product.md`
 - `.kiro/steering/01-guardrails.md`
 - `.kiro/steering/02-engineering.md`
+- `.kiro/steering/03-repo-layout.md`
 - `.kiro/steering/10-api-contracts.md`
 - `.kiro/steering/11-frontend.md`
 - `.kiro/steering/20-aws-first.md`
@@ -74,80 +149,3 @@
 - `.kiro/steering/22-frankenstein.md`
 - `.kiro/steering/23-agent-action-safety.md`
 - `.kiro/steering/submission-evidence.md`
-- `.kiroignore`
-- `.nvmrc`
-- `AGENTS.md`
-- `CHANGELOG.md`
-- `CODE_OF_CONDUCT.md`
-- `CONTRIBUTING.md`
-- `FILE-INDEX.md`
-- `LICENSE`
-- `MANIFEST.sha256`
-- `README.md`
-- `SECURITY.md`
-- `START-HERE.md`
-- `apps/api/README.md`
-- `apps/api/package.json`
-- `apps/api/src/server.ts`
-- `apps/api/tsconfig.json`
-- `docs/ACCEPTANCE-MATRIX.md`
-- `docs/AGENT-ACTION-FORENSICS.md`
-- `docs/AGENT-ACTION-THREAT-MODEL.md`
-- `docs/AGENT-SAFETY-FINDINGS.md`
-- `docs/API.md`
-- `docs/ARCHITECTURE.md`
-- `docs/AWS-ARCHITECTURE.md`
-- `docs/AWS-COST-AND-SAFETY.md`
-- `docs/AWS-DEPLOYMENT.md`
-- `docs/BUILD_LOG.md`
-- `docs/COMPETITION.md`
-- `docs/DECISIONS/0001-synthetic-lab.md`
-- `docs/DECISIONS/0002-deterministic-engine.md`
-- `docs/DECISIONS/0003-stack.md`
-- `docs/DECISIONS/0004-aws-first-strands.md`
-- `docs/DECISIONS/0005-frankenstein-category.md`
-- `docs/DECISIONS/0006-consequential-agent-actions.md`
-- `docs/DEMO.md`
-- `docs/DEPLOYMENT.md`
-- `docs/DEVPOST-FRANKENSTEIN.md`
-- `docs/DOMAIN-MODEL.md`
-- `docs/ENVIRONMENT.md`
-- `docs/FRANKENSTEIN-EVIDENCE-MATRIX.md`
-- `docs/FRANKENSTEIN-STRATEGY.md`
-- `docs/HACKATHON.md`
-- `docs/KIRO-AWS-WORKFLOW.md`
-- `docs/KIRO-OPTIONAL-INTEGRATIONS.md`
-- `docs/KIRO-PROMPTS.md`
-- `docs/KIRO-WORKFLOW.md`
-- `docs/OPENAPI.yaml`
-- `docs/PRD.md`
-- `docs/RISK-REGISTER.md`
-- `docs/ROADMAP.md`
-- `docs/SECURITY-PRIVACY.md`
-- `docs/SOURCES.md`
-- `docs/STRANDS-AGENT-DESIGN.md`
-- `docs/TEST-PLAN.md`
-- `docs/UI-UX.md`
-- `fixtures/README.md`
-- `fixtures/agent-actions/action-trace.schema.json`
-- `fixtures/agent-actions/denied-destructive-proposal.json`
-- `fixtures/agent-actions/verification-unavailable.json`
-- `fixtures/scenario.schema.json`
-- `fixtures/scenarios/partial-delete-v1.json`
-- `fixtures/scenarios/unreachable-v1.json`
-- `fixtures/scenarios/zombie-sync-v1.json`
-- `infra/README.md`
-- `package.json`
-- `packages/contracts/README.md`
-- `packages/contracts/package.json`
-- `packages/contracts/src/contracts.test.mjs`
-- `packages/contracts/src/index.ts`
-- `packages/contracts/tsconfig.json`
-- `packages/engine/README.md`
-- `packages/engine/package.json`
-- `packages/engine/src/index.test.ts`
-- `packages/engine/src/index.ts`
-- `packages/engine/tsconfig.json`
-- `scripts/audit-submission.mjs`
-- `scripts/dev.mjs`
-- `scripts/validate-workspace.mjs`

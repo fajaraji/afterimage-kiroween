@@ -1,6 +1,6 @@
 # Start here — first Kiro IDE session
 
-> **Direction:** the category is **Costume Contest** (ADR-0007). The backend serves the frontend's `/cases` API and the story in `../docs/backend-handoff.md`. No cookies, no visitor identifiers (ADR-0008). The Frankenstein, Strands and agent-action plans are superseded.
+> **Direction:** the category is **Costume Contest** (ADR-0007). The backend serves the frontend's `/cases` API and the story in `../docs/backend-handoff.md`. No cookies, no visitor identifiers (ADR-0008). The earlier Frankenstein plan was removed.
 
 ## 0. What exists and what does not
 The repo has a Next.js frontend (teammate), a backend workspace with contracts, an in-memory engine, DynamoDB and S3 adapters with unit tests, and a Fastify health shell. The `/cases` API, the restore flow, the CDK app and any AWS deployment are **not built yet**. Do not claim the project works end to end.
@@ -29,7 +29,7 @@ Ask before deploy, IAM changes, spend, new dependencies or MCP servers.
 5. `06-aws-serverless` tasks 3–7: CDK synth (owner reviews the diff), AWS adapters, replica, limits.
 6. `06-aws-serverless` tasks 8–10: deploy only after explicit approval, run the evaluation table, Vercel preview.
 7. `05-reporting-submission`: evidence export, audit, video, submission.
-Specs 04, 07, 08 and 09 are superseded. Spec 01 tasks 1–5 were done against the earlier three-store model; task 6 and 7 stay open.
+Spec number 04 is unused. Spec 01 tasks 1–5 were done against the earlier three-store model; task 6 and 7 stay open.
 
 ## 4. Actions only you can do before submitting
 - Keep the GitHub repo public with a license and root `.kiro/` committed.

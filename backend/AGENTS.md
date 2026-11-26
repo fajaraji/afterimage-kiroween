@@ -1,4 +1,4 @@
-> **Current direction:** hackathon category is **Costume Contest** (ADR-0007). The backend serves the frontend's browser API (`../docs/backend-contract.md`, `../lib/case.ts`, `../docs/backend-handoff.md`). Frankenstein, Strands, Bedrock, Step Functions replay and agent-action documents are superseded history. No cookies and no visitor identifiers are stored (ADR-0008). Do not deploy cloud resources or install MCP servers without explicit approval.
+> **Current direction:** hackathon category is **Costume Contest** (ADR-0007). The backend serves the frontend's browser API (`../docs/backend-contract.md`, `../lib/case.ts`, `../docs/backend-handoff.md`). No cookies and no visitor identifiers are stored (ADR-0008). Do not deploy cloud resources or install MCP servers without explicit approval.
 # Instructions for Kiro and coding agents
 
 Read `../docs/backend-contract.md`, `../docs/backend-handoff.md`, `docs/SECURITY-PRIVACY.md`, and the active specs (01, 02, 03, 05, 06 in `../.kiro/specs/`) before coding. Treat the spec acceptance criteria as the source of truth and propose changes rather than silently changing requirements.
@@ -15,4 +15,4 @@ Read `../docs/backend-contract.md`, `../docs/backend-handoff.md`, `docs/SECURITY
 
 ## Scope discipline
 
-Do not build the superseded Frankenstein or agent-action scope (specs 04, 07, 08, 09) unless the user reopens it. A finding is set only from a direct read; a failed read is `unreachable`; a `return` event needs a new matching read.
+Stay inside the active specs. A finding is set only from a direct read; a failed read is `unreachable`; a `return` event needs a new matching read.

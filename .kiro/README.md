@@ -3,7 +3,7 @@
 These are repository-scoped Kiro artifacts, intentionally committed to satisfy Kiroween rules. Paths and configuration align with Kiro public docs as of Nov 7, 2026.
 
 - `steering/`: always, fileMatch, and manual context. No silent broad auto-inclusion.
-- `specs/`: nine specs (01, 02, 03, 05, 06 active; 04, 07, 08, 09 superseded), each with `requirements.md`, `design.md`, `tasks.md`; unchecked tasks mean **not implemented**.
+- `specs/`: five specs (01, 02, 03, 05, 06; number 04 is unused), each with `requirements.md`, `design.md`, `tasks.md`; unchecked tasks mean **not implemented**.
 - `agents/`: optional agents (no trust bypass/auto-approved tools).
 - `skills/`: focused on-demand workflows.
 - `hooks/`: quick local validation on save, **IDE and CLI**, not Kiro Web.
@@ -12,7 +12,7 @@ These are repository-scoped Kiro artifacts, intentionally committed to satisfy K
 IMPORTANT: Do not add `.kiro/` to `.gitignore` and do not remove the directory to reduce repo size. See `backend/docs/KIRO-WORKFLOW.md`.
 
 ## Category
-The chosen category is **Costume Contest** (ADR-0007). Active steering: `00-product`, `01-guardrails`, `02-engineering`, `03-repo-layout`, `10-api-contracts`, `11-frontend`, `20-aws-first`. Manual or deferred (Frankenstein, Strands, agent actions): `21`, `22`, `23`, and specs 04, 07, 08, 09.
+The chosen category is **Costume Contest** (ADR-0007). Active steering: `00-product`, `01-guardrails`, `02-engineering`, `03-repo-layout`, `10-api-contracts`, `11-frontend`, `20-aws-first`.
 
 Paths in specs and steering such as `docs/...` and `apps/...` are relative to `backend/`, except `docs/backend-contract.md` and `docs/backend-handoff.md`, which are in the repository root `docs/`.
 

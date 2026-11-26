@@ -3,7 +3,7 @@ Authoritative source: https://kiroween.devpost.com/rules (re-check before submis
 
 - **Eligible period:** new project work created from Oct 30, 2026. Standard starter templates and libraries are allowed under the rules. Disclose other pre-existing code.
 - **Deadline:** Dec 4, 2026 2:00 PM PST (Dec 5, 5:00 AM Asia/Jakarta). Plan to submit by Dec 3.
-- **Category:** **Costume Contest** (ADR-0007). Select exactly one main category in Devpost. The Frankenstein plan is deferred and must not appear in claims.
+- **Category:** **Costume Contest** (ADR-0007). Select exactly one main category in Devpost.
 
 ## Checklist
 - [ ] Working application URL that judges can open, working as shown in the video.
