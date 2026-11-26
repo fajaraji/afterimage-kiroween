@@ -1,3 +1,5 @@
+> **Superseded (Costume Contest direction):** this document describes the earlier run-workflow or Frankenstein plan. The active contract is [`docs/backend-contract.md`](../../docs/backend-contract.md) and [`docs/backend-handoff.md`](../../docs/backend-handoff.md) at the repo root. Kept as history; do not implement from it.
+
 # Strands investigator — bounded agent specification
 
 **Status:** planned integrated Frankenstein demo target after deterministic P0, not installed/tested. **Language:** TypeScript to match the repository; SDK `@strands-agents/sdk`, model provider Amazon Bedrock. The Python SDK has more bundled tools, but P0 doesn't need them.

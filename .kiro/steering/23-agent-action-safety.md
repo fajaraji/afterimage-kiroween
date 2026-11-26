@@ -1,6 +1,8 @@
 ---
-inclusion: always
+inclusion: manual
 ---
+> **Deferred:** the hackathon category is Costume Contest, so the Strands investigator and agent-action work this file covers are not planned. Apply it only if the user reopens that scope.
+
 # Consequential-action safety — v4 scope boundary
 
 - P0 **remains data-resurrection regression testing** on isolated synthetic AWS resources; never pivot core delivery toward a production AI-agent firewall.

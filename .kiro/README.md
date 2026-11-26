@@ -3,7 +3,7 @@
 These are repository-scoped Kiro artifacts, intentionally committed to satisfy Kiroween rules. Paths and configuration align with Kiro public docs as of Nov 7, 2026.
 
 - `steering/`: always, fileMatch, and manual context. No silent broad auto-inclusion.
-- `specs/`: eight specs, each with `requirements.md`, `design.md`, `tasks.md`; unchecked tasks mean **not implemented**.
+- `specs/`: nine specs (01, 02, 03, 05, 06 active; 04, 07, 08, 09 superseded), each with `requirements.md`, `design.md`, `tasks.md`; unchecked tasks mean **not implemented**.
 - `agents/`: optional agents (no trust bypass/auto-approved tools).
 - `skills/`: focused on-demand workflows.
 - `hooks/`: quick local validation on save, **IDE and CLI**, not Kiro Web.
@@ -11,7 +11,7 @@ These are repository-scoped Kiro artifacts, intentionally committed to satisfy K
 
 IMPORTANT: Do not add `.kiro/` to `.gitignore` and do not remove the directory to reduce repo size. See `docs/KIRO-WORKFLOW.md`.
 
-## Frankenstein 2026 category overlay
+## Frankenstein 2026 category overlay (deferred: the chosen category is Costume Contest)
 
 - `.kiro/steering/22-frankenstein.md`: product/category priorities, always included.
 - `.kiro/specs/08-frankenstein-integration/`: acceptance criteria proving the mixed-tech user journey.

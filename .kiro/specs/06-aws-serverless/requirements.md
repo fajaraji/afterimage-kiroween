@@ -1,23 +1,24 @@
-# Spec 06 — AWS serverless runtime (P0)
+# Spec 06 — AWS runtime for the case API
+**Priority:** P0 · **Status:** not implemented · **Method:** requirements-first (EARS).
+References: `docs/backend-contract.md`, `docs/backend-handoff.md` (tickets #20 to #24), `backend/docs/AWS-DEPLOYMENT.md` (partly superseded).
 
-Status: NOT implemented. Requirements-first. References: `docs/AWS-ARCHITECTURE.md`, `docs/AWS-DEPLOYMENT.md`, ADR-0004.
+**AWS-1:** WHEN the infrastructure is synthesized, THE SYSTEM SHALL define, in CDK v2 TypeScript, an HTTP API with Lambda handlers for `POST /cases`, `GET /cases/{id}` and `POST /cases/{id}/commands`, a DynamoDB table for customer records, a replica table, a case-state table, and a versioned S3 bucket for export and snapshot objects.
 
-**AWS-1:** WHEN Kiro synthesizes the infrastructure, THE SYSTEM SHALL define Amplify-compatible frontend configuration, API Gateway, Lambda handlers, Standard Step Functions orchestration, SQS+DLQ, independent DynamoDB test tables, a barrier metadata store, and S3 evidence/export storage using CDK TypeScript.
+**AWS-2:** WHEN `POST /cases` is received, THE SYSTEM SHALL create an isolated case owned by the visitor session, seed four stores with fictional data, and return the full `CaseFile` with all findings `unchecked`.
 
-**AWS-2:** IF a run is created, THE API SHALL validate allowlisted synthetic scenario ID and isolated session authorization, start the workflow, and reply HTTP 202 with a run identifier.
+**AWS-3:** THE SYSTEM SHALL identify the visitor with a server-set session cookie and SHALL return 404 for a case that belongs to another session.
 
-**AWS-3:** WHEN a prior snapshot event is deliberately released after deletion, THE SYSTEM SHALL deliver it through SQS to the sandbox consumer; an intentionally unsafe run SHALL reproduce an observed resurrection, and a protected run SHALL atomically reject the same-generation write.
+**AWS-4:** THE SYSTEM SHALL allow CORS only for the exact configured frontend origin, with credentials, methods GET, POST and OPTIONS, and the `Content-Type` header. The cookie settings SHALL be documented for the deployment's site relationship.
 
-**AWS-4:** WHEN duplicate SQS messages occur, THE SYSTEM SHALL record a single logical event result and SHALL NOT corrupt state.
+**AWS-5:** WHEN the DynamoDB stream delivers a primary change, THE SYSTEM SHALL update the analytics replica idempotently, so a redelivered record does not corrupt state.
 
-**AWS-5:** WHEN the verifier checks a run, THE SYSTEM SHALL query independent AWS stores and evaluate `PASS | FAIL | UNKNOWN`; unavailable required observations SHALL never be labeled PASS.
+**AWS-6:** THE SYSTEM SHALL scope every Lambda role to the case tables and the bucket prefix `cases/` with no wildcard actions, and SHALL keep verifier read permissions separate from writer permissions.
 
-**AWS-6:** WHEN a demo user initiates runs, THE SYSTEM SHALL enforce per-session limits, run concurrency caps, bounded fixture sizes and scoped IAM; it SHALL NOT accept arbitrary AWS resource names or raw commands.
+**AWS-7:** WHEN a visitor creates cases, THE SYSTEM SHALL enforce a per-session case limit, a request size limit, and an expiry (TTL) for case data.
 
-**AWS-7:** WHEN a run fails or times out, THE SYSTEM SHALL retain a safe failure status and diagnostic evidence while keeping unrelated runs isolated.
+**AWS-8:** WHEN a command takes longer than the browser's 15 second wait, THE SYSTEM SHALL still leave the case consistent so a reload shows a valid revision.
 
-**AWS-8:** IF a model region/service is unavailable, THE deterministic scenario engine SHALL still function without the Strands investigator.
+**AWS-9:** IF deployment, `cdk bootstrap`, IAM changes or paid services are proposed, THEN the owner SHALL approve them explicitly first, and the CDK diff SHALL be reviewed before any deploy.
 
-**AWS-9:** WHEN deployment is proposed, THE project SHALL require an explicit account-owner approval before `cdk bootstrap`, `cdk deploy` or changing IAM/policy.
-
-Acceptance: CDK synth/diff reviewed; tested real AWS end-to-end in a synthetic sandbox; SQS stale replay creates FAIL only in unsafe mode; protected is PASS with evidence; unreachable store UNKNOWN; budget, IAM, throttling, cleanup and deployment instructions documented.
+## Acceptance
+`cdk synth` and diff reviewed. Integration tests run against a real sandbox: erase/scan/restore end to end, replay of a command, 409, two visitors isolated, one denied read gives `unreachable`. A frontend preview connects with `NEXT_PUBLIC_AFTERIMAGE_API_BASE` and shows the Connected label. Cost, quotas, cleanup and teardown are documented in `docs/BUILD_LOG.md`.

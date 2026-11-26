@@ -1,3 +1,5 @@
+> **Superseded (Costume Contest direction):** this document describes the earlier run-workflow or Frankenstein plan. The active contract is [`docs/backend-contract.md`](../../docs/backend-contract.md) and [`docs/backend-handoff.md`](../../docs/backend-handoff.md) at the repo root. Kept as history; do not implement from it.
+
 # AWS deployment runbook — actions require account-owner approval
 
 **Status:** design/runbook only. There is no deployed AWS stack or verified service in this starter. Do not run `cdk deploy` until infrastructure is implemented and reviewed.

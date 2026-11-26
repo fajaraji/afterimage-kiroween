@@ -1,3 +1,5 @@
+> **Superseded:** this spec belongs to the earlier Frankenstein plan. The hackathon category is Costume Contest. Do not implement it unless the user reopens that scope.
+
 # Tasks — Frankenstein integrated demo readiness
 
 - [ ] 1. Audit real implemented contracts across AWS workflow, independent verifier, agent tools, and UI for run/evidence identity. _(FRANK-1,5)_

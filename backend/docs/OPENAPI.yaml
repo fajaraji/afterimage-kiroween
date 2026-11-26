@@ -1,3 +1,4 @@
+# SUPERSEDED (Costume Contest direction): describes /api/runs. The active contract is docs/backend-contract.md at the repo root.
 openapi: 3.1.0
 info:
   title: Afterimage Synthetic Lab API

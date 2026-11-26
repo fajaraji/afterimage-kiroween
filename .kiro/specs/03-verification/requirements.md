@@ -1,15 +1,24 @@
-# 03 — Independent verification and verdict semantics
+# 03 — Independent verification and evidence
+**Priority:** P0 · **Status:** not implemented · **Method:** requirements-first (EARS).
+(The folder name is kept from the earlier plan. The PASS/FAIL/UNKNOWN verdict model is replaced by per-store findings.)
 
-**Priority:** P0 · **Status:** not implemented.
+## User story
+As a reviewer, I want every finding to come from its own read, so that I can trust the map, log and certificate.
 
-**VERIFY-1:** WHEN a scenario completes, THE SYSTEM SHALL query each configured store independently of frontend state and record observed presence or absence.
+## Requirements
+**VERIFY-1:** WHEN the system sets a finding, THE SYSTEM SHALL have just performed a direct read of that store. A write response, a receipt or a cached value SHALL NOT set `clear`, `found` or `returned`.
 
-**VERIFY-2:** IF any required store cannot be queried or returns an ambiguous result, THE SYSTEM SHALL mark it `UNKNOWN`; IF no `PRESENT` is observed and any required evidence is `UNKNOWN`, THE SYSTEM SHALL emit overall `UNKNOWN`, never `PASS`.
+**VERIFY-2:** IF a read fails, times out or is outside the inspection boundary, THEN THE SYSTEM SHALL set `unreachable` and SHALL NOT set `clear`.
 
-**VERIFY-3:** IF any required store is observed `PRESENT` after deletion, THE SYSTEM SHALL emit `FAIL` with linked observation evidence.
+**VERIFY-3:** WHEN primary is read, THE SYSTEM SHALL use a strongly consistent read of the base table with the same region and key as the write.
 
-**VERIFY-4:** WHEN all required store observations are `ABSENT` and all invariants succeed, THE SYSTEM SHALL emit scoped `PASS` and record verifier version, fixture hash, scenario ID and run ID.
+**VERIFY-4:** WHEN a versioned S3 object is read, THE SYSTEM SHALL state in the evidence which version it read, and a delete marker SHALL NOT be reported as the data being gone while older versions remain.
 
-**VERIFY-5:** IF a store observation is duplicated, mismatched, or forged from an unknown store, THE SYSTEM SHALL reject or report `UNKNOWN`, not double-count evidence.
+**VERIFY-5:** WHEN an event is appended, THE SYSTEM SHALL write `detail` in English with store, UTC read time, snapshot reference and the actual result, and SHALL NOT include credentials, account IDs, ARNs or raw error text.
 
-**VERIFY-6:** WHEN a user reads a report, THE SYSTEM SHALL disclose the configured scope and observation time, not imply universal erasure.
+**VERIFY-6:** THE SYSTEM SHALL report errors as short codes (for example `AccessDenied`) and keep stack traces and ARNs in server logs only.
+
+**VERIFY-7:** THE SYSTEM SHALL keep verification independent of the command path: the code that reads a store SHALL NOT share a client or state with the code that wrote to it beyond configuration.
+
+## Acceptance
+Negative tests: outcome looks right but source is wrong; import without a confirming read; duplicate command; delete marker with older version present; denied read gives `unreachable`. Logs and responses contain synthetic IDs only.

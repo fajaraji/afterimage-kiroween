@@ -1,3 +1,5 @@
+> **Superseded (Costume Contest direction):** this document describes the earlier run-workflow or Frankenstein plan. The active contract is [`docs/backend-contract.md`](../../docs/backend-contract.md) and [`docs/backend-handoff.md`](../../docs/backend-handoff.md) at the repo root. Kept as history; do not implement from it.
+
 # Consequential-action forensics and independent post-action checks
 
 **Status: design/specification, not implemented.** This document defines what must be logged once real scenario actions exist. Existing P0 deletion tests remain first priority. See spec 09.

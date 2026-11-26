@@ -1,3 +1,5 @@
+> **Superseded (Costume Contest direction):** this document describes the earlier run-workflow or Frankenstein plan. The active contract is [`docs/backend-contract.md`](../../docs/backend-contract.md) and [`docs/backend-handoff.md`](../../docs/backend-handoff.md) at the repo root. Kept as history; do not implement from it.
+
 # AWS-first architecture — authoritative target design
 
 **Status:** proposed, not deployed or tested against AWS. **AWS region:** choose one region with verified Bedrock model access; do not assume model availability. **Data:** synthetic-only. **Category:** Frankenstein (proposed); demonstrate distinct cross-technology roles, not service count.

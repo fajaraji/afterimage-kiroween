@@ -1,3 +1,5 @@
+> **Superseded:** this spec belongs to the earlier Frankenstein plan. The hackathon category is Costume Contest. Do not implement it unless the user reopens that scope.
+
 # Spec 07 — Strands read-only investigator (P1, optional runtime)
 
 **AGENT-1:** WHEN a user requests an explanation of a completed run, THE SYSTEM SHALL invoke one Strands TypeScript agent using Bedrock with only bounded, read-only evidence tools.

@@ -1,10 +1,6 @@
-# Tasks — 05 Reports & submission
-
-- [ ] 1. Add typed evidence report serialization from server data; validate against schema. _(REPORT-1,2)_
-- [ ] 2. Add JSON download endpoint and provenance/evidence links. _(REPORT-1,3)_
-- [ ] 3. Implement repeatable regression tests and CI quality gates; capture actual test logs. _(REPORT-4)_
-- [ ] 4. Review privacy, rate limits, session isolation and deployment hardening before public hosting. _(REPORT-3,6)_
-- [ ] 5. Deploy functioning product and test judge URL in private browser. _(REPORT-6)_
-- [ ] 6. Publish public GitHub repo and English documentation; preserve `.kiro/` and LICENSE. _(REPORT-5)_
-- [ ] 7. Produce own sub-3-minute public YouTube demo and truthful Kiro use write-up. _(REPORT-5)_
-- [ ] 8. Complete Devpost submission before deadline; verify requirements again.
+# Tasks — 05
+- [ ] 1. Make restore events carry before and after primary reads with UTC time, `seq`, store and result. (REPORT-1,2)
+- [ ] 2. Add a test that no response or event contains an ARN, account ID or secret. (REPORT-3)
+- [ ] 3. Add a sanitized evidence export script for one case. (REPORT-4)
+- [ ] 4. Update `audit-submission.mjs` to the Costume Contest checks and run it. (REPORT-5,6)
+- [ ] 5. Write `docs/BUILD_LOG.md` entries from real Kiro sessions and AWS runs. (REPORT-5)

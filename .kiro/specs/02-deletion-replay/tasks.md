@@ -1,9 +1,10 @@
-# Tasks — 02 Replay
-
-- [ ] 1. Implement strict event schema with eventId, generation, logical sequence and event type. _(REPLAY-3,6)_
-- [ ] 2. Implement held-event queue and deterministic release, with safe reset. _(REPLAY-1,3)_
-- [ ] 3. Implement intentionally unsafe consumer and reproduce a failing resurrection regression test. _(REPLAY-1)_
-- [ ] 4. Implement protected consumer's atomic generation barrier and prove same event cannot revive record. _(REPLAY-2)_
-- [ ] 5. Add idempotency, duplicate IDs, invalid generation and replay determinism tests. _(REPLAY-3,4,6)_
-- [ ] 6. Inject analytics deletion failure and observe real leftover record. _(REPLAY-5)_
-- [ ] 7. Capture actual Kiro spec/PBT and regression evidence in build log.
+# Tasks — 02 Case commands and verified restore
+- [ ] 1. Add the command envelope parser (`commandId`, `expectedRevision`, five command types) with rejection tests for unknown types and extra fields. (CMD-1,2,3, FOUNDATION-3)
+- [ ] 2. Implement `applyCommand` for `erase-primary`, `scan`, `erase-copy` and `inspect` against in-memory adapters, including revision increment and increasing `seq`. (CMD-1,2,3,5)
+- [ ] 3. Add `commandId` deduplication and stale-revision 409 with tests for retry, conflict and no extra events. (CMD-4,5)
+- [ ] 4. Implement restore preconditions and refusal when primary is not clear or backup is clear. (CMD-6)
+- [ ] 5. Implement restore import with conditional write, restore journal, verifying read and the `return` event, with tests for a matching read. (CMD-7,8)
+- [ ] 6. Add failure tests: import succeeds but verification read fails, read returns another subject or tag, and wrong source. No `return` in any of them. (CMD-9)
+- [ ] 7. Add retry-after-write resume test: second delivery verifies without importing again. (CMD-10)
+- [ ] 8. Decide and implement analytics replica behavior on restore, then observe it by a read. (CMD-11)
+- [ ] 9. Compare outputs with `runDemo` snapshots for the five evaluation scenarios in `docs/backend-handoff.md`. (CMD-1 to CMD-9)

@@ -1,3 +1,5 @@
+> **Superseded:** this spec belongs to the earlier Frankenstein plan. The hackathon category is Costume Contest. Do not implement it unless the user reopens that scope.
+
 # Spec 07 — Tasks (optional until deterministic P0 passes)
 
 - [ ] 1. Implement read-only evidence provider with authorization and bounded responses. (AGENT-1,5)

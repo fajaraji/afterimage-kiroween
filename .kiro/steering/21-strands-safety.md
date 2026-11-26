@@ -2,6 +2,8 @@
 inclusion: fileMatch
 fileMatchPattern: "**/*agent*"
 ---
+> **Deferred:** the hackathon category is Costume Contest, so the Strands investigator and agent-action work this file covers are not planned. Apply it only if the user reopens that scope.
+
 # Strands product-agent safety
 
 - Product agent is **read-only** investigator, not an orchestrator or deletion/verdict engine. Kiro dev agents and product Strands agent are separate.

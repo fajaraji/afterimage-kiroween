@@ -1,3 +1,5 @@
+> **Superseded:** this spec belongs to the earlier Frankenstein plan. The hackathon category is Costume Contest. Do not implement it unless the user reopens that scope.
+
 # Spec 09 design — deliberately bounded
 
 ## Trusted source-of-truth boundaries

@@ -1,12 +1,8 @@
 ---
-inclusion: always
+inclusion: manual
 ---
-# Frankenstein category product boundaries
+# Frankenstein plan (deferred, not the chosen category)
 
-Primary planned Kiroween 2026 category is **Frankenstein**. The innovation is a testable *combination* of independent disciplines, not an AWS services inventory: (1) Step Functions/SQS/Lambda fault injection into isolated synthetic stores; (2) deterministic independent verification returning PASS/FAIL/UNKNOWN; (3) read-only Strands+Bedrock investigation of persisted facts; (4) accessible visual forensics with evidence links.
+The user chose **Costume Contest**. This file is kept as reference for the earlier plan: a fault-injection run workflow (Step Functions, SQS), a deterministic PASS/FAIL/UNKNOWN verifier, a read-only Strands + Bedrock investigator, and visual forensics. Specs 07, 08 and 09 and the `backend/docs/FRANKENSTEIN-*.md` files describe it and are marked superseded.
 
-**Sequence:** deterministic AWS replay + verifier first, then functional Ghost Graph, then on-demand Strands investigator and end-to-end demo. The agent is a meaningful integration target, **not** an authority and never a prerequisite for core test function. No fake agent logs or passing reports. Scope owner approval before AWS deploy or spending.
-
-Human-readable product context: `#[[file:backend/docs/FRANKENSTEIN-STRATEGY.md]]` and `#[[file:backend/docs/FRANKENSTEIN-EVIDENCE-MATRIX.md]]`.
-
-At the Nov 27 gate, if working Strands evidence cannot be demonstrated, report the limitation and reassess final category instead of inventing AI results. Cosmetic Halloween effects remain in scope only after correctness and accessible evidence viewing.
+Do not implement or claim any of it unless the user explicitly reopens the category. Safety rules that still hold if it is reopened: an LLM never decides a verdict or mutates stores, and an AI outage never changes a verified result.

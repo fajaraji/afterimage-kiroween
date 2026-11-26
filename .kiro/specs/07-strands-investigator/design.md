@@ -1,3 +1,5 @@
+> **Superseded:** this spec belongs to the earlier Frankenstein plan. The hackathon category is Costume Contest. Do not implement it unless the user reopens that scope.
+
 # Spec 07 — Design
 
 Create `packages/agent-investigator` with `@strands-agents/sdk` (TypeScript), Bedrock default provider (configure and check actual model ID/region), Zod response validation, bounded tool schema. Deploy via AWS Lambda `explain` handler and invoke only after a stored verifier result exists.

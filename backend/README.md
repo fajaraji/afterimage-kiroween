@@ -1,13 +1,14 @@
 # Afterimage — The Data Resurrection Lab
 
-> **Repository layout:** This folder is the backend of [Afterimage](../README.md). The frontend is the Next.js app at the repository root, and Kiro's specs, steering, skills, agents and hook live in the root [`.kiro/`](../.kiro/) folder. Run the backend commands below from this `backend/` folder. The Vite placeholder in `apps/web` was removed. Documents here that still mention it (port 5173, Amplify Hosting, `/api/runs`) will be updated to the frontend's [browser API contract](../docs/backend-contract.md) together with the specs.
+> **Repository layout:** This folder is the backend of [Afterimage](../README.md). The frontend is the Next.js app at the repository root, and Kiro's specs, steering, skills, agents and hook live in the root [`.kiro/`](../.kiro/) folder. Run the backend commands below from this `backend/` folder.
+> **Current direction:** the hackathon category is **Costume Contest**. The backend serves the frontend's [browser API](../docs/backend-contract.md) (`/cases`) and follows [`docs/backend-handoff.md`](../docs/backend-handoff.md). Documents here that describe `/api/runs`, Step Functions replay, Amplify, Vite or the Strands/Frankenstein plan are **superseded** and kept as history. Active specs: 01, 02, 03, 05, 06.
 
 > **Status: Kiro-ready AWS-first development scaffold, not a finished or deployed hackathon product.**
 > *Don't just delete data. Make sure it stays dead.*
 
-Afterimage is a **synthetic-data-only deletion resilience testing laboratory**. It intentionally reproduces stale-event resurrection and incomplete deletion, checks the **observed state** of participating test stores, and explains the failure through a haunted investigation UI. It is **not** a production privacy-compliance platform or a universal deletion guarantee.
+Afterimage is a **synthetic-data-only demonstration** that an erased customer record can return from a retained backup, and that only a fresh read of the store proves it. It is **not** a production privacy-compliance platform or a universal deletion guarantee.
 
-**Kiroween 2026 primary category:** Frankenstein (proposed; select on Devpost). Haunted UI remains important for UX, but the submission must demonstrate meaningful integration between distributed fault injection, deterministic verification, read-only agentic reasoning, and visual forensics. **Submission:** December 4, 2026, 2:00 PM PST. New work must be built during the permitted submission period; disclose any pre-existing code and comply with library licenses. See [`docs/HACKATHON.md`](docs/HACKATHON.md).
+**Kiroween 2026 category:** Costume Contest. **Submission:** December 4, 2026, 2:00 PM PST. New work must be built during the permitted submission period; disclose any pre-existing code and comply with library licenses. See [`docs/HACKATHON.md`](docs/HACKATHON.md).
 
 ## v4 — consequential-action forensics (scoped addition)
 

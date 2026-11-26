@@ -1,3 +1,5 @@
+> **Superseded:** the teammate built the investigation UI in Next.js at the repo root (Codex). This spec no longer applies and is not a backend task.
+
 # Tasks — 04 UI
 
 - [ ] 1. Implement typed API client and load allowlisted scenarios; honest not-run state. _(UI-1,5)_

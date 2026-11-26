@@ -1,3 +1,5 @@
+> **Superseded (Costume Contest direction):** this document describes the earlier run-workflow or Frankenstein plan. The active contract is [`docs/backend-contract.md`](../../docs/backend-contract.md) and [`docs/backend-handoff.md`](../../docs/backend-handoff.md) at the repo root. Kept as history; do not implement from it.
+
 # Frankenstein strategy — combining incompatible methods responsibly
 
 **Decision (2026-11-07):** Target the **Frankenstein** category instead of Costume Contest for Kiroween 2026. This is a proposed submission direction, not proof of eligibility or of an implemented system. The official rules require a working Kiro-built application; judges decide category merit. Source: https://kiroween.devpost.com/rules

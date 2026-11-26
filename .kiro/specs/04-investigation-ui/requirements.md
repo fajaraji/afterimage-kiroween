@@ -1,3 +1,5 @@
+> **Superseded:** the teammate built the investigation UI in Next.js at the repo root (Codex). This spec no longer applies and is not a backend task.
+
 # 04 — Haunted investigation UI
 
 **Priority:** P0 · **Status:** not implemented.

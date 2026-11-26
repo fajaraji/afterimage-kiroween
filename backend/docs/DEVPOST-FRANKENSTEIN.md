@@ -1,3 +1,5 @@
+> **Superseded (Costume Contest direction):** this document describes the earlier run-workflow or Frankenstein plan. The active contract is [`docs/backend-contract.md`](../../docs/backend-contract.md) and [`docs/backend-handoff.md`](../../docs/backend-handoff.md) at the repo root. Kept as history; do not implement from it.
+
 # Devpost pre-registration — editable Frankenstein draft
 
 **Planning copy only. Update with actual implemented work before submitting.** Official rules: https://kiroween.devpost.com/rules

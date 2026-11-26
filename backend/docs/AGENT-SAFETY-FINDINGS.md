@@ -1,3 +1,5 @@
+> **Superseded (Costume Contest direction):** this document describes the earlier run-workflow or Frankenstein plan. The active contract is [`docs/backend-contract.md`](../../docs/backend-contract.md) and [`docs/backend-handoff.md`](../../docs/backend-handoff.md) at the repo root. Kept as history; do not implement from it.
+
 # What the AI-agent data-loss article changes (v4)
 
 **Source discussed:** https://medium.com/@chenyuan19920509/ten-ai-agents-destroyed-production-data-not-one-vendor-published-a-postmortem-8907211a68d2

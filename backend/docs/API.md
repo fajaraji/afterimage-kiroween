@@ -1,3 +1,5 @@
+> **Superseded (Costume Contest direction):** this document describes the earlier run-workflow or Frankenstein plan. The active contract is [`docs/backend-contract.md`](../../docs/backend-contract.md) and [`docs/backend-handoff.md`](../../docs/backend-handoff.md) at the repo root. Kept as history; do not implement from it.
+
 # Proposed API contract (to be implemented in Kiro specs)
 
 Scaffold currently implements `GET /api/health` only. Everything else is **planned** and must not be represented as already functional.

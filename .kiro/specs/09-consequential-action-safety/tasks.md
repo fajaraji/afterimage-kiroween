@@ -1,3 +1,5 @@
+> **Superseded:** this spec belongs to the earlier Frankenstein plan. The hackathon category is Costume Contest. Do not implement it unless the user reopens that scope.
+
 # Tasks — consequential action records and optional agent-safety demo
 
 **P1 — implement only after core P0 is real and stable**

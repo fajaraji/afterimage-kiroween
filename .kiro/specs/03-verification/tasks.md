@@ -1,8 +1,7 @@
 # Tasks — 03 Verification
-
-- [ ] 1. Implement direct adapter observers and normalized observation schema with failure states. _(VERIFY-1,2)_
-- [ ] 2. Implement pure scoped verdict reducer and table-driven tests. _(VERIFY-2,3,4,5)_
-- [ ] 3. Add intentionally unreachable-store simulation and assert `UNKNOWN`. _(VERIFY-2)_
-- [ ] 4. Add evidence IDs, run/fixture hash and scope provenance in API read endpoints. _(VERIFY-4,6)_
-- [ ] 5. Add negative tests for forged, duplicate and mismatched observations. _(VERIFY-5)_
-- [ ] 6. Verify unsafe=FAIL, protected=PASS and partial delete=FAIL using actual stores.
+- [ ] 1. Add a `Verifier` over read-only adapters and make every finding go through it. (VERIFY-1,7)
+- [ ] 2. Test that failed, denied and timed-out reads give `unreachable`, never `clear`. (VERIFY-2,6)
+- [ ] 3. Use `ConsistentRead` for primary reads and test the request flag. (VERIFY-3)
+- [ ] 4. Add S3 version handling and a test with a delete marker over a retained version. (VERIFY-4)
+- [ ] 5. Add English event detail templates and a test that no ARN, account ID or raw error text appears. (VERIFY-5,6)
+- [ ] 6. Add the three separate negative tests: wrong source, import without confirmation, duplicate command. (VERIFY-1, CMD-4,9)

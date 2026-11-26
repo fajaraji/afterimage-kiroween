@@ -13,7 +13,7 @@ This ZIP is a **planning + runnable UI/API scaffold**, not an implemented deleti
 - Install Node.js 22+ and npm; `node --version`; `npm --version`.
 - Open the **`afterimage-kiro-starter` directory** in Kiro IDE.
 - In Kiro terminal: `npm install` (internet required), then `npm run dev`.
-- Browse `http://localhost:5173`, with API health at `http://localhost:8787/api/health`.
+- API health is at `http://localhost:8787/api/health`. Run the frontend from the repository root (`npm run dev`, port 3000).
 - Run `npm run validate:starter`, `npm run typecheck`, and `npm test`.
 - Record the first successful clean install and smoke test in `docs/BUILD_LOG.md`.
 
@@ -53,7 +53,7 @@ Run one task at a time and review the diff; do not execute all parallel tasks wh
 
 - Create a **new public GitHub repo**, choose a unique repo name, commit `package-lock.json` after installation.
 - Maintain actual Kiro usage evidence and screenshots (do not fabricate).
-- Deploy the actual backend through AWS CDK to reviewed AWS account and React frontend through Amplify Hosting; test the judge URL in an incognito browser. Never publish unrestricted mutable AWS resources.
+- Deploy the actual backend through AWS CDK to reviewed AWS account and frontend preview on Vercel; test the judge URL in an incognito browser. Never publish unrestricted mutable AWS resources.
 - Record **your own** functioning app demo under 3 minutes and publish it **publicly on YouTube**.
 - Complete Devpost entry, category, technology/Kiro write-up, and open-source repo URL.
 - Keep the judge-accessible app online until the official end of judging, January 29, 2027.
@@ -63,7 +63,7 @@ See docs/KIRO-WORKFLOW.md, docs/HACKATHON.md, docs/DEMO.md, docs/ROADMAP.md.
 
 ## Updated category and first working session
 
-The **primary proposed category is Frankenstein**. The Halloween design is still a functional UX layer, not the principal category claim. Read `docs/FRANKENSTEIN-STRATEGY.md` and `docs/FRANKENSTEIN-EVIDENCE-MATRIX.md` before prioritizing features. Execute `npm run audit:submission` regularly; it reports evidence that remains unverified, not a false submission success. If Kiro Web is used, local hooks are not executed there; validate in Kiro IDE/CLI or CI.
+The **chosen category is Costume Contest** (the Frankenstein plan is deferred). The Halloween design is still a functional UX layer, not the principal category claim. Read `docs/FRANKENSTEIN-STRATEGY.md` and `docs/FRANKENSTEIN-EVIDENCE-MATRIX.md` before prioritizing features. Execute `npm run audit:submission` regularly; it reports evidence that remains unverified, not a false submission success. If Kiro Web is used, local hooks are not executed there; validate in Kiro IDE/CLI or CI.
 
 **Safe first milestone:** show real `FAIL` (unsafe stale upsert), real `PASS` (protected barrier), and `UNKNOWN` (unreachable store) before invoking Strands. Obtain approval before AWS CDK bootstrap/deploy, IAM changes, spending, or model access. Once P0 works, add a bounded read-only Strands narrative with evidence IDs; the verifier alone owns verdicts.
 

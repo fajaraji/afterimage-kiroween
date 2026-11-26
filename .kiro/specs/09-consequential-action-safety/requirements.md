@@ -1,3 +1,5 @@
+> **Superseded:** this spec belongs to the earlier Frankenstein plan. The hackathon category is Costume Contest. Do not implement it unless the user reopens that scope.
+
 # Spec 09 — Consequential action forensics (P1) and optional synthetic guard demo (P2)
 
 **Status:** Not implemented. Dependencies: specs 01–03 and 06 for real store evidence; spec 08 integrated demo takes precedence over optional P2. This spec adds no production agent interception or automatic cost.

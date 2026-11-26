@@ -1,5 +1,7 @@
 # File index — Afterimage AWS + Strands Frankenstein Kiro Starter v4
 
+> **Note:** this index and `MANIFEST.sha256` were refreshed after the merge into the Afterimage repo. `apps/web/` was removed. Files under `.kiro/` and `LICENSE` live at the repository root. Documents marked superseded describe the earlier plan.
+
 **Status:** AWS-first, synthetic-only planning + minimal runnable local scaffold. v4 documents action forensics and optional controlled agent-proposal safety; **it does not implement a production agent guard, AWS infrastructure, deletion engine, or Strands runtime**. No cloud deployments or actual incident evidence were produced.
 
 ## v4 additions
@@ -88,14 +90,6 @@
 - `apps/api/package.json`
 - `apps/api/src/server.ts`
 - `apps/api/tsconfig.json`
-- `apps/web/README.md`
-- `apps/web/index.html`
-- `apps/web/package.json`
-- `apps/web/src/App.tsx`
-- `apps/web/src/main.tsx`
-- `apps/web/src/styles.css`
-- `apps/web/tsconfig.json`
-- `apps/web/vite.config.ts`
 - `docs/ACCEPTANCE-MATRIX.md`
 - `docs/AGENT-ACTION-FORENSICS.md`
 - `docs/AGENT-ACTION-THREAT-MODEL.md`

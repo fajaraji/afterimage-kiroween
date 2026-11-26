@@ -1,3 +1,5 @@
+> **Superseded (Costume Contest direction):** this document describes the earlier run-workflow or Frankenstein plan. The active contract is [`docs/backend-contract.md`](../../docs/backend-contract.md) and [`docs/backend-handoff.md`](../../docs/backend-handoff.md) at the repo root. Kept as history; do not implement from it.
+
 # Architecture and boundaries — AWS-first
 
 **Authoritative:** `docs/AWS-ARCHITECTURE.md` and ADR-0004. Original local SQLite target in the first starter has been superseded. The existing React/Vite app and Fastify API are **local-only development shells**, not the intended AWS production infrastructure.

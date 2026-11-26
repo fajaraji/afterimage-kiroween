@@ -1,3 +1,5 @@
+> **Superseded (Costume Contest direction):** this document describes the earlier run-workflow or Frankenstein plan. The active contract is [`docs/backend-contract.md`](../../docs/backend-contract.md) and [`docs/backend-handoff.md`](../../docs/backend-handoff.md) at the repo root. Kept as history; do not implement from it.
+
 # Deployment — AWS serverless target
 
 The original long-running Fastify/SQLite deployment suggestion has been **superseded** by AWS-first architecture. The app is not yet deployable to AWS; Kiro must implement infrastructure and Lambda handlers.

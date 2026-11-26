@@ -1,14 +1,12 @@
 ---
 inclusion: always
 ---
-# AWS-first target architecture
+# AWS target architecture
 
-- Use `docs/AWS-ARCHITECTURE.md` and ADR-0004 as authoritative cloud-target requirements. Original SQLite/Fastify deployment notes are superseded; local Fastify is **dev shell only**. Never represent this kit as already deployed.
-- Prefer AWS CDK v2 in TypeScript, API Gateway HTTP API, Lambda Node.js 22+, Step Functions **Standard**, DynamoDB, SQS+DLQ, S3, Amplify Hosting. Avoid unnecessary services.
-- Split domain engine and SDK adapters; every AWS action needs minimal scoped IAM and synthetic-only run partitions.
+- Source of truth for the flow is `docs/backend-handoff.md` and `docs/backend-contract.md` (repo root). `backend/docs/AWS-ARCHITECTURE.md` and ADR-0004 are older and apply only where they do not conflict. Local Fastify (`backend/apps/api`) is a dev shell; never represent this kit as already deployed.
+- Prefer AWS CDK v2 in TypeScript, API Gateway HTTP API, Lambda Node.js 22+, DynamoDB, S3 with versioning, CloudWatch Logs. The frontend is hosted on Vercel, not Amplify. Avoid services the flow does not need (no Step Functions, SQS or Bedrock unless a spec justifies them).
+- The browser API is `POST /cases`, `GET /cases/{id}`, `POST /cases/{id}/commands`. Responses are synchronous and return the full `CaseFile`. Commands are deduplicated by `commandId`; a stale `expectedRevision` returns 409. Case ownership comes from a server-side visitor session cookie; CORS allows the exact frontend origin with credentials.
+- Every AWS action needs minimal scoped IAM and a per-case key prefix. Never accept resource names, ARNs, keys or paths from the client.
 - Never deploy, bootstrap CDK, configure account credentials, change IAM or spend money without explicit owner approval.
-- `POST /api/runs` responds 202; asynchronous workflow and independently verified status. No bogus success when a store or event receipt is missing.
-- Use SQS duplicate-tolerant worker, atomic DynamoDB barrier check + protected upsert, and direct independent store queries.
-- DynamoDB TTL is delayed cleanup only. Versioned S3 DELETE may add a delete marker; verify versions when versioning is enabled.
-- No production customer information; no public unrestricted resource mutation; no broad IAM wildcard actions.
-- Record real infrastructure deployment and tests in `docs/BUILD_LOG.md` for Kiroween evidence.
+- DynamoDB reads that prove state use `ConsistentRead=true` on the base table. S3 verification must name the bucket versioning scope: a delete marker can hide an object while older versions remain.
+- No production data. Record real deployments and tests in `backend/docs/BUILD_LOG.md` for Kiroween evidence.

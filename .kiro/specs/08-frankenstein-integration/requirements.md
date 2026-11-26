@@ -1,3 +1,5 @@
+> **Superseded:** this spec belongs to the earlier Frankenstein plan. The hackathon category is Costume Contest. Do not implement it unless the user reopens that scope.
+
 # Spec 08 — Frankenstein integration evidence (P1, category readiness)
 
 **Status:** Not implemented. **Dependency:** actual AWS replay + independent verifier P0, then read-only Strands investigator and UI. This spec adds no arbitrary AWS resources or automatic spend.

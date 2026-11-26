@@ -1,7 +1,21 @@
-# Design — 01 Foundation (AWS-first revision)
+# Design — 01 Foundation
+Contracts live in `packages/contracts`, pure logic in `packages/engine`, AWS adapters in `packages/aws-adapters`, fixtures in `fixtures/`. Unit tests use in-memory adapters, and these are never presented as AWS evidence.
 
-Keep contracts under `packages/contracts`, pure deterministic logic in `packages/engine`, and synthetic fixtures in `fixtures/`. Unit test with in-memory fake adapters. Cloud target uses independent DynamoDB primary and analytics tables plus S3 synthetic exports; adapters are implemented under new `packages/aws-adapters/` (spec 06). `apps/api` Fastify remains a LOCAL development shell only.
+## Store IDs
+The earlier code uses `primary`, `analytics`, `exports`. The frontend uses `primary`, `analytics`, `export`, `backup`. Task 8 renames `exports` to `export` and adds `backup`. `backup` is read-only for the visitor: it is created at seed time as a versioned S3 object and only `restore` reads it.
 
-Each run gets a non-guessable ID, scoped ownership and deterministic fixture hash. Logical timestamps keep fixture replay reproducible. Runtime schemas validate scenario/store IDs against an allowlist. Store adapters have `reset`, `delete`, `observe`, but do not accept arbitrary AWS ARNs/keys. For schema and IAM details read spec 06 and `docs/AWS-ARCHITECTURE.md`.
+## Finding mapping
+| Adapter result | Finding | Notes |
+| --- | --- | --- |
+| `PRESENT` | `found` | `checkedAt` is the read time |
+| `ABSENT` | `clear` | `checkedAt` is the read time |
+| `UNKNOWN` | `unreachable` | no `checkedAt` change |
+| not read yet | `unchecked` | initial state |
+| erase accepted, not re-read | previous finding with `pendingCheck: true` | cleared only by a successful read |
+| verified restore | `returned` on primary | `sourceId: "backup"` |
 
-Interface: `FixtureRepository.create(runId, seed)`, `StoreAdapter.reset`, `StoreAdapter.observe`, `StoreRegistry.get(allowlistedId)`. Test repeated seeds, independent runs, bad IDs. Do not claim deployment evidence from local mocks.
+## Case identity
+Case ID is a server-generated random ID. Subject and record tag come from the seed. Every AWS key is derived server-side from the case ID (`cases/{caseId}/...`). No client value becomes a key, ARN or path.
+
+## Interfaces
+`StoreAdapter.seed | observe | remove | reset`, `StoreRegistry.get(allowlistedId)`, `toFinding(observation)`, `CaseFile` type and `parseCaseFile` in `packages/contracts`.

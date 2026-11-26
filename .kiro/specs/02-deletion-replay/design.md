@@ -1,5 +1,21 @@
-# Design — 02 Deletion and replay (AWS-first revision)
+# Design — 02 Case commands and verified restore
+## Engine
+`applyCommand(caseState, envelope, adapters, clock)` returns `{ caseFile, commandResult }`. It is pure apart from adapter calls, so unit tests run it with in-memory adapters.
 
-Implement server-neutral event state machine and explicit idempotency logic in `packages/engine`. On AWS, orchestrate with Step Functions **Standard**, persist a synthetic stale event in run metadata before deletion, and **publish** that pre-created event to SQS after deleting the subject. SQS Lambda consumer processes an actual asynchronous message; explicit late publication makes the test repeatable. `unsafe` mode intentionally bypasses the barrier in sandbox-only partitions, while `protected` mode uses a DynamoDB `TransactWriteItems` ConditionCheck against a persisted deletion barrier plus upsert/idempotency record to prevent a same-generation revival. Every state change and consumer receipt is stored with a run ID.
+Order of checks: validate envelope (runtime parser) → look up `commandId` in the case command log (return stored result) → compare `expectedRevision` (409) → run the command → persist case state, command log entry and events in one conditional write on the revision.
 
-No optimistic UI verdicts. Wait for a bounded actual receipt before verifying or return UNKNOWN. Duplicate SQS delivery must be idempotent. Reject unknown generation and store IDs. Apply fault-injected analytics deletion failure against the actual sandbox replica. See `docs/AWS-ARCHITECTURE.md` and spec 06.
+## State kept per case (server only)
+Revision, events, command log (`commandId` → result snapshot), restore journal (`commandId`, snapshot key, `VersionId`, phase: `read | written | verified | failed`), per-store `pendingCheck` and last findings. The simulator's physical-copy booleans are not part of this.
+
+## Restore flow
+1. Re-read primary (consistent) and backup object version. Refuse unless primary clear and backup holds subject and record tag.
+2. Journal phase `read`. `GetObject(Key, VersionId)`, check case and subject.
+3. `PutItem` with `attribute_not_exists(PK)` and an import reference (`commandId`). Journal `written`. Append `restore`.
+4. New `GetItem(ConsistentRead=true)`. Compare subject, tag and import reference with step 2 bytes. Match: journal `verified`, append `return`, set primary `returned`. No match or read error: journal `failed`, no `return`.
+5. Retry in phase `written` goes straight to step 4.
+
+## Replay
+Replay in the browser plays stored events only. The server does not re-run anything for replay.
+
+## Open decisions to settle in the spec workflow
+Analytics replica behavior on restore (CMD-11); whether `erase-copy` on `backup` is allowed (default: reject).
