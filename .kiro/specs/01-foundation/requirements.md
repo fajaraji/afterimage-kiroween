@@ -13,7 +13,7 @@ As the backend developer, I want an isolated fictional case with four independen
 
 **FOUNDATION-3:** IF a store ID, command type or field is not on the allowlist, THEN THE SYSTEM SHALL reject the request without running any AWS call, query or path built from it.
 
-**FOUNDATION-4:** WHEN two cases exist, THE SYSTEM SHALL keep their data, key prefixes and revisions separate, and a visitor session SHALL NOT read or change another visitor's case.
+**FOUNDATION-4:** WHEN two cases exist, THE SYSTEM SHALL keep their data, key prefixes and revisions separate. A case SHALL be reachable only with its random case ID (at least 128 bits), and an unknown or expired ID SHALL return 404.
 
 **FOUNDATION-5:** IF initialization or reset fails, THEN THE SYSTEM SHALL return an explicit error and SHALL NOT return a case that looks ready.
 

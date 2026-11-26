@@ -2,6 +2,8 @@
 name: agent-action-threat-review
 description: Review Afterimage consequential-action evidence and optional synthetic agent-action gate for trustworthy enforcement, post-action verification, and honest scope claims.
 ---
+> **Deferred:** the category is Costume Contest (ADR-0007). Use this skill only if the user reopens the Frankenstein or agent-action scope.
+
 # Action threat review — read-only audit workflow
 
 1. Read spec 09, `docs/AGENT-SAFETY-FINDINGS.md`, `docs/AGENT-ACTION-FORENSICS.md`, `docs/AGENT-ACTION-THREAT-MODEL.md`, and `docs/SECURITY-PRIVACY.md`.

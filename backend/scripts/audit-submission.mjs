@@ -1,19 +1,22 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-const root = resolve(import.meta.dirname,'..');
+const root = resolve(import.meta.dirname, '..');
 // This script lives in backend/scripts. The Kiroween rules keep .kiro/ and LICENSE at the repository root.
-const repoRoot = resolve(root,'..');
+const repoRoot = resolve(root, '..');
+const read = (file) => (existsSync(file) ? readFileSync(file, 'utf8') : '');
+const buildLog = read(`${root}/docs/BUILD_LOG.md`);
+const ignored = ['.gitignore', 'backend/.gitignore'].some((f) => /^\s*\.?kiro\/?\s*$/m.test(read(`${repoRoot}/${f}`)));
 const checks = [
-  ['LICENSE', existsSync(`${repoRoot}/LICENSE`)],
-  ['root .kiro specs', existsSync(`${repoRoot}/.kiro/specs/01-foundation/tasks.md`)],
-  ['Frankenstein spec and evidence guide', existsSync(`${repoRoot}/.kiro/specs/08-frankenstein-integration/tasks.md`) && existsSync(`${root}/docs/FRANKENSTEIN-EVIDENCE-MATRIX.md`)],
-  ['README', existsSync(`${root}/README.md`)],
-  ['v4 P1/P2 scope docs and spec present (not proof of implementation)', existsSync(`${repoRoot}/.kiro/specs/09-consequential-action-safety/tasks.md`) && existsSync(`${root}/docs/AGENT-ACTION-THREAT-MODEL.md`)],
-  ['Kiro build log has real entries', !readFileSync(`${root}/docs/BUILD_LOG.md`,'utf8').includes('| TODO | TODO |')],
-  ['User-filled public GitHub URL / deployed URL / YouTube', false],
-  ['Working deletion regression lab verified end-to-end', false],
-  ['Real AWS + read-only Strands + Ghost Graph integration verified', false],
-  ['Optional agent-action enforcement with independent observations verified (do not claim unless executed)', false],
+  ['LICENSE at repo root', existsSync(`${repoRoot}/LICENSE`)],
+  ['root .kiro specs present', existsSync(`${repoRoot}/.kiro/specs/06-aws-serverless/tasks.md`)],
+  ['.kiro is not gitignored', !ignored],
+  ['README present', existsSync(`${repoRoot}/README.md`) && existsSync(`${root}/README.md`)],
+  ['Browser API contract present (docs/backend-contract.md)', existsSync(`${repoRoot}/docs/backend-contract.md`)],
+  ['Kiro build log has real entries', buildLog.length > 0 && !buildLog.includes('| TODO | TODO |')],
+  ['Sanitized evidence file for the recorded run (backend/docs/evidence/)', existsSync(`${root}/docs/evidence`)],
+  ['User-filled public GitHub URL, deployed URL and YouTube URL', false],
+  ['Erase, scan, restore verified end to end against real AWS', false],
+  ['Demo video under 3 minutes shows one real run with the Connected label', false],
 ];
-for (const [name,ok] of checks) console.log(`${ok?'[PRESENT]':'[UNVERIFIED]'} ${name}`);
-console.log('This script cannot verify externally hosted URLs, real Kiro evidence, or completed functionality. The Frankenstein integration check requires actual evidence, not the existence of plans. Do not claim it can.');
+for (const [name, ok] of checks) console.log(`${ok ? '[PRESENT]' : '[UNVERIFIED]'} ${name}`);
+console.log('This script cannot verify hosted URLs, real Kiro usage, or completed functionality. Items marked PRESENT only show that a file exists. Do not claim more than that.');

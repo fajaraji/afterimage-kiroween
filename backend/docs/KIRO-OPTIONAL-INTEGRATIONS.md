@@ -1,4 +1,4 @@
-> **AWS-first update:** See `docs/KIRO-AWS-WORKFLOW.md` for curated Strands SDK, AWS CDK/IaC, Amplify and Observability powers and safe AWS MCP usage.
+> **Update:** see `docs/KIRO-AWS-WORKFLOW.md` for the powers that apply to this project (CDK/IaC and Observability).
 
 # Kiro optional integrations and powers — opt-in, not automatically installed
 

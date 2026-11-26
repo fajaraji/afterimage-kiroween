@@ -2,6 +2,8 @@
 name: frankenstein-demo-audit
 description: Verify the Kiroween Frankenstein cross-technology demonstration using real run evidence rather than AWS product names or mock outputs.
 ---
+> **Deferred:** the category is Costume Contest (ADR-0007). Use this skill only if the user reopens the Frankenstein or agent-action scope.
+
 # Frankenstein evidence audit
 
 Use this skill before demo recording, Devpost editing or marking spec 08 done.

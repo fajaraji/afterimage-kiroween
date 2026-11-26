@@ -15,7 +15,10 @@ The earlier code uses `primary`, `analytics`, `exports`. The frontend uses `prim
 | verified restore | `returned` on primary | `sourceId: "backup"` |
 
 ## Case identity
-Case ID is a server-generated random ID. Subject and record tag come from the seed. Every AWS key is derived server-side from the case ID (`cases/{caseId}/...`). No client value becomes a key, ARN or path.
+Case ID is a server-generated random ID of at least 128 bits and is the only access credential (ADR-0008). Subject and record tag come from the seed. Every AWS key is derived server-side from the case ID (`cases/{caseId}/...`). No client value becomes a key, ARN or path.
 
 ## Interfaces
 `StoreAdapter.seed | observe | remove | reset`, `StoreRegistry.get(allowlistedId)`, `toFinding(observation)`, `CaseFile` type and `parseCaseFile` in `packages/contracts`.
+
+## Older run contracts
+The existing packages/contracts still has the earlier run model (SCENARIO_IDS such as zombie-sync, RunEvidence) and tests for it. Task 10 adds CaseFile next to it. Retire the old run model in the same task or a follow-up once nothing imports it, and update its tests rather than deleting them silently.

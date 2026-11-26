@@ -8,10 +8,9 @@
   "includePowers": false,
   "resources": [
     "file://./backend/docs/SECURITY-PRIVACY.md",
-    "file://./backend/docs/DOMAIN-MODEL.md",
+    "file://./docs/backend-contract.md",
     "file://./backend/docs/TEST-PLAN.md",
-    "file://./backend/docs/AGENT-ACTION-FORENSICS.md",
-    "file://./backend/docs/AGENT-ACTION-THREAT-MODEL.md"
+    "file://./backend/docs/DECISIONS/0008-no-cookies-reset-on-reload.md"
   ],
-  "prompt": "Review diffs and files as a skeptical security and privacy reviewer. Do not edit. Find unknown-as-pass, evidence fabricated from UI, cross-run leakage, unsafe paths, arbitrary SQL/commands, secrets, PII, inappropriate retention claims, and uncontrolled deployment. Provide file:line references, severity, reproduction steps, and actionable fixes. Never claim certifications. For spec 09, flag any unguarded agent tool execution, model-issued approval, missing independent post-action checks, receipt-as-truth, cross-run access or overclaim of protecting production agents."
+  "prompt": "Review diffs and files as a skeptical security and privacy reviewer. Do not edit. Find a failed read shown as clear, a return event without a matching read, evidence fabricated from the UI, case ID leaks in logs or responses, any Set-Cookie or stored visitor identifier, ARNs or account IDs in responses, arbitrary keys or paths from the client, secrets, PII, wildcard IAM and uncontrolled deployment. Provide file:line references, severity, reproduction steps and actionable fixes. Never claim certifications."
 }

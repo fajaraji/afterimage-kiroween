@@ -1,33 +1,29 @@
-# Threat model, safety and truthful reporting
+# Threat model, privacy and truthful reporting
 
 ## Assumptions
-A public demo may receive untrusted inputs. No real user/customer data; no access to external systems. Test scenarios are allowlisted, fixture IDs synthetic, output read-only for external audiences except sandbox run controls.
+A public demo receives untrusted input. All data is fictional. The API reaches only its own sandbox resources. There are no cookies and no visitor accounts (ADR-0008).
 
 ## Threats and mitigations
-
 | Threat | Mitigation |
 |---|---|
-| Arbitrary filesystem or SQL injection | Never accept SQL, shell or path from public API; whitelist scenario IDs and adapter names |
-| Cross-run data leakage | Unique run directories, strict per-run adapters, clean reset, no shared mutable execution state |
-| Denial of service from excessive runs | Concurrency caps, timeouts, payload size limits, simple public demo rate limiting |
-| Fake verification success | Direct independent adapter checks; `UNKNOWN` on timeout/unreachable |
-| Accidental PII in artifacts | Fixed synthetic generator; scrub outputs; reject production credentials |
-| Persistent raw customer values in logs | Redaction, identifiers only, structured event types |
-| Stale event bypassing deletion barrier | Atomic barrier check + upsert, idempotent event handling |
-| Misleading compliance claims | Clear scope banner and report caveats; no universal erasure guarantee |
-| Public deployment mutation | Bind local-only until session isolation and abuse prevention implemented |
+| Client picks a table, key, ARN, path or query | Server derives every key from the case ID; only five command types and four store IDs are accepted; runtime parser on every request |
+| Another browser reads a case | Case ID is random (at least 128 bits) and is the only credential; unknown or expired ID gives 404. This is not authentication. State this honestly |
+| Fake "clear" or "returned" | Findings only from a direct read after the operation; failed read is `unreachable`; `return` only after a matching new read |
+| Retry or double click corrupts a case | `commandId` deduplication, conditional revision write, restore journal |
+| Restore overwrites a live record | Conditional write that requires no existing item |
+| Denial of service or cost | API throttling, request size limit, active-case cap, TTL, budget alarm |
+| Secrets or account details in responses | No ARNs, account IDs, error text or stack traces in responses or events; short error codes only |
+| Visitor tracking | No cookies, no IP or user agent stored, truncated case ID hash in logs |
+| Cross-origin abuse | CORS allows only the configured frontend origin and the methods and header in the contract |
+| Misleading compliance claims | Scope limits in the certificate and docs; no GDPR or universal erasure claims |
 
 ## Security acceptance criteria
-- Sensitive `.env` and `.data` are excluded from git and agent context.
-- API accepts only predefined synthetic scenarios and bounded options.
-- An unreachable store yields `UNKNOWN`.
-- Unsafe mode is clearly labeled as a deliberately vulnerable demonstration.
-- No live production connectors or arbitrary third-party API calls in P0.
-- Browser UI sanitizes all displayed data and relies on React escaping; no `dangerouslySetInnerHTML` for untrusted values.
+- `.env` files and `.data` are untracked.
+- Responses never contain `Set-Cookie`.
+- A failed read yields `unreachable`.
+- Logs and events contain fictional IDs and short codes only.
+- IAM has no wildcard actions; the verifier cannot write.
+- No production connectors or third-party calls.
 
 ## Responsible usage
-Deletion barriers may be personal data in real deployments. The MVP is not a general compliance solution and makes no legal determination regarding GDPR/CCPA backup retention or exemptions. Verify regulatory claims with counsel before productization.
-
-## v4 agent-action safety amendment
-
-An agent output is **never** an authorization, approval or verified report. Decisions are made by a trusted server-side policy gate before execution and reinforced by IAM/resource boundaries. Only synthetic, run-scoped operations are contemplated. No external coding agent interception, production database modification, arbitrary shell/SQL, infrastructure destroy, or write-capable Strands tools. Human approvals (if P2 ever implements them) must bind exact action/digest/run, expire, be consumed once atomically and be rechecked. Independent post-action reads are required for outcome claims; failed read = `UNKNOWN`. Structured diagnostic logs are not automatically tamper-proof forensic evidence. See `docs/AGENT-ACTION-THREAT-MODEL.md`.
+This is a demonstration, not a compliance product. It makes no legal determination about backup retention or erasure duties. Check any regulatory claim with counsel before productizing.

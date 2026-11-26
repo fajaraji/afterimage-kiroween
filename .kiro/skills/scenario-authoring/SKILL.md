@@ -1,13 +1,12 @@
 ---
 name: scenario-authoring
-description: Design or extend a deterministic synthetic Afterimage deletion regression scenario with a failing example, safe replay, and direct store assertions.
+description: Design or extend a deterministic synthetic Afterimage case scenario (erase, scan, restore) with a failing test first and direct store assertions.
 ---
 # Afterimage scenario authoring
-
-1. Read `docs/DOMAIN-MODEL.md`, `docs/TEST-PLAN.md`, the active Kiro spec and `fixtures/scenarios/`.
-2. Write one small allowlisted fixture and validate it against `fixtures/scenario.schema.json`.
-3. State event order, subject generation, fault mode, expected adapter observations, and unknown-state handling.
-4. First construct a test that reproduces the unsafe behavior; then implement the barrier fix.
-5. Verify the result by querying all configured stores, never by interpreting animation state.
-6. Add deterministic replay and duplicate-delivery tests; update docs without exaggerating verification scope.
-7. Run tests and record actual evidence in `docs/BUILD_LOG.md`.
+1. Read `docs/backend-contract.md`, `docs/backend-handoff.md` (evaluation table), `lib/case.ts` and the active spec in `.kiro/specs/`.
+2. State the command sequence, expected findings per store, expected events and `seq`, and what a failed read must show.
+3. Write the failing test first, using in-memory adapters and fixtures copied from `startDemo` and `runDemo`.
+4. Implement until it passes. Findings come only from reads.
+5. Add retry, stale revision and import-without-confirmation cases.
+6. Run tests and record real results in `backend/docs/BUILD_LOG.md`.
+Older scenario files in `backend/fixtures/scenarios/` belong to the superseded replay plan; do not extend them.

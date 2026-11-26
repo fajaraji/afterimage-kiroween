@@ -1,77 +1,55 @@
-# Afterimage — The Data Resurrection Lab
-
-> **Repository layout:** This folder is the backend of [Afterimage](../README.md). The frontend is the Next.js app at the repository root, and Kiro's specs, steering, skills, agents and hook live in the root [`.kiro/`](../.kiro/) folder. Run the backend commands below from this `backend/` folder.
-> **Current direction:** the hackathon category is **Costume Contest**. The backend serves the frontend's [browser API](../docs/backend-contract.md) (`/cases`) and follows [`docs/backend-handoff.md`](../docs/backend-handoff.md). Documents here that describe `/api/runs`, Step Functions replay, Amplify, Vite or the Strands/Frankenstein plan are **superseded** and kept as history. Active specs: 01, 02, 03, 05, 06.
-
-> **Status: Kiro-ready AWS-first development scaffold, not a finished or deployed hackathon product.**
-> *Don't just delete data. Make sure it stays dead.*
+# Afterimage backend
+> **Repository layout:** This folder is the backend of [Afterimage](../README.md). The frontend is the Next.js app at the repository root. Kiro's specs, steering, skills, agents and hook live in the root [`.kiro/`](../.kiro/) folder. Run the backend commands below from this `backend/` folder.
+>
+> **Direction:** the hackathon category is **Costume Contest** ([ADR-0007](docs/DECISIONS/0007-costume-contest-category.md)). The backend serves the frontend's [browser API](../docs/backend-contract.md) (`/cases`) and follows [`../docs/backend-handoff.md`](../docs/backend-handoff.md). The API sets no cookies and stores no visitor identifiers ([ADR-0008](docs/DECISIONS/0008-no-cookies-reset-on-reload.md)). Documents here that describe `/api/runs`, Step Functions replay, Amplify, Vite or the Strands/Frankenstein plan are **superseded** and kept as history.
+>
+> **Status: development scaffold, not a finished or deployed product.** Nothing is deployed to AWS.
 
 Afterimage is a **synthetic-data-only demonstration** that an erased customer record can return from a retained backup, and that only a fresh read of the store proves it. It is **not** a production privacy-compliance platform or a universal deletion guarantee.
 
-**Kiroween 2026 category:** Costume Contest. **Submission:** December 4, 2026, 2:00 PM PST. New work must be built during the permitted submission period; disclose any pre-existing code and comply with library licenses. See [`docs/HACKATHON.md`](docs/HACKATHON.md).
-
-## v4 — consequential-action forensics (scoped addition)
-
-The earlier AI-agent data-loss discussion motivated **P1 action trace + independent post-action verification** and a **P2 optional synthetic-only destructive proposal denial demo**. **P0 remains deletion-resurrection testing.** Afterimage does **not** currently intercept or protect external AI coding agents, and this starter contains no implemented agent-action enforcement service. Read [`docs/AGENT-SAFETY-FINDINGS.md`](docs/AGENT-SAFETY-FINDINGS.md), [`docs/AGENT-ACTION-FORENSICS.md`](docs/AGENT-ACTION-FORENSICS.md), and spec `09-consequential-action-safety`. The sample action JSON is illustrative, never an AWS execution result.
-
+**Submission:** December 4, 2026, 2:00 PM PST. New work must be built during the permitted submission period; disclose pre-existing code and comply with library licenses. See [`docs/HACKATHON.md`](docs/HACKATHON.md).
 
 ## Start here
+1. Read [`START-HERE.md`](START-HERE.md).
+2. Install Node.js 22.13+ and Kiro IDE. Open the **repository root** (the folder that contains `.kiro/`).
+3. Run `npm ci` in this folder.
+4. Start the **local API dev shell** with the `dev` script (`npm run dev`) at `http://localhost:8787` (health at `/api/health`). It is not the AWS runtime. The `/cases` routes are not built yet (spec 06 task 1). Run the frontend from the repository root with its own `dev` script (port 3000).
+5. Run `npm run validate:starter`, `npm run typecheck` and `npm test`.
+6. In Kiro, work through the active specs one task at a time: 01, 06 (tasks 1–2), 02, 03, 06 (the rest), 05. Approve deployment and IAM actions explicitly.
 
-1. Read **[`START-HERE.md`](START-HERE.md)** before asking Kiro to implement features.
-2. Install **Node.js 22+** and Kiro IDE, extract the archive, and **open this repository root** (the folder containing `.kiro/`).
-3. Run `npm install` while online. This creates the first `package-lock.json`; commit it. Package installation could not be performed while this archive was generated (network unavailable).
-4. Run `npm run dev` for the **local development shell** at `http://localhost:5173`; this is not the AWS runtime. The local health endpoint is at `http://localhost:8787/api/health`.
-5. Run `npm run validate:starter`, `npm run typecheck`, and `npm test` after installing dependencies.
-6. Read `docs/AWS-ARCHITECTURE.md` and `docs/KIRO-AWS-WORKFLOW.md`. In Kiro, reconcile specs 01–05 and implement the AWS target (spec 06), with a read-only Strands investigator (spec 07) as a *Frankenstein demo target once deterministic P0 is solid*, and integration proof (spec 08). Approve architecture/deployment actions explicitly. Implement one task at a time.
+## Active specs (`../.kiro/specs/`)
+| Spec | Topic |
+|---|---|
+| 01-foundation | Four stores, finding mapping, `CaseFile` contract |
+| 02-deletion-replay | Case commands and verified restore (folder name kept from the older plan) |
+| 03-verification | Independent reads and evidence |
+| 05-reporting-submission | Certificate evidence and submission package |
+| 06-aws-serverless | AWS runtime: CDK, API, DynamoDB, S3, limits |
 
-**Expected at extraction:** a minimal local React page and Fastify API health endpoint. **Not yet implemented:** AWS infrastructure, DynamoDB/S3 adapters, SQS replay, Lambda, Step Functions, Strands investigator, actual verifier, timeline, graph, reports. No fake passing results are shown.
+Superseded: 04, 07, 08, 09.
 
 ## Repository overview
-
-- `.kiro/steering/`: always-on and targeted coding rules
-- `.kiro/specs/`: EARS requirements, design, actionable unchecked tasks
-- `.kiro/agents/`: optional specialist agents with no broad permission auto-approval
-- `.kiro/skills/`: on-demand reusable workflows
-- `.kiro/hooks/`: small local validation hook (IDE/CLI only)
-- `.kiro/settings/mcp.json`: empty/safe by default; optional tools are opt-in
-- `apps/web/`: React/Vite app shell
-- `apps/api/`: local-only Fastify dev shell; deployed API will be Lambda behind API Gateway
-- `packages/contracts/`: shared typed contracts
-- `packages/engine/`: pure domain engine placeholder to implement using Kiro
-- `infra/`: target AWS CDK workspace (implementation deliberately pending spec 06)
-- `docs/AWS-ARCHITECTURE.md`: authoritative serverless target design
-- `docs/STRANDS-AGENT-DESIGN.md`: bounded, read-only Strands investigator; core remains agent-independent
-- `docs/FRANKENSTEIN-STRATEGY.md`: why the technology combination matters, category gates and scope
-- `docs/FRANKENSTEIN-EVIDENCE-MATRIX.md`: testable cross-technology claims
-- `docs/DEVPOST-FRANKENSTEIN.md`: provisional pre-registration and submission copy
-- `fixtures/`: synthetic test scenario descriptions
-- `docs/`: PRD, engineering design, test plan, security, UI, demos, Kiro workflow, competitive analysis
+- `apps/api/`: local Fastify dev shell; the deployed API will be Lambda behind API Gateway.
+- `packages/contracts/`, `packages/engine/`, `packages/aws-adapters/`: contracts, pure logic, DynamoDB and S3 adapters.
+- `infra/`: AWS CDK app (pending spec 06).
+- `fixtures/`: older scenario fixtures (superseded); new fixtures come from `../lib/case.ts`.
+- `docs/`: current docs are `HACKATHON`, `DEMO`, `ACCEPTANCE-MATRIX`, `TEST-PLAN`, `ROADMAP`, `RISK-REGISTER`, `SECURITY-PRIVACY`, `AWS-COST-AND-SAFETY`, `FRONTEND-REQUESTS`, `KIRO-*`, `BUILD_LOG` and `DECISIONS/0007`, `0008`. Others carry a superseded banner.
 
 ## Scripts
-
 ```bash
-npm install
-npm run dev               # web + API (press Ctrl+C to stop)
-npm run typecheck         # TypeScript projects; requires npm install
-npm test                  # tests (existing scaffold smoke tests)
-npm run validate:starter  # zero-dependency workspace integrity checks
-npm run audit:submission  # warns about missing submission deliverables
+npm ci
+npm run dev               # local API dev shell (Ctrl+C to stop)
+npm run typecheck
+npm test
+npm run validate:starter  # workspace integrity checks
+npm run audit:submission  # reports missing submission items
 ```
 
 ## Limitations and evidence policy
+- Everything is synthetic; never import real customer information.
+- A finding is a bounded observation at a specific time and scope, not permanent deletion everywhere.
+- A failed or unreachable read is `unreachable`, never `clear`. A `return` event needs a new read that matches the backup.
+- Record real Kiro work and test results in `docs/BUILD_LOG.md`; do not present the scaffold as a finished product.
+- No AWS deployment, IAM change or spend without the owner's approval.
 
-- Everything shown is synthetic; never import real customer information.
-- A successful assertion establishes a bounded observation **at a specific time and configured scope**, not permanent deletion everywhere.
-- An unreachable or unconfigured store returns `UNKNOWN`, never an invented `PASS`.
-- Core scenario tests will be implemented with Kiro after you open this repo; do not present the scaffold as a completed product.
-- Preserve your Kiro spec history, hook usage, and before/after failing tests to substantiate hackathon development.
-
-**Cloud warning:** No AWS deployment or full dependency installation has been performed. AWS account access, IAM changes and spending require your approval.
-
-MIT licensed. See [`LICENSE`](LICENSE). For security issues follow [`SECURITY.md`](SECURITY.md).
-
-## Frankenstein category pivot (v0.0.3)
-
-The intended category is **Frankenstein**, not Costume Contest. Its claim is **not** that an app uses many AWS services. Rather, AWS serverless fault injection generates a real failure, a deterministic verifier proves the bounded result, a permission-constrained Strands + Bedrock investigator explains evidence, and the haunted UI makes that evidence inspectable. Each component has a distinct job and trust boundary.
-
-**Submission gate:** Do not claim an integrated AI demonstration unless a successful end-to-end read-only Strands explanation, with verified evidence IDs and a safe Bedrock-offline fallback, is captured. If agent integration is unavailable before demo lock, the deterministic product can still function; reconsider the category narrative rather than claiming a capability that was not shown. See `docs/FRANKENSTEIN-STRATEGY.md`. No cloud infrastructure or real agent has been implemented in this starter.
+MIT licensed. See [`LICENSE`](../LICENSE). For security issues follow [`SECURITY.md`](SECURITY.md).

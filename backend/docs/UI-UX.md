@@ -1,35 +1,19 @@
-# UI/UX design brief — Frankenstein with Costume-quality polish
+# UI/UX notes
+> The UI is built and owned by the teammate (Next.js, repo root). This file only records what the backend must keep true for the UI. Source of truth: `../../docs/backend-handoff.md`, `../../lib/case.ts`, `../../lib/trace.ts`.
 
-## Design objective
-A haunting but professional engineering investigation console. Horror metaphors communicate observed state, not decoration.
+## What the UI shows from backend data
+| Backend fact | UI meaning |
+|---|---|
+| `finding: found` | A ghost at that store |
+| `finding: clear` | A tombstone: a successful read found the record absent at the read time |
+| `finding: unreachable` | Out of scope; not verified |
+| `pendingCheck: true` | Recheck needed |
+| `return` event on primary with `sourceId: backup` | The large apparition and confirmed path. Only after a new matching read |
 
-## Screens
-1. **Graveyard:** scenario catalog, run statuses; never label unexecuted scenarios passed.
-2. **Ghost Graph:** store nodes and replication edges; hover/focus shows evidence and source adapter.
-3. **Séance Timeline:** step-through logical event sequence with before/after observation snapshots.
-4. **Autopsy Report:** plain-language failures, direct evidence, reproduction instructions and limitations.
+## Rules for the backend
+- Never send a state the server did not read. Unverified stays unverified.
+- Event `detail` is English and includes store, UTC read time, snapshot reference and result, because the certificate compares before and after reads.
+- Reload and replay in the UI never trigger server commands.
 
-## State → visuals
-- `PRESENT`: solid node + text label "Present".
-- `ABSENT`: faded node + text label "Absent".
-- `UNKNOWN`: amber dotted border + "Not verified" (not success).
-- Recreated after deletion: illuminated ghost symbol with explicit "Resurrected".
-- Active replay step: animated edge only if motion is enabled.
-- `PASS`: green check + text, `FAIL`: red warning + text, `UNKNOWN`: amber question + text.
-
-## Palette (suggestion)
-Background `#090D14`, surface `#121A27`, text `#F0F4F8`, secondary `#AEBCCB`, verified `#48C6A4`, uncertain `#F6C36A`, failed `#FF738A`.
-
-## Accessibility
-WCAG 2.2 AA targets. Keyboard traversal and focus rings; color-independent information; `aria-live` for new verification results; reduce animation under `prefers-reduced-motion`; no rapid flashing; graphs have equivalent table/linearized evidence view.
-
-## Demo choreography
-Real data changes first, effects second. Keep Ghost Graph and timeline responsive; errors must be visible even when the effects are disabled. Design P0 = working plain evidence table; P1 = graph and animated story.
-
-## Frankenstein proof within the product experience
-
-- The Ghost Graph must visually link a **specific AWS stale event** to a verified residual record and a **specific failed invariant**.
-- An optional-on-demand **Explain this ghost (Strands)** panel displays bounded advisory conclusions and clickable evidence IDs; label hypotheses as hypotheses, never impersonate the verifier.
-- Show machine verdict and agent status separately: `verdict: FAIL`, `explanation: READY/UNAVAILABLE` are different concepts.
-- Maintain a credible baseline when Bedrock is unavailable: graph/timeline and deterministic report still work with no invented AI content.
-- The ghostly theme remains useful and accessible; score-optimizing decoration never outranks correct and transparent evidence.
+## Accessibility (frontend-owned)
+Text status next to color, keyboard operation, reduced motion as still images, and a table equivalent for the map.

@@ -1,5 +1,8 @@
 # Changelog
 
+## Merge into the Afterimage repo
+- Merged into the Afterimage repo. Category is Costume Contest (ADR-0007). Backend follows the frontend browser API (/cases). No cookies or visitor identifiers (ADR-0008). Specs 01, 02, 03, 05, 06 rewritten; 04, 07, 08, 09 and the Frankenstein-era docs marked superseded. Aws-adapters test fakes now page like real DynamoDB and S3.
+
 ## [Unreleased]
 - Created project documentation, Kiro steering/specs/skills/agents/hooks, and minimal API/React development scaffold.
 - **Not implemented:** deletion engine, fault injection, verifier, timeline, ghost graph, or report generation.

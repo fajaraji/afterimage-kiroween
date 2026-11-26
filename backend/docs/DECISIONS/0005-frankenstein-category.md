@@ -1,3 +1,5 @@
+> **Superseded (Costume Contest direction):** see ADR-0007. This describes the earlier Frankenstein or run-workflow plan and is kept as history. Do not implement from it.
+
 # ADR-0005 — Choose Frankenstein as primary Kiroween category
 
 **Status:** Accepted as proposed hackathon positioning on 2026-11-07; recheck at demo readiness. **Supersedes:** category selection in initial docs (Costume Contest); **does not supersede:** functional haunted UI, AWS-first ADR-0004, or deterministic engine requirements.

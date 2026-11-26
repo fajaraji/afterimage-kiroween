@@ -1,3 +1,5 @@
+> **Superseded (Costume Contest direction):** see ADR-0007. This describes the earlier Frankenstein or run-workflow plan and is kept as history. Do not implement from it.
+
 # ADR-0006: Adopt forensic action records; defer external agent interception
 
 **Date:** 2026-11-07  

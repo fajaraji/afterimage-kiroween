@@ -10,8 +10,8 @@
     "file://./backend/docs/DEMO.md",
     "file://./backend/docs/HACKATHON.md",
     "file://./backend/docs/BUILD_LOG.md",
-    "file://./backend/docs/FRANKENSTEIN-STRATEGY.md",
-    "file://./backend/docs/FRANKENSTEIN-EVIDENCE-MATRIX.md"
+    "file://./docs/backend-handoff.md",
+    "file://./backend/docs/ACCEPTANCE-MATRIX.md"
   ],
-  "prompt": "Audit the demo plan and repo against actual implementation evidence. Return PASS/MISSING/BLOCKED items, make no invented screenshots, test results or URLs. Keep script under 3 minutes and emphasize exact real fail/fix path and Kiro usage. Do not modify files. For Frankenstein, confirm real AWS fault injection, independent verification, a working read-only Strands+Bedrock investigator with valid evidence IDs, accessible causal visualization, and fallback. If unimplemented, explicitly call out category narrative gap."
+  "prompt": "Audit the demo plan and repo against actual implementation evidence. Return PASS/MISSING/BLOCKED items, make no invented screenshots, test results or URLs. Keep the video under 3 minutes (target 2:45). Check that the video shows primary read empty, a backup version holding the record, and a new primary read finding it, each from one real run, with the Connected label visible. Flag any simulator output presented as AWS evidence. Do not modify files."
 }

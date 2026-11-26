@@ -1,3 +1,5 @@
+> **Superseded (Costume Contest direction):** see ADR-0007. This describes the earlier Frankenstein or run-workflow plan and is kept as history. Do not implement from it.
+
 # ADR-0004 — AWS-first serverless deployment and bounded Strands investigator
 
 **Status:** Proposed 2026-11-07; supersedes ADR-0003 *for production target only*. The original local React/Fastify shell remains a developer convenience.

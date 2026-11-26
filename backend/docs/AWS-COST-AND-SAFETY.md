@@ -1,35 +1,23 @@
-# AWS cost, privacy, and abuse guardrails
+# AWS cost, privacy and abuse guardrails
+The hackathon is judged on Kiro use and product execution, not the number of AWS services. AWS charges apply independently of Kiro credits. Do not assume a free tier covers this account.
 
-This hackathon is judged on effective Kiro implementation and product execution, **not** the number of AWS services consumed. AWS charges may apply independently of Kiro subscription credits. Never assume an AWS Free Tier allowance or Bedrock model pricing for your specific account.
+## Before any deployment
+- Owner approval for deploy, `cdk bootstrap`, IAM and any paid service. Review `cdk diff` first.
+- AWS Budgets alert and CloudWatch alarms on Lambda errors, throttles and duration. Budgets only notify; they do not cap spend.
+- API Gateway throttling, Lambda reserved concurrency, request size limit, and a global cap on active cases enforced in code.
+- Case items expire with DynamoDB TTL, a short time after the last write. TTL deletion can lag, so reads treat an expired item as not found. TTL is cleanup only. Deletions in the test use explicit API calls and a read afterwards.
+- No cookies and no visitor identifiers stored (ADR-0008). Logs hold short codes and a truncated case ID hash, never subject names or request bodies. Keep retention short.
+- S3: block public access, encryption on, lifecycle rules. With versioning, a delete marker does not remove older versions, so tests name the version read.
+- AWS-managed encryption is enough for synthetic data. Add KMS only for a concrete risk.
+- Do not set a teardown timer that removes access before judging ends (Jan 29, 2027).
 
-## Required before deployment
+## Isolation
+Every key and item is under a per-case prefix derived on the server. Clients never supply resource names, ARNs, keys or paths. Roles are least-privilege, and verifier read access is separate from writer access.
 
-- Configure AWS Budgets threshold alerts and CloudWatch alarms for failures, throttling, Lambda duration, Bedrock model usage and Step Functions starts. Budget alarms are **notifications**, not an absolute spending limit.
-- Define per-demo-session daily run cap, per-run event count, max run duration and concurrent-run cap in application logic. Constrain Lambda reserved concurrency, API route throttling, and agent invocations separately.
-- Disallow public arbitrary AWS resource names and operations. A scenario ID must map to a strictly allowlisted synthetic scenario.
-- Keep Bedrock explanations opt-in; cache a report per run, do not invoke a model every UI refresh.
-- Use DynamoDB on-demand only if traffic is unpredictable; still cost-bounded by app quotas. Understand higher transactional cost.
-- Retain logs for a deliberately short interval; don't put personal data in logs or agent prompts.
-- Explicitly configure S3 block-public-access, encryption, and lifecycle. For versioned buckets, lifecycle and deletion semantics must be specified per test; a delete marker is **not** permanent deletion of previous versions.
-- DynamoDB TTL may take days; never use TTL as the test deletion mechanism. Perform explicit API deletion and verify state.
-- Use KMS/customer-managed keys only if required by a demonstrable risk; AWS-managed server-side encryption is sufficient for synthetic MVP and simpler to operate.
-- Never leave infrastructure teardown to an automatic timer that will remove judge access before judging ends.
+## Reporting
+Keep run evidence (case ID hash, revision, event sequence, snapshot version, read results, UTC times) with the commit. Never describe a result as universal erasure or GDPR certification.
 
-## Failure isolation
-
-- `unsafe` deliberately bypasses deletion barrier only for synthetic test partitions. Never expose an unsafe write mode against real production accounts.
-- Safe worker uses atomic transaction/condition checks; duplicate SQS messages cannot perform duplicate writes.
-- Independent verifier queries each system directly; a missing, failed or timed-out observation -> `UNKNOWN`.
-- Inactive or unknown run IDs never authorize cross-run reads or writes.
-- API Gateway throttle is best effort and does not replace authentication or business-level quotas.
-
-## Evidence and user communications
-
-- Preserve fixture hash, run ID, scenario version, observed state, exact event trail, model version if an explanation used AI, and explicit scope limitations.
-- Never market a test result as universal erasure, GDPR certification, or a guarantee about unknown systems.
-
-Official references:
+References:
 - https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TTL.html
 - https://docs.aws.amazon.com/AmazonS3/latest/userguide/DeletingObjectVersions.html
 - https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-throttling.html
-- https://docs.aws.amazon.com/bedrock/latest/userguide/model-access.html
