@@ -1,18 +1,20 @@
 Afterimage cemetery audio
 
-Ghost Monster Voice Moaning & Growling / qubodup (Iwan Gabovitch)
-https://opengameart.org/content/ghost-monster-voice-moaning-growling
-Source file: qubodup-GhostMoan01.wav
+Creature vocals / contributors to the Freedoom project
+https://github.com/freedoom/freedoom/tree/e4ec24d19314207ec17e991b473d8a15f0caeca9/sounds
+Source files: dssgtatk.wav and dscybsit.wav.
+License and redistribution notice: Freedoom.txt (BSD 3-Clause).
+The crypt-roar mix aligns both attacks, lowers and filters the vocals,
+and adds a short bass impact and dark room reflections.
 
 Various Sound Effects / laleksic
 https://opengameart.org/content/various-sound-effects
 Source files: bell.wav, turn_page.wav, drawer_close.wav, clang_metal.wav, lock.wav,
 grind_stone.wav and door_creak_open.wav.
 
-Both authors released these recordings under CC0 1.0 Universal.
+laleksic released these recordings under CC0 1.0 Universal.
 https://creativecommons.org/publicdomain/zero/1.0/
 
 The Afterimage mixes edit, repitch and spatialize these recordings. The bowed
-strings, celesta waltz, sliding string cluster and low impact were composed
-for the demo. The confirmed-return sting layers the voice and metal recording.
+strings, celesta waltz and low impact were composed for the demo.
 Music and sound run from local MP3 files via Web Audio.

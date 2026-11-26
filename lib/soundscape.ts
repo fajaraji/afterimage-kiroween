@@ -6,7 +6,7 @@ const recordings = {
   drawer: '/audio/archive-drawer.mp3',
   read: '/audio/index-read.mp3',
   hinge: '/audio/vault-hinge.mp3',
-  voice: '/audio/apparition.mp3'
+  voice: '/audio/crypt-roar.mp3'
 } as const;
 type Clip = keyof typeof recordings;
 
@@ -14,6 +14,7 @@ export class CemeterySound {
   readonly context = new AudioContext();
   private readonly mix = this.context.createGain();
   private readonly bed = this.context.createGain();
+  private readonly aftermath = this.context.createGain();
   private readonly buffers = new Map<Clip, Promise<AudioBuffer | null>>();
   private ambience: AudioBufferSourceNode | null = null;
   private opening: Promise<boolean> | null = null;
@@ -23,7 +24,7 @@ export class CemeterySound {
   constructor() {
     this.mix.gain.value = 0.88;
     this.mix.connect(this.context.destination);
-    this.bed.connect(this.mix);
+    this.bed.connect(this.aftermath).connect(this.mix);
     for (const name of Object.keys(recordings) as Clip[]) void this.load(name);
   }
 
@@ -120,8 +121,15 @@ export class CemeterySound {
         gain.setValueAtTime(gain.value, now);
         gain.linearRampToValueAtTime(0.07, now + 0.24);
         void this.sample('hinge', bus, now, 0.22);
-        if (trace.confirmedReturn) void this.sample('voice', bus, now + RETURN_SCENE.voiceAt);
-        gain.setTargetAtTime(1, now + (trace.confirmedReturn ? RETURN_SCENE.retreatAt : 1.6), 0.38);
+        if (trace.confirmedReturn) {
+          // Keep the score down through the retreat, including navigation to the certificate.
+          const score = this.aftermath.gain;
+          score.cancelScheduledValues(now);
+          score.setTargetAtTime(0.015, now, 0.12);
+          score.setTargetAtTime(1, now + RETURN_SCENE.end + 1.5, 1.2);
+          void this.sample('voice', bus, now + RETURN_SCENE.voiceAt);
+        }
+        gain.setTargetAtTime(1, now + 1.6, 0.38);
         break;
       }
     }
