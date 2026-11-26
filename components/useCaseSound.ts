@@ -76,10 +76,12 @@ export function useCaseSound(notify: (message: string) => void) {
       } else void start();
     };
     document.addEventListener('click', resumeOnGesture, true);
+    document.addEventListener('pointerup', resumeOnGesture, true);
     document.addEventListener('keydown', resumeOnGesture, true);
     document.addEventListener('visibilitychange', visibility);
     return () => {
       document.removeEventListener('click', resumeOnGesture, true);
+      document.removeEventListener('pointerup', resumeOnGesture, true);
       document.removeEventListener('keydown', resumeOnGesture, true);
       document.removeEventListener('visibilitychange', visibility);
       const old = engine.current;

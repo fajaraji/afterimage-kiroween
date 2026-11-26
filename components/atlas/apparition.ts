@@ -230,9 +230,9 @@ export function drawHaunting(c: Brush, plan: Plan, t: number) {
   c.fillStyle = `rgba(13,8,18,${dim * 0.79})`;
   c.fillRect(0, 0, w, h);
   const appearance =
-    smooth((t - RETURN_SCENE.voiceAt) / 0.32) * (1 - smooth((t - RETURN_SCENE.retreatAt) / 1.04));
+    smooth((t - RETURN_SCENE.voiceAt) / 0.09) * (1 - smooth((t - RETURN_SCENE.retreatAt) / 1.04));
   if (appearance > 0) {
-    const approach = smooth((t - RETURN_SCENE.voiceAt) / 0.78);
+    const approach = smooth((t - RETURN_SCENE.voiceAt) / 0.19);
     const retreat = smooth((t - RETURN_SCENE.retreatAt) / 1.13);
     const travel = approach * (1 - retreat);
     const origin = plots.primary;

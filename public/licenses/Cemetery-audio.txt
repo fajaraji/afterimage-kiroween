@@ -12,6 +12,7 @@ grind_stone.wav and door_creak_open.wav.
 Both authors released these recordings under CC0 1.0 Universal.
 https://creativecommons.org/publicdomain/zero/1.0/
 
-The Afterimage mixes edit, repitch and spatialize these recordings. The chapel
-pedal and the low impact underneath the ghost voice were composed for the demo.
+The Afterimage mixes edit, repitch and spatialize these recordings. The bowed
+strings, celesta waltz, sliding string cluster and low impact were composed
+for the demo. The confirmed-return sting layers the voice and metal recording.
 Music and sound run from local MP3 files via Web Audio.

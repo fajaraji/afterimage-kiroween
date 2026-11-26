@@ -13,5 +13,8 @@ export const metadata: Metadata = {
 };
 
 export default function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en"><body>{children}</body></html>;
+  return <html lang="en">
+    <head><link rel="preload" as="fetch" href="/audio/chapel.mp3" crossOrigin="anonymous" /></head>
+    <body>{children}</body>
+  </html>;
 }
