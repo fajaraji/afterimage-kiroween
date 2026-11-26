@@ -1,0 +1,5 @@
+# Design — 02 Deletion and replay (AWS-first revision)
+
+Implement server-neutral event state machine and explicit idempotency logic in `packages/engine`. On AWS, orchestrate with Step Functions **Standard**, persist a synthetic stale event in run metadata before deletion, and **publish** that pre-created event to SQS after deleting the subject. SQS Lambda consumer processes an actual asynchronous message; explicit late publication makes the test repeatable. `unsafe` mode intentionally bypasses the barrier in sandbox-only partitions, while `protected` mode uses a DynamoDB `TransactWriteItems` ConditionCheck against a persisted deletion barrier plus upsert/idempotency record to prevent a same-generation revival. Every state change and consumer receipt is stored with a run ID.
+
+No optimistic UI verdicts. Wait for a bounded actual receipt before verifying or return UNKNOWN. Duplicate SQS delivery must be idempotent. Reject unknown generation and store IDs. Apply fault-injected analytics deletion failure against the actual sandbox replica. See `docs/AWS-ARCHITECTURE.md` and spec 06.

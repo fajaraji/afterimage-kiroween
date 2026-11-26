@@ -1,0 +1,67 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1. Reconcile domain contracts and runtime validation with AWS-first data model. (FOUNDATION-3)": [
+      {
+        "executionId": "2f917689-c292-4cb2-9c88-48b974427bbd",
+        "chatSessionId": "sess_14da2e7c-8c1c-423e-a75e-b4bce9c945e8",
+        "timestamp": 1794731015294
+      }
+    ],
+    "2. Implement pure in-memory test adapters to validate create/delete/observe logic locally, without calling them production evidence. (FOUNDATION-2)": [
+      {
+        "executionId": "f80527e5-4d87-423c-a937-8fec267a1430",
+        "chatSessionId": "sess_9dede577-a816-4abe-a733-14518dd7db51",
+        "timestamp": 1794731214720
+      },
+      {
+        "executionId": "f80527e5-4d87-423c-a937-8fec267a1430",
+        "chatSessionId": "sess_9dede577-a816-4abe-a733-14518dd7db51",
+        "timestamp": 1794731295739
+      }
+    ],
+    "3. Define independent primary, analytics and export adapter interfaces and allowlisted store IDs; AWS implementations are spec 06. (FOUNDATION-2,3)": [
+      {
+        "executionId": "5733fbbe-f7d6-44f8-a089-6e5ba5813ff5",
+        "chatSessionId": "sess_f9f22c1a-2e33-4d6d-842d-1d29c8bd85c0",
+        "timestamp": 1794731857467
+      },
+      {
+        "executionId": "5733fbbe-f7d6-44f8-a089-6e5ba5813ff5",
+        "chatSessionId": "sess_f9f22c1a-2e33-4d6d-842d-1d29c8bd85c0",
+        "timestamp": 1794731970462
+      }
+    ],
+    "4. Implement seeded fixture initialization/reset and deterministic fixture hash. (FOUNDATION-1,5)": [
+      {
+        "executionId": "7284df5b-d677-401f-ac68-2033181cf083",
+        "chatSessionId": "sess_fede98a9-ce0e-4776-8673-00c4e657d518",
+        "timestamp": 1794732022326
+      },
+      {
+        "executionId": "7284df5b-d677-401f-ac68-2033181cf083",
+        "chatSessionId": "sess_fede98a9-ce0e-4776-8673-00c4e657d518",
+        "timestamp": 1794732113818
+      }
+    ],
+    "5. Add run isolation, invalid-input and failed-reset tests. (FOUNDATION-4,5)": [
+      {
+        "executionId": "067a2af6-22c8-4cfd-b960-03972441e906",
+        "chatSessionId": "sess_bf05ec30-e268-44cd-9999-1a62eed2cc2a",
+        "timestamp": 1794732660018
+      },
+      {
+        "executionId": "067a2af6-22c8-4cfd-b960-03972441e906",
+        "chatSessionId": "sess_bf05ec30-e268-44cd-9999-1a62eed2cc2a",
+        "timestamp": 1794732773695
+      }
+    ],
+    "6. Implement real AWS adapters through spec 06, then verify same fixture in deployed dev sandbox. (FOUNDATION-2)": [
+      {
+        "executionId": "8ad26c4f-a1d4-419d-93ec-b26dff96c6f3",
+        "chatSessionId": "sess_5064abd9-e62b-4b89-b4ca-72f9b0e7ee41",
+        "timestamp": 1794733061217
+      }
+    ]
+  }
+}

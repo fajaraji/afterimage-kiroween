@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "1",
+  "id": "unreachable-v1",
+  "name": "Required export store unreachable",
+  "fixture": {
+    "seed": 44,
+    "subjectId": "synthetic-subject-044",
+    "generation": 1,
+    "requiredStores": [
+      "primary",
+      "analytics",
+      "exports"
+    ]
+  },
+  "steps": [
+    {
+      "action": "seed_subject"
+    },
+    {
+      "action": "mark_store_unreachable",
+      "storeId": "exports"
+    },
+    {
+      "action": "delete_subject"
+    },
+    {
+      "action": "verify"
+    }
+  ],
+  "expectedObservation": {
+    "unsafe": "UNKNOWN",
+    "protected": "UNKNOWN"
+  }
+}

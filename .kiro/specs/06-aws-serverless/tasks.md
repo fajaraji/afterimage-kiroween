@@ -1,0 +1,12 @@
+# Spec 06 — Tasks (all unchecked; must be implemented and verified in Kiro)
+
+- [ ] 1. Audit legacy local SQLite/production Fastify assumptions and update shared contracts without breaking starter. (AWS-1,9)
+- [ ] 2. Scaffold CDK v2 TypeScript `infra/`, synth immutable dev/demo stack with explicit scoped IAM; owner reviews diff before any deploy. (AWS-1,9)
+- [ ] 3. Implement DynamoDB primary/analytics/barrier/run records and S3 export/evidence AWS adapters; test scoped keys. (AWS-1,5,6)
+- [ ] 4. Implement API Gateway/Lambda async start/status/evidence handlers and validated 202 contract; add authentication and quotas. (AWS-2,6)
+- [ ] 5. Implement Step Functions Standard scenario flow with bounded failure/timeout paths. (AWS-3,7)
+- [ ] 6. Implement SQS+DLQ, stale event release and protected transactional consumer; isolate unsafe consumer to test partitions. (AWS-3,4)
+- [ ] 7. Implement independent AWS verifier with PASS/FAIL/UNKNOWN and persist evidence. (AWS-5,7)
+- [ ] 8. Add real integration tests: unsafe FAIL, protected PASS, partial deletion FAIL, inaccessible store UNKNOWN, duplicate idempotent. (AWS-3,4,5)
+- [ ] 9. Deploy to reviewed AWS sandbox with explicit approval, enable budgets/monitoring and test no cross-run leaks. (AWS-6,8,9)
+- [ ] 10. Deploy React frontend to Amplify Hosting, verify judge-browser end-to-end behavior and fallback without Bedrock. (AWS-1,8)

@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/afterimage/scenario.schema.json",
+  "title": "Afterimage synthetic scenario draft v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "name",
+    "fixture",
+    "steps",
+    "expectedObservation"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "fixture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "seed",
+        "subjectId",
+        "generation",
+        "requiredStores"
+      ],
+      "properties": {
+        "seed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "subjectId": {
+          "type": "string",
+          "pattern": "^synthetic-[a-z0-9-]+$"
+        },
+        "generation": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "requiredStores": {
+          "type": "array",
+          "uniqueItems": true,
+          "minItems": 1,
+          "items": {
+            "enum": [
+              "primary",
+              "analytics",
+              "exports"
+            ]
+          }
+        }
+      }
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "enum": [
+              "seed_subject",
+              "hold_upsert",
+              "delete_subject",
+              "release_held",
+              "inject_delete_failure",
+              "mark_store_unreachable",
+              "verify"
+            ]
+          },
+          "storeId": {
+            "enum": [
+              "primary",
+              "analytics",
+              "exports"
+            ]
+          }
+        }
+      }
+    },
+    "expectedObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "unsafe",
+        "protected"
+      ],
+      "properties": {
+        "unsafe": {
+          "enum": [
+            "PASS",
+            "FAIL",
+            "UNKNOWN"
+          ]
+        },
+        "protected": {
+          "enum": [
+            "PASS",
+            "FAIL",
+            "UNKNOWN"
+          ]
+        }
+      }
+    }
+  }
+}

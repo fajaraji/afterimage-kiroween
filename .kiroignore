@@ -1,0 +1,15 @@
+# Kiro agent access only; do not include secret or generated data.
+node_modules/
+dist/
+build/
+coverage/
+.data/
+tmp/
+.env
+.env.*
+!.env.example
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+playwright-report/
+test-results/

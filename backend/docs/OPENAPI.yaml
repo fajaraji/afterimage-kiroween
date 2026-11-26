@@ -1,0 +1,142 @@
+openapi: 3.1.0
+info:
+  title: Afterimage Synthetic Lab API
+  version: 0.1.0-draft
+  description: >-
+    Planned API for a synthetic-only data resurrection testing lab. Only
+    GET /api/health is implemented in the delivered scaffold; all other
+    paths are proposed Kiro development tasks and must not be represented
+    as working endpoints.
+servers:
+  - url: http://127.0.0.1:8787
+paths:
+  /api/health:
+    get:
+      summary: Implemented health endpoint (does not indicate product readiness)
+      responses:
+        '200':
+          description: API process is reachable
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, service, productFeaturesImplemented]
+                properties:
+                  ok: { type: boolean }
+                  service: { type: string }
+                  productFeaturesImplemented: { type: boolean }
+  /api/scenarios:
+    get:
+      summary: Planned - synthetic scenario catalog
+      responses:
+        '200':
+          description: Planned catalog of allowlisted scenarios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required: [id, name]
+                  properties:
+                    id: { type: string }
+                    name: { type: string }
+        '501':
+          description: Current scaffold behavior - not implemented
+  /api/runs:
+    post:
+      summary: Planned - start an isolated synthetic scenario run
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [scenarioId, mode, seed]
+              properties:
+                scenarioId: { type: string, maxLength: 100 }
+                mode: { type: string, enum: [unsafe, protected] }
+                seed: { type: integer, minimum: 0 }
+      responses:
+        '202':
+          description: Planned accepted run, not a claim of PASS
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [runId, status]
+                properties:
+                  runId: { type: string }
+                  status: { type: string, enum: [queued, running] }
+        '400': { description: Malformed request }
+        '429': { description: Too many concurrent requests }
+  /api/runs/{runId}:
+    parameters:
+      - name: runId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      summary: Planned - scenario run status and scoped verdict
+      responses:
+        '200':
+          description: Actual server-side run state and verdict when available
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RunSummary' }
+        '404': { description: Run not found }
+  /api/runs/{runId}/events:
+    parameters:
+      - name: runId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      summary: Planned - logical event trace
+      responses:
+        '200': { description: Server-side event trace }
+  /api/runs/{runId}/observations:
+    parameters:
+      - name: runId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      summary: Planned - independent per-store observations
+      responses:
+        '200': { description: Directly observed evidence, not visual guesses }
+  /api/runs/{runId}/report:
+    parameters:
+      - name: runId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      summary: Planned - JSON autopsy/evidence report
+      responses:
+        '200': { description: Reproducible report including scope and uncertainty }
+components:
+  schemas:
+    Observation:
+      type: object
+      required: [storeId, state, evidenceId]
+      properties:
+        storeId: { type: string, enum: [primary, analytics, exports] }
+        state: { type: string, enum: [PRESENT, ABSENT, UNKNOWN] }
+        evidenceId: { type: string }
+        errorCode: { type: string }
+    RunSummary:
+      type: object
+      required: [runId, scenarioId, status, verdict, requiredStores, observations]
+      properties:
+        runId: { type: string }
+        scenarioId: { type: string }
+        status: { type: string, enum: [queued, running, completed, failed] }
+        verdict: { type: string, enum: [PASS, FAIL, UNKNOWN] }
+        requiredStores:
+          type: array
+          items: { type: string, enum: [primary, analytics, exports] }
+        observations:
+          type: array
+          items: { $ref: '#/components/schemas/Observation' }

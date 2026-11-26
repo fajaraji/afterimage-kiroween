@@ -1,0 +1,22 @@
+{
+  "name": "afterimage-kiroween-2026",
+  "version": "0.0.4",
+  "private": true,
+  "type": "module",
+  "description": "Kiro-first AWS+Strands Frankenstein starter with scoped forensic action evidence (not a production agent firewall)",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "validate:starter": "node scripts/validate-workspace.mjs",
+    "audit:submission": "node scripts/audit-submission.mjs",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present"
+  }
+}
