@@ -17,5 +17,7 @@ Revision, events, command log (`commandId` → result snapshot), restore journal
 ## Replay
 Replay in the browser plays stored events only. The server does not re-run anything for replay.
 
-## Open decisions to settle in the spec workflow
-Analytics replica behavior on restore (CMD-11); whether `erase-copy` on `backup` is allowed (default: reject).
+## Decisions (settled)
+- **Replica on restore (CMD-11):** the stream Lambda copies primary inserts, so a restored record can reach the replica. The restore does not read analytics. After `return`, analytics keeps its last finding and gets `pendingCheck: true`. Reason: claiming "clear" for a store that may have changed would be false, and re-reading it inside the restore would blur which read proved what.
+- **`erase-copy` on backup (CMD-13):** allowed, because the frontend simulator and the handoff scenario "remove the backup, then restore is refused" need it. It deletes the exact snapshot `VersionId`. A plain delete would only add a delete marker and leave the version restorable.
+- **Disallowed states (CMD-12):** HTTP 422 with a short code such as `ERASURE_ALREADY_STARTED`, `ERASE_FIRST`, `INSPECT_FIRST`, `RESTORE_NOT_POSSIBLE`. 409 stays reserved for a stale revision.

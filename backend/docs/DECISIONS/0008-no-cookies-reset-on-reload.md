@@ -5,7 +5,7 @@
 ## Decision
 - The backend sets **no cookies** and reads none. It stores no IP address, user agent or visitor identifier.
 - `POST /cases` always creates a new case with a new random ID (at least 128 bits, URL-safe). The case ID is the only access credential. Unknown or expired IDs return 404.
-- The intended experience is that a browser reload starts a fresh case. The backend cannot force this. It needs the frontend to stop saving the case ID across reloads (see `docs/FRONTEND-REQUESTS.md`). Until then the browser may keep the ID in tab storage and the backend will serve the same case until it expires.
+- The intended experience is that a browser reload starts a fresh case. The backend cannot force this. It needs the frontend to stop saving the case ID across reloads (spec 06 requirement AWS-10 and task 11; see `docs/FRONTEND-REQUESTS.md`). Until then the browser may keep the ID in tab storage and the backend will serve the same case until it expires.
 - Case data expires on its own: DynamoDB TTL on every case item, short (default 1 hour after the last write). TTL deletion can lag, so reads treat an expired item as not found.
 - Abuse limits do not use visitor identity: API Gateway throttling plus a global cap on active cases (429 when reached).
 - Logs hold event types, short codes and a truncated hash of the case ID, never the full ID, request bodies or subject names.

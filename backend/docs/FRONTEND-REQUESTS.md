@@ -1,8 +1,8 @@
-# Requests to the frontend owner (backend side)
+# Changes the backend needs in frontend files
+The backend does not change frontend files outside an approved spec task. Decisions: ADR-0008 (no cookies, reset on reload). The work is tracked as **spec 06 requirement AWS-10 and task 11**, and the frontend owner approves it in the PR.
 
-The backend does not change frontend files. These are the changes the backend needs or would like. Decisions: ADR-0008 (no cookies, reset on reload).
+1. **Reset on every reload (required, spec 06 task 11).** `lib/gateway.ts` saves the case ID in `sessionStorage` and asks for the same case on reload. Change it to keep the ID in memory only, so each page load calls `POST /cases` (or `startDemo` in demo mode). "Reload case" inside a page still calls `GET /cases/{id}`. Show a clear message on 404 (expired case). Add a test with a throwing `sessionStorage` stub. Details: spec 06 design, section "Frontend change for reset on reload".
+2. **Docs text (part of task 11).** `docs/backend-contract.md` and `docs/backend-handoff.md` mention a visitor session and tab-scoped storage. Say instead that the case ID is the access credential and is kept in memory only.
+3. **Credentials (optional, not in task 11).** The backend sets no cookies. `credentials: 'include'` can become `'omit'`, with a matching change in `tests/gateway.test.mjs`. Until then the API answers `Access-Control-Allow-Credentials: true`.
 
-1. **Reset on every reload (requested).** `lib/gateway.ts` saves the case ID in `sessionStorage` (`afterimage:case:v1:*`) and calls `GET /cases/{id}` on reload. For a fresh case on each reload, `openCase()` should always call `POST /cases` and keep the ID in memory only. The in-page "Reload case" button after a 409 or timeout can keep using the in-memory ID with `GET /cases/{id}`. The browser-only demo mode has the same storage behavior.
-2. **Credentials (optional).** The backend sets no cookies. `credentials: 'include'` can become `'omit'`. Until it does, the API sends `Access-Control-Allow-Credentials: true`.
-3. **Handoff text.** `docs/backend-contract.md` and `docs/backend-handoff.md` mention a visitor session cookie. After the change, say that the case ID is the access credential.
-4. **Expired case.** After the TTL, `GET /cases/{id}` returns 404. The UI should offer to open a new case.
+PR checklist for the frontend owner: root `npm test`, `npm run typecheck` and `npm run build` pass; a page reload shows a new case; "Reload case" after a failed command still works; no `sessionStorage` or cookie use remains.

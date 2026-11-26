@@ -28,7 +28,11 @@ As a visitor, I erase a customer, scan four stores, restore the backup, and see 
 
 **CMD-10:** WHEN a restore is retried after the write but before verification, THE SYSTEM SHALL resume verification without importing again.
 
-**CMD-11:** THE SYSTEM SHALL define what the analytics replica does when primary is restored, and the result SHALL be observed by a read, never assumed.
+**CMD-11:** THE analytics replica SHALL follow primary through DynamoDB Streams, including a restored record. WHEN a `return` event is appended, THE SYSTEM SHALL set analytics `pendingCheck: true` and SHALL NOT change its finding, because the replica may repopulate after the restore. A later `inspect` or `scan` SHALL report what a read finds.
+
+**CMD-12:** WHEN a command is not allowed in the current state, THE SYSTEM SHALL return HTTP 422 with a short error code and SHALL NOT change the case or its revision. The rules follow `runDemo`: `erase-primary` is refused once erasure has started; every other command is refused before `erase-primary`; `erase-copy` is refused unless that store's finding is `found`; `restore` is refused unless primary is `clear` and backup is `found`.
+
+**CMD-13:** WHEN `erase-copy` targets `backup`, THE SYSTEM SHALL delete the case's snapshot object by its exact `VersionId` (not by adding a delete marker) and set backup `pendingCheck: true`, so a later read of that version returns absent. THE SYSTEM SHALL touch no other object or version.
 
 ## Acceptance (from `docs/backend-handoff.md` evaluation table)
-Erase then scan gives 1 clear and 3 found. Restore after scan ends with primary `returned` from `backup`. A restore with backup clear is refused. One failed read shows `unreachable` and no `return`. Identical envelope twice adds no events. Stale revision returns 409.
+Erase then scan gives 1 clear and 3 found. Erasing the backup copy and rechecking gives a clear backup, and a restore is then refused. After a restore, analytics shows `pendingCheck` until it is read again. Restore after scan ends with primary `returned` from `backup`. A restore with backup clear is refused. One failed read shows `unreachable` and no `return`. Identical envelope twice adds no events. Stale revision returns 409.

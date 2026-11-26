@@ -25,6 +25,10 @@
 | T-13 | duplicate stream record | replica unchanged the second time |
 | T-14 | expired, oversized, over-cap | 404, rejected, 429 |
 | T-15 | two cases | neither can read or change the other by ID |
+| T-16 | verified `return` | analytics `pendingCheck: true`, finding unchanged; later `inspect` reports the read |
+| T-17 | `erase-primary` twice, any command before erase, `erase-copy` on a store not `found`, `restore` when not allowed | HTTP 422 with a short code; revision and events unchanged |
+| T-18 | `erase-copy` on backup, then `inspect` backup, then `restore` | version absent, backup clear, restore refused |
+| T-19 | frontend with a throwing `sessionStorage` stub (root `tests/gateway.test.mjs`) | open, command and "Reload case" still work; new page load opens a new case |
 
 ## Gate for each Kiro task
 Tests for the task pass, typecheck passes, no credentials in the diff, docs and the contract fixtures updated, and the task is checked only after tests pass. A task that says "real AWS" is not done from mocks.

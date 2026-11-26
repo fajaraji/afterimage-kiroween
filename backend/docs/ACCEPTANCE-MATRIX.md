@@ -15,6 +15,10 @@ No status below implies implementation. Set a status only with a command, test r
 | CMD-7,8 | Restore then verifying read gives `restore` then `return` | T-03 | TODO |
 | CMD-9 | Import ok, verification fails: no `return` | T-05 | TODO |
 | CMD-10 | Retry after write resumes without second import | T-08 | TODO |
+| CMD-11 | After `return`, analytics has `pendingCheck` and an unchanged finding | T-16 | TODO |
+| CMD-12 | Disallowed command gives 422 and changes nothing | T-17 | TODO |
+| CMD-13 | Backup `erase-copy` removes the exact version; restore then refused | T-18 | TODO |
+| AWS-10 | Reload opens a new case; no `sessionStorage` or cookie; Reload case still works | T-19 (frontend) | TODO |
 | VERIFY-1,2 | Findings only from reads; failed read is `unreachable` | T-05 | TODO |
 | VERIFY-3,4 | Consistent primary read; S3 version stated | T-09 | TODO |
 | VERIFY-5,6 | English detail, no ARN or raw error text | T-10 | TODO |

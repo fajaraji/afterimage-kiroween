@@ -20,3 +20,12 @@ On-demand DynamoDB, small Lambda memory, log retention 7 days, TTL on case items
 
 ## Testing
 Unit tests with in-memory adapters. Integration tests against a sandbox account only after the owner approves a deploy. Record results in `backend/docs/BUILD_LOG.md`; never mark a task done from mocks alone when it says "real".
+
+## Frontend change for reset on reload (AWS-10)
+This is the only task that edits frontend files. It is small and isolated in `lib/gateway.ts`:
+- `saved()` returns only the module-level `memory`; `save()` sets only `memory`. Remove every `sessionStorage` call and the storage key. After a page reload the module state is empty, so `openCase()` calls `POST /cases` (connected) or `startDemo` (demo).
+- `openCase(reset)` keeps its signature. A second call in the same page with no `reset` still calls `GET /cases/{id}` with the in-memory ID, which keeps "Reload case" working.
+- Handle a 404 from `GET /cases/{id}` with a clear message ("This case has expired") and let the existing reset path open a new case.
+- `credentials: 'include'` stays as is. The backend sets no cookies and answers `Access-Control-Allow-Credentials: true`. Switching to `'omit'` is a separate optional change and would also change `tests/gateway.test.mjs`.
+- Doc text in `docs/backend-contract.md` and `docs/backend-handoff.md` that says "visitor session" or "tab-scoped storage" changes to "the case ID is the access credential and is kept in memory only".
+Frontend tests in `tests/gateway.test.mjs` keep passing. Add a test that stubs `sessionStorage` to throw on any access and still opens, commands and reloads a case.

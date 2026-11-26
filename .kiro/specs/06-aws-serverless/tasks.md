@@ -1,4 +1,4 @@
-# Spec 06 — Tasks (all unchecked; implement and verify in Kiro)
+# Spec 06 — Tasks (all unchecked; implement and verify in Kiro; task 11 edits frontend files and needs the frontend owner's approval)
 - [ ] 1. Add the three-route HTTP handler layer in `apps/api` over in-memory adapters, matching `docs/backend-contract.md`, with exact-origin CORS and no cookies, so the frontend can connect locally. (AWS-2,3,4)
 - [ ] 2. Test the local API against the frontend (after the reload change in `docs/FRONTEND-REQUESTS.md`, each reload opens a new case): set `NEXT_PUBLIC_AFTERIMAGE_API_BASE` and confirm the Connected label and a full erase, scan, restore run. (AWS-2,4)
 - [ ] 3. Scaffold the CDK v2 app in `backend/infra/` and synth a dev stack with scoped IAM. The owner reviews the diff before any deploy. (AWS-1,6,9)
@@ -9,3 +9,4 @@
 - [ ] 8. Deploy to a sandbox account after explicit owner approval; turn on budget alarm and log retention. (AWS-9)
 - [ ] 9. Run the evaluation table in `docs/backend-handoff.md` against AWS and record sanitized results in `docs/BUILD_LOG.md`. (AWS-1 to AWS-8)
 - [ ] 10. Connect a Vercel preview, check CORS from the preview origin, and document teardown. (AWS-4,9)
+- [ ] 11. FRONTEND CHANGE (frontend owner approves in the PR): make `lib/gateway.ts` keep the case ID in memory only so each page load opens a new case; add the throwing-`sessionStorage` test and the expired-case message; update the two doc sentences in `docs/`. Run the root `npm test`, `npm run typecheck` and `npm run build`. (AWS-10)
