@@ -1,6 +1,6 @@
 ---
 inclusion: fileMatch
-fileMatchPattern: ["apps/api/**/*.ts", "packages/contracts/**/*.ts", "packages/engine/**/*.ts"]
+fileMatchPattern: ["backend/apps/api/**/*.ts", "backend/packages/contracts/**/*.ts", "backend/packages/engine/**/*.ts"]
 ---
 # API + engine guardrails
 

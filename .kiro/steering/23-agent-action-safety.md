@@ -11,4 +11,4 @@ inclusion: always
 - For denied proposals, independently query relevant stores before claiming no mutation. Failed queries mean `UNKNOWN`.
 - Never let client text, model tools, logs, receipts, or screenshot animation serve as proof of execution outcomes.
 - No secret-bearing logs, real customer data, unrestricted shell/SQL, IAM wildcard mutations, real production connectors, or unapproved spend.
-- See `#[[file:docs/AGENT-SAFETY-FINDINGS.md]]`, `#[[file:docs/AGENT-ACTION-FORENSICS.md]]`, `#[[file:docs/AGENT-ACTION-THREAT-MODEL.md]]`, and spec 09.
+- See `#[[file:backend/docs/AGENT-SAFETY-FINDINGS.md]]`, `#[[file:backend/docs/AGENT-ACTION-FORENSICS.md]]`, `#[[file:backend/docs/AGENT-ACTION-THREAT-MODEL.md]]`, and spec 09.

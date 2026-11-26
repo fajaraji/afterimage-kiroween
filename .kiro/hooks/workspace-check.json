@@ -4,10 +4,10 @@
     {
       "name": "Validate workspace structure on source save",
       "trigger": "PostFileSave",
-      "matcher": "^(apps|packages)/.*\\.(ts|tsx)$",
+      "matcher": "^backend/(apps|packages)/.*\\.(ts|tsx)$",
       "action": {
         "type": "command",
-        "command": "node scripts/validate-workspace.mjs --quiet"
+        "command": "node backend/scripts/validate-workspace.mjs --quiet"
       }
     }
   ]

@@ -11,4 +11,4 @@ inclusion: always
 6. Isolate runs and prevent arbitrary filesystem paths, SQL strings, or commands from API parameters.
 7. Obtain user approval before changing deployment security, enabling paid services, or installing external powers/MCP tools.
 
-Details: `#[[file:docs/SECURITY-PRIVACY.md]]`.
+Details: `#[[file:backend/docs/SECURITY-PRIVACY.md]]`.

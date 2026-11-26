@@ -1,8 +1,8 @@
 import { spawn } from 'node:child_process';
 
+// The frontend is the Next.js app at the repository root. Start it there with npm run dev.
 const jobs = [
   ['api', ['run', 'dev', '-w', '@afterimage/api']],
-  ['web', ['run', 'dev', '-w', '@afterimage/web']],
 ];
 const processes = jobs.map(([name, args]) => {
   const child = spawn(process.platform === 'win32' ? 'npm.cmd' : 'npm', args, { stdio: 'inherit', shell: process.platform === 'win32' });

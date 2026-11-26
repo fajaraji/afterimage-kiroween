@@ -1,5 +1,7 @@
 # Afterimage — The Data Resurrection Lab
 
+> **Repository layout:** This folder is the backend of [Afterimage](../README.md). The frontend is the Next.js app at the repository root, and Kiro's specs, steering, skills, agents and hook live in the root [`.kiro/`](../.kiro/) folder. Run the backend commands below from this `backend/` folder. The Vite placeholder in `apps/web` was removed. Documents here that still mention it (port 5173, Amplify Hosting, `/api/runs`) will be updated to the frontend's [browser API contract](../docs/backend-contract.md) together with the specs.
+
 > **Status: Kiro-ready AWS-first development scaffold, not a finished or deployed hackathon product.**
 > *Don't just delete data. Make sure it stays dead.*
 

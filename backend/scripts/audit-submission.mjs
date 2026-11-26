@@ -1,12 +1,14 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 const root = resolve(import.meta.dirname,'..');
+// This script lives in backend/scripts. The Kiroween rules keep .kiro/ and LICENSE at the repository root.
+const repoRoot = resolve(root,'..');
 const checks = [
-  ['LICENSE', existsSync(`${root}/LICENSE`)],
-  ['root .kiro specs', existsSync(`${root}/.kiro/specs/01-foundation/tasks.md`)],
-  ['Frankenstein spec and evidence guide', existsSync(`${root}/.kiro/specs/08-frankenstein-integration/tasks.md`) && existsSync(`${root}/docs/FRANKENSTEIN-EVIDENCE-MATRIX.md`)],
+  ['LICENSE', existsSync(`${repoRoot}/LICENSE`)],
+  ['root .kiro specs', existsSync(`${repoRoot}/.kiro/specs/01-foundation/tasks.md`)],
+  ['Frankenstein spec and evidence guide', existsSync(`${repoRoot}/.kiro/specs/08-frankenstein-integration/tasks.md`) && existsSync(`${root}/docs/FRANKENSTEIN-EVIDENCE-MATRIX.md`)],
   ['README', existsSync(`${root}/README.md`)],
-  ['v4 P1/P2 scope docs and spec present (not proof of implementation)', existsSync(`${root}/.kiro/specs/09-consequential-action-safety/tasks.md`) && existsSync(`${root}/docs/AGENT-ACTION-THREAT-MODEL.md`)],
+  ['v4 P1/P2 scope docs and spec present (not proof of implementation)', existsSync(`${repoRoot}/.kiro/specs/09-consequential-action-safety/tasks.md`) && existsSync(`${root}/docs/AGENT-ACTION-THREAT-MODEL.md`)],
   ['Kiro build log has real entries', !readFileSync(`${root}/docs/BUILD_LOG.md`,'utf8').includes('| TODO | TODO |')],
   ['User-filled public GitHub URL / deployed URL / YouTube', false],
   ['Working deletion regression lab verified end-to-end', false],

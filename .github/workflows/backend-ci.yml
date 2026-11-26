@@ -1,10 +1,21 @@
-name: Afterimage quality gate
+name: Afterimage backend quality gate
 on:
   push:
+    paths:
+      - 'backend/**'
+      - '.kiro/**'
+      - '.github/workflows/backend-ci.yml'
   pull_request:
+    paths:
+      - 'backend/**'
+      - '.kiro/**'
+      - '.github/workflows/backend-ci.yml'
 jobs:
   verify:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
