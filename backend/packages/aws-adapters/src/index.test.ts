@@ -30,11 +30,16 @@ function fakeDynamo(opts: { failRead?: Error } = {}) {
     },
     async query(i) {
       const pk = i.ExpressionAttributeValues[':pk'];
-      const items = [...t(i.TableName).values()].filter((x) => x.PK === pk);
+      // Like real DynamoDB: items sorted by SK, and paging resumes strictly after the last returned key,
+      // so deleting earlier pages while paging does not skip items.
+      const after = i.ExclusiveStartKey ? String(i.ExclusiveStartKey.SK) : undefined;
+      const items = [...t(i.TableName).values()]
+        .filter((x) => x.PK === pk && (after === undefined || String(x.SK) > after))
+        .sort((a, b) => (String(a.SK) < String(b.SK) ? -1 : 1));
       // two items per page to exercise pagination
-      const start = i.ExclusiveStartKey ? Number(i.ExclusiveStartKey.n) : 0;
-      const slice = items.slice(start, start + 2).map(({ PK, SK }) => ({ PK, SK }));
-      return { Items: slice, LastEvaluatedKey: start + 2 < items.length ? { n: start + 2 } : undefined };
+      const page = items.slice(0, 2).map(({ PK, SK }) => ({ PK, SK }));
+      const last = page[page.length - 1];
+      return { Items: page, LastEvaluatedKey: items.length > 2 && last ? { PK: last.PK, SK: last.SK } : undefined };
     },
   };
   return { client, calls };
@@ -54,13 +59,18 @@ function fakeS3(opts: { headError?: unknown } = {}) {
       if (!objs.has(`${i.Bucket}/${i.Key}`)) throw Object.assign(new Error('nf'), { name: 'NotFound' });
     },
     async listObjectsV2(i) {
-      const keys = [...objs].filter((k) => k.startsWith(`${i.Bucket}/${i.Prefix}`)).map((k) => k.slice(i.Bucket.length + 1));
-      const start = i.ContinuationToken ? Number(i.ContinuationToken) : 0;
-      const more = start + 2 < keys.length;
+      // Like real S3: keys in lexicographic order, and the continuation token resumes after the last returned key.
+      const keys = [...objs]
+        .filter((k) => k.startsWith(`${i.Bucket}/${i.Prefix}`))
+        .map((k) => k.slice(i.Bucket.length + 1))
+        .filter((k) => !i.ContinuationToken || k > i.ContinuationToken)
+        .sort();
+      const page = keys.slice(0, 2);
+      const more = keys.length > 2;
       return {
-        Contents: keys.slice(start, start + 2).map((Key) => ({ Key })),
+        Contents: page.map((Key) => ({ Key })),
         IsTruncated: more,
-        NextContinuationToken: more ? String(start + 2) : undefined,
+        NextContinuationToken: more ? page[page.length - 1] : undefined,
       };
     },
   };
