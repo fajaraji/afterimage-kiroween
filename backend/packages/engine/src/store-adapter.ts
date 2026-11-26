@@ -7,7 +7,7 @@
  * generation. Each store is independently queryable; `observe` is a direct read and
  * must return UNKNOWN (never ABSENT) when the store cannot be read.
  */
-export const ALLOWLISTED_STORE_IDS = ['primary', 'analytics', 'exports'] as const;
+export const ALLOWLISTED_STORE_IDS = ['primary', 'analytics', 'export', 'backup'] as const;
 export type AllowlistedStoreId = (typeof ALLOWLISTED_STORE_IDS)[number];
 export type StoreObservationState = 'PRESENT' | 'ABSENT' | 'UNKNOWN';
 

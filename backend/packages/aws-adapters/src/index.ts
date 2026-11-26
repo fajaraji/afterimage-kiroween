@@ -1,4 +1,4 @@
-/**
+﻿/**
  * AWS store adapters (spec 06 task 3, foundation task 6).
  *
  * STATUS: implemented and unit-tested against injected fake clients only. Nothing here
@@ -16,7 +16,7 @@
  * - Store types mirror @afterimage/engine's StoreAdapter (structurally compatible).
  */
 
-export const ALLOWLISTED_STORE_IDS = ['primary', 'analytics', 'exports'] as const;
+export const ALLOWLISTED_STORE_IDS = ['primary', 'analytics', 'export', 'backup'] as const;
 export type AllowlistedStoreId = (typeof ALLOWLISTED_STORE_IDS)[number];
 export type StoreObservationState = 'PRESENT' | 'ABSENT' | 'UNKNOWN';
 
@@ -182,9 +182,10 @@ export class DynamoStoreAdapter implements AwsStoreAdapter {
 
 // ---- S3 export adapter ----
 
-export const s3RunPrefix = (runId: string): string => `runs/${runId}/exports/`;
-export const s3ObjectKey = (runId: string, subjectId: string, generation: number): string =>
-  `${s3RunPrefix(runId)}${subjectId}/gen-${generation}.json`;
+export type S3StoreId = 'export' | 'backup';
+export const s3RunPrefix = (runId: string, storeId: S3StoreId = 'export'): string => `runs/${runId}/${storeId}/`;
+export const s3ObjectKey = (runId: string, subjectId: string, generation: number, storeId: S3StoreId = 'export'): string =>
+  `${s3RunPrefix(runId, storeId)}${subjectId}/gen-${generation}.json`;
 
 function isNotFound(err: unknown): boolean {
   const e = err as { name?: unknown; $metadata?: { httpStatusCode?: unknown } } | null;
@@ -192,10 +193,15 @@ function isNotFound(err: unknown): boolean {
   return e?.name === 'NotFound' || e?.name === 'NoSuchKey' || e?.$metadata?.httpStatusCode === 404;
 }
 
-export class S3ExportStoreAdapter implements AwsStoreAdapter {
-  readonly storeId = 'exports' as const;
+/**
+ * Shared S3 object store. `export` and `backup` differ only by key segment and bucket.
+ * LIMITATION: `observe` uses HeadObject, which reads the CURRENT version only. In a versioned
+ * bucket a delete marker makes it report ABSENT while older versions remain. Reading versions
+ * (ListObjectVersions / GetObject with VersionId) belongs to spec 06 and needs the SDK binding.
+ */
+abstract class S3ObjectStoreAdapter implements AwsStoreAdapter {
+  abstract readonly storeId: S3StoreId;
   private readonly bucket: string;
-
   /** Non-versioned buckets only: a versioned bucket would need ListObjectVersions (P1). */
   constructor(
     private readonly client: S3ClientLike,
@@ -218,7 +224,7 @@ export class S3ExportStoreAdapter implements AwsStoreAdapter {
   }
 
   async reset(runId: string): Promise<void> {
-    const prefix = s3RunPrefix(assertId('runId', runId));
+    const prefix = s3RunPrefix(assertId('runId', runId), this.storeId);
     let token: string | undefined;
     for (let page = 0; page < MAX_RESET_PAGES; page++) {
       const res = await this.client.listObjectsV2({
@@ -250,8 +256,15 @@ export class S3ExportStoreAdapter implements AwsStoreAdapter {
   }
 
   private key(runId: string, subjectId: string, generation: number): string {
-    return s3ObjectKey(assertId('runId', runId), assertId('subjectId', subjectId), assertGen(generation));
+    return s3ObjectKey(assertId('runId', runId), assertId('subjectId', subjectId), assertGen(generation), this.storeId);
   }
+}
+export class S3ExportStoreAdapter extends S3ObjectStoreAdapter {
+  readonly storeId = 'export' as const;
+}
+/** Retained snapshot copy. Visitor commands never write here after seeding (spec 01 design). */
+export class S3BackupStoreAdapter extends S3ObjectStoreAdapter {
+  readonly storeId = 'backup' as const;
 }
 
 // ---- registry ----
@@ -260,6 +273,7 @@ export interface AwsStoreConfig {
   primaryTable: string;
   analyticsTable: string;
   exportBucket: string;
+  backupBucket: string;
 }
 
 export function createAwsStoreAdapters(
@@ -267,9 +281,11 @@ export function createAwsStoreAdapters(
   config: AwsStoreConfig,
 ): readonly AwsStoreAdapter[] {
   if (config.primaryTable === config.analyticsTable) throw new Error('Primary and analytics tables must be independent');
+  if (config.exportBucket === config.backupBucket) throw new Error('Export and backup buckets must be independent');
   return [
     new DynamoStoreAdapter('primary', clients.dynamo, config.primaryTable),
     new DynamoStoreAdapter('analytics', clients.dynamo, config.analyticsTable),
     new S3ExportStoreAdapter(clients.s3, config.exportBucket),
+    new S3BackupStoreAdapter(clients.s3, config.backupBucket),
   ];
 }

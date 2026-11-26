@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { reduceObservedDeletion } from './index';
 
 describe('bounded deletion observation reducer (no database involved)', () => {
-  const stores = ['primary', 'analytics', 'exports'];
+  const stores = ['primary', 'analytics', 'export'];
   it('returns PASS only when all required stores observed absent', () => {
     expect(reduceObservedDeletion(stores, stores.map((storeId) => ({ storeId, state: 'ABSENT' })))).toBe('PASS');
   });
@@ -10,14 +10,14 @@ describe('bounded deletion observation reducer (no database involved)', () => {
     expect(reduceObservedDeletion(stores, [
       { storeId: 'primary', state: 'ABSENT' },
       { storeId: 'analytics', state: 'PRESENT' },
-      { storeId: 'exports', state: 'ABSENT' },
+      { storeId: 'export', state: 'ABSENT' },
     ])).toBe('FAIL');
   });
   it('never passes on unreachable or missing evidence', () => {
     expect(reduceObservedDeletion(stores, [
       { storeId: 'primary', state: 'ABSENT' },
       { storeId: 'analytics', state: 'ABSENT' },
-      { storeId: 'exports', state: 'UNKNOWN' },
+      { storeId: 'export', state: 'UNKNOWN' },
     ])).toBe('UNKNOWN');
     expect(reduceObservedDeletion(stores, [{ storeId: 'primary', state: 'ABSENT' }])).toBe('UNKNOWN');
   });

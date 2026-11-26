@@ -50,7 +50,8 @@ describe('seeded fixture (local fakes, not AWS evidence)', () => {
     const registry = new StoreRegistry<InMemoryStoreAdapter>([
       new InMemoryStoreAdapter('primary'),
       failing,
-      new InMemoryStoreAdapter('exports'),
+      new InMemoryStoreAdapter('export'),
+      new InMemoryStoreAdapter('backup'),
     ]);
     const res = await new FixtureRepository(registry).create('run1', 'seed-a');
     expect(res).toMatchObject({ ok: false, code: 'RESET_FAILED', storeId: 'analytics' });
@@ -59,8 +60,8 @@ describe('seeded fixture (local fakes, not AWS evidence)', () => {
   });
 
   it('returns INIT_FAILED when a store is unreachable during seeding', async () => {
-    const res = await new FixtureRepository(createInMemoryTestRegistry(['exports'])).create('run1', 'seed-a');
-    expect(res).toMatchObject({ ok: false, code: 'INIT_FAILED', storeId: 'exports' });
+    const res = await new FixtureRepository(createInMemoryTestRegistry(['export'])).create('run1', 'seed-a');
+    expect(res).toMatchObject({ ok: false, code: 'INIT_FAILED', storeId: 'export' });
   });
 
   it('rejects invalid run IDs and seeds explicitly', async () => {

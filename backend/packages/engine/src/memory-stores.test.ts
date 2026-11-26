@@ -20,11 +20,20 @@ describe('in-memory test-fake store adapters (not production evidence)', () => {
     r.get('primary').delete('run1', 's1', 1);
     expect(r.get('primary').observe('run1', 's1', 1).state).toBe('ABSENT');
     expect(r.get('analytics').observe('run1', 's1', 1).state).toBe('PRESENT');
-    expect(r.get('exports').observe('run1', 's1', 1).state).toBe('ABSENT');
+    expect(r.get('export').observe('run1', 's1', 1).state).toBe('ABSENT');
   });
 
+  it('keeps the backup store independent and unreachable-safe', () => {
+    const r = createInMemoryTestRegistry(['backup']);
+    r.get('primary').create('run1', 's1', 1);
+    expect(r.get('backup').observe('run1', 's1', 1)).toMatchObject({ state: 'UNKNOWN', errorCode: 'STORE_UNREACHABLE' });
+    const ok = createInMemoryTestRegistry();
+    ok.get('backup').create('run1', 's1', 1);
+    ok.get('primary').delete('run1', 's1', 1);
+    expect(ok.get('backup').observe('run1', 's1', 1).state).toBe('PRESENT');
+  });
   it('isolates runs and resets only one run', () => {
-    const a = createInMemoryTestRegistry().get('exports');
+    const a = createInMemoryTestRegistry().get('export');
     a.create('runA', 's1', 1);
     a.create('runB', 's1', 1);
     expect(a.observe('runC', 's1', 1).state).toBe('ABSENT');
@@ -34,11 +43,11 @@ describe('in-memory test-fake store adapters (not production evidence)', () => {
   });
 
   it('returns UNKNOWN, never ABSENT, for an unreachable store', () => {
-    const r = createInMemoryTestRegistry(['exports']);
-    const o = r.get('exports').observe('run1', 's1', 1);
+    const r = createInMemoryTestRegistry(['export']);
+    const o = r.get('export').observe('run1', 's1', 1);
     expect(o.state).toBe('UNKNOWN');
     expect(o.errorCode).toBe('STORE_UNREACHABLE');
-    expect(() => r.get('exports').create('run1', 's1', 1)).toThrow();
+    expect(() => r.get('export').create('run1', 's1', 1)).toThrow();
     expect(r.get('primary').observe('run1', 's1', 1).state).toBe('ABSENT');
   });
 

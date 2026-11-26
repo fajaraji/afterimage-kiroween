@@ -4,7 +4,7 @@ export type ObservationState = 'PRESENT' | 'ABSENT' | 'UNKNOWN';
 export type AssertionVerdict = 'PASS' | 'FAIL' | 'UNKNOWN';
 export type ConsumerMode = 'unsafe' | 'protected';
 export type RunStatus = 'queued' | 'running' | 'completed' | 'failed';
-export type StoreId = 'primary' | 'analytics' | 'exports';
+export type StoreId = 'primary' | 'analytics' | 'export' | 'backup';
 
 export interface StoreObservation {
   evidenceId: string;

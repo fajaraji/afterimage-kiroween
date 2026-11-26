@@ -8,19 +8,19 @@ import {
 const hostile = [
   'arn:aws:dynamodb:us-east-1:123456789012:table/prod',
   '../../etc/passwd', 'C:\\Windows\\system32', "primary'; DROP TABLE users;--",
-  'primary; rm -rf /', '$(whoami)', '', ' primary', 'PRIMARY', 'export', 42, null, undefined, {},
+  'primary; rm -rf /', '$(whoami)', '', ' primary', 'PRIMARY', 'exports', 42, null, undefined, {},
 ];
 
 const obs = { evidenceId: 'obs-001', storeId: 'primary', subjectId: 'synthetic-subject-042', generation: 1, state: 'ABSENT', observedAt: '2026-01-01T00:00:00Z' };
 const ev = { eventId: 'evt-1', subjectId: 'synthetic-subject-042', generation: 1, sequence: 1, kind: 'UPSERT' };
 const evidence = {
   schemaVersion: '1', runId: 'run-abc123', scenarioId: 'zombie-sync', fixtureHash: 'a'.repeat(64),
-  mode: 'protected', status: 'completed', verdict: 'PASS', requiredStores: ['primary', 'analytics', 'exports'],
+  mode: 'protected', status: 'completed', verdict: 'PASS', requiredStores: ['primary', 'analytics', 'export', 'backup'],
   observations: [obs], events: [ev], limitations: ['synthetic only'],
 };
 
-test('allowlists are exactly three stores and three scenarios', () => {
-  assert.deepEqual([...STORE_IDS], ['primary', 'analytics', 'exports']);
+test('allowlists are exactly four stores and three scenarios', () => {
+  assert.deepEqual([...STORE_IDS], ['primary', 'analytics', 'export', 'backup']);
   assert.deepEqual([...SCENARIO_IDS], ['zombie-sync', 'partial-delete', 'unreachable-store']);
   for (const s of STORE_IDS) assert.equal(parseStoreId(s).ok, true);
   for (const s of SCENARIO_IDS) assert.equal(parseScenarioId(s).ok, true);
@@ -59,7 +59,7 @@ test('observation state and assertion verdict stay distinct', () => {
 
 test('observations reject extra fields, bad store, bad ids and bad times', () => {
   assert.equal(parseStoreObservation({ ...obs, path: '/tmp/x' }).ok, false);
-  assert.equal(parseStoreObservation({ ...obs, storeId: 'export' }).ok, false);
+  assert.equal(parseStoreObservation({ ...obs, storeId: 'exports' }).ok, false);
   assert.equal(parseStoreObservation({ ...obs, evidenceId: 'arn:aws:s3:::b/k' }).ok, false);
   assert.equal(parseStoreObservation({ ...obs, subjectId: '../x' }).ok, false);
   assert.equal(parseStoreObservation({ ...obs, observedAt: 'yesterday' }).ok, false);

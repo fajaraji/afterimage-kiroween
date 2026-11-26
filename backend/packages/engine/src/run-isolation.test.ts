@@ -52,12 +52,12 @@ describe('run isolation (FOUNDATION-4)', () => {
     const repo = new FixtureRepository(registry);
     const ok = await repo.create('runA', 'seed-a');
     if (!ok.ok) throw new Error('expected ok');
-    registry.get('exports').setUnreachable(true);
+    registry.get('export').setUnreachable(true);
     const failed = await repo.create('runB', 'seed-b');
-    expect(failed).toMatchObject({ ok: false, code: 'INIT_FAILED', storeId: 'exports' });
-    registry.get('exports').setUnreachable(false);
+    expect(failed).toMatchObject({ ok: false, code: 'INIT_FAILED', storeId: 'export' });
+    registry.get('export').setUnreachable(false);
     for (const s of ok.fixture.subjects) {
-      expect(registry.get('exports').observe('runA', s.subjectId, 1).state).toBe('PRESENT');
+      expect(registry.get('export').observe('runA', s.subjectId, 1).state).toBe('PRESENT');
     }
   });
 });
@@ -72,7 +72,8 @@ describe('failed init/reset returns explicit error, never a verdict (FOUNDATION-
     return new StoreRegistry<InMemoryStoreAdapter>([
       new InMemoryStoreAdapter('primary'),
       failing,
-      new InMemoryStoreAdapter('exports'),
+      new InMemoryStoreAdapter('export'),
+      new InMemoryStoreAdapter('backup'),
     ]);
   }
 
@@ -138,7 +139,7 @@ describe('allowlist rejection of invalid IDs (FOUNDATION-3)', () => {
 
   it('registry rejects non-allowlisted store IDs of every shape', () => {
     const registry = createInMemoryTestRegistry();
-    for (const bad of [...badIds, 'Primary', 'export', 'primary ', '__proto__', 'constructor', 'toString']) {
+    for (const bad of [...badIds, 'Primary', 'exports', 'primary ', '__proto__', 'constructor', 'toString']) {
       expect(() => registry.get(bad)).toThrow();
     }
   });

@@ -4,7 +4,7 @@
  * used as an ARN, path, query or command.
  */
 
-export const STORE_IDS = ['primary', 'analytics', 'exports'] as const;
+export const STORE_IDS = ['primary', 'analytics', 'export', 'backup'] as const;
 export const SCENARIO_IDS = ['zombie-sync', 'partial-delete', 'unreachable-store'] as const;
 export const CONSUMER_MODES = ['unsafe', 'protected'] as const;
 export const OBSERVATION_STATES = ['PRESENT', 'ABSENT', 'UNKNOWN'] as const;

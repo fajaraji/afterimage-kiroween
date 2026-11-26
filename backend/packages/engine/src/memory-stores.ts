@@ -82,7 +82,7 @@ export class InMemoryStoreAdapter implements InMemoryTestAdapter {
   }
 }
 
-/** Builds the three independent in-memory test fakes. */
+/** Builds the four independent in-memory test fakes. */
 export function createInMemoryTestRegistry(unreachable: readonly AllowlistedStoreId[] = []): StoreRegistry<InMemoryStoreAdapter> {
   return new StoreRegistry<InMemoryStoreAdapter>(
     ALLOWLISTED_STORE_IDS.map((id) => new InMemoryStoreAdapter(id, { unreachable: unreachable.includes(id) })),

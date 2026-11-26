@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   DynamoStoreAdapter,
+  S3BackupStoreAdapter,
   S3ExportStoreAdapter,
   createAwsStoreAdapters,
   dynamoKey,
@@ -117,7 +118,7 @@ describe('DynamoStoreAdapter', () => {
     await expect(a.delete('r', 's;DROP', 1)).rejects.toThrow('Invalid subjectId');
     await expect(a.seed('r', 's', -1)).rejects.toThrow('Invalid generation');
     await expect(a.reset('a/b')).rejects.toThrow('Invalid runId');
-    expect(() => new DynamoStoreAdapter('exports' as never, client, 'tbl-x')).toThrow();
+    expect(() => new DynamoStoreAdapter('export' as never, client, 'tbl-x')).toThrow();
     expect(() => new DynamoStoreAdapter('primary', client, 'bad name!')).toThrow('Invalid tableName');
     expect(calls).toEqual([]);
   });
@@ -179,17 +180,43 @@ describe('S3ExportStoreAdapter', () => {
   });
 });
 
+describe('S3BackupStoreAdapter', () => {
+  it('uses its own bucket and a backup key prefix, separate from export', async () => {
+    const { client, objs } = fakeS3();
+    const b = new S3BackupStoreAdapter(client, 'backup-bucket');
+    const e = new S3ExportStoreAdapter(client, 'export-bucket');
+    expect(b.storeId).toBe('backup');
+    expect(e.storeId).toBe('export');
+    await b.seed('run1', 's1', 1);
+    expect([...objs]).toEqual([`backup-bucket/runs/run1/backup/s1/gen-1.json`]);
+    expect((await b.observe('run1', 's1', 1)).state).toBe('PRESENT');
+    expect((await e.observe('run1', 's1', 1)).state).toBe('ABSENT');
+  });
+  it('a failed read is UNKNOWN, never ABSENT', async () => {
+    const r = await new S3BackupStoreAdapter(fakeS3({ headError: new Error('down') }).client, 'backup-bucket').observe('run1', 's1', 1);
+    expect(r.state).toBe('UNKNOWN');
+  });
+  it('reset deletes only the run backup prefix', async () => {
+    const { client, objs } = fakeS3();
+    const b = new S3BackupStoreAdapter(client, 'backup-bucket');
+    await b.seed('run1', 's1', 1);
+    await b.seed('run10', 's1', 1);
+    await b.reset('run1');
+    expect([...objs]).toEqual([`backup-bucket/runs/run10/backup/s1/gen-1.json`]);
+  });
+});
 describe('createAwsStoreAdapters', () => {
-  it('builds three independent adapters and rejects shared tables', () => {
+  it('builds four independent adapters and rejects shared tables or buckets', () => {
     const clients = { dynamo: fakeDynamo().client, s3: fakeS3().client };
-    const adapters = createAwsStoreAdapters(clients, { primaryTable: 'p-table', analyticsTable: 'a-table', exportBucket: 'e-bucket' });
-    expect(adapters.map((a) => a.storeId)).toEqual(['primary', 'analytics', 'exports']);
-    expect(() => createAwsStoreAdapters(clients, { primaryTable: 'same', analyticsTable: 'same', exportBucket: 'e-bucket' })).toThrow();
+    const adapters = createAwsStoreAdapters(clients, { primaryTable: 'p-table', analyticsTable: 'a-table', exportBucket: 'e-bucket', backupBucket: 'b-bucket' });
+    expect(adapters.map((a) => a.storeId)).toEqual(['primary', 'analytics', 'export', 'backup']);
+    expect(() => createAwsStoreAdapters(clients, { primaryTable: 'same', analyticsTable: 'same', exportBucket: 'e-bucket', backupBucket: 'b-bucket' })).toThrow();
+    expect(() => createAwsStoreAdapters(clients, { primaryTable: 'p-table', analyticsTable: 'a-table', exportBucket: 'same-b', backupBucket: 'same-b' })).toThrow();
   });
 
   it('stores are independent: deleting from primary leaves analytics copy observable', async () => {
     const clients = { dynamo: fakeDynamo().client, s3: fakeS3().client };
-    const [p, a] = createAwsStoreAdapters(clients, { primaryTable: 'p-table', analyticsTable: 'a-table', exportBucket: 'e-bucket' });
+    const [p, a] = createAwsStoreAdapters(clients, { primaryTable: 'p-table', analyticsTable: 'a-table', exportBucket: 'e-bucket', backupBucket: 'b-bucket' });
     await p.seed('run1', 's1', 1);
     await a.seed('run1', 's1', 1);
     await p.delete('run1', 's1', 1);
